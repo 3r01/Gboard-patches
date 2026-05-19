@@ -10,10 +10,25 @@ import dev.jason.gboardpatches.patches.gboard.features.addsymbols.gboardZhuyinCu
 import dev.jason.gboardpatches.patches.gboard.features.addsymbols.gboardZhuyinCustomSymbolsRoutingPatch
 import dev.jason.gboardpatches.patches.gboard.features.chinesevoice.gboardChineseOnlineVoiceBytecodePatch
 import dev.jason.gboardpatches.patches.gboard.features.chinesevoice.gboardChineseOnlineVoiceResourcePatch
+import dev.jason.gboardpatches.patches.gboard.features.clipboard.gboardClipboardFeatureMarkerPatch
+import dev.jason.gboardpatches.patches.gboard.features.clipboard.gboardClipboardAdapterTrimPatch
+import dev.jason.gboardpatches.patches.gboard.features.clipboard.gboardClipboardItemBindPatch
+import dev.jason.gboardpatches.patches.gboard.features.clipboard.gboardClipboardLoaderPatch
+import dev.jason.gboardpatches.patches.gboard.features.clipboard.gboardClipboardPrunePatch
 import dev.jason.gboardpatches.patches.gboard.features.englishqwerty.gboardEnglishQwertySlideResourcePatch
 import dev.jason.gboardpatches.patches.gboard.features.englishqwerty.gboardEnglishQwertySoftKeyPatch
+import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardClipboardEntityExtractionFeatureMarkerPatch
+import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardClipboardItemEditFeatureMarkerPatch
+import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardFeatureFlagsBytecodePatch
+import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardGrammarCheckerFeatureMarkerPatch
+import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardInlineSuggestionsFeatureMarkerPatch
+import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardKeyShapeSelectionFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.packagerename.gboardPackageRenameResourcePatch
+import dev.jason.gboardpatches.patches.gboard.features.settingshomepage.gboardSettingsHomepageBytecodePatch
+import dev.jason.gboardpatches.patches.gboard.features.settingshomepage.gboardSettingsHomepageFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.signaturebypass.gboardSignatureBypassBytecodePatch
+import dev.jason.gboardpatches.patches.gboard.shared.gboardPatchesExtensionCarrierPatch
+import dev.jason.gboardpatches.patches.gboard.shared.gboardPatchesSettingsPatch
 import dev.jason.gboardpatches.patches.gboard.features.undoredoaccesspoint.gboardUndoRedoAccessPointBytecodePatch
 import dev.jason.gboardpatches.patches.gboard.features.zhuyinslide.gboardZhuyinSlidePointerAnchorPatch
 import dev.jason.gboardpatches.patches.gboard.features.zhuyinslide.gboardZhuyinSlideResourcePatch
@@ -24,7 +39,7 @@ import dev.jason.gboardpatches.patches.shared.Constants.COMPATIBILITY_GBOARD
 @Suppress("unused")
 val gboardZhuyinSlideInputPatch = resourcePatch(
     name = "Zhuyin Slide Input",
-    description = "注音鍵盤支持上下滑輸入",
+    description = "注音鍵盤支持上下滑輸入\nEnable slide-up and slide-down input on the Zhuyin keyboard.",
     default = true
 ) {
     compatibleWith(COMPATIBILITY_GBOARD)
@@ -39,7 +54,7 @@ val gboardZhuyinSlideInputPatch = resourcePatch(
 @Suppress("unused")
 val gboardEnglishQwertySlideSymbolsPatch = resourcePatch(
     name = "English QWERTY Slide Symbols",
-    description = "英文 QWERTY 鍵盤支持上下滑符號輸入",
+    description = "英文 QWERTY 鍵盤支持上下滑符號輸入\nEnable slide-up and slide-down symbol input on the English QWERTY keyboard.",
     default = true
 ) {
     compatibleWith(COMPATIBILITY_GBOARD)
@@ -54,7 +69,7 @@ val gboardEnglishQwertySlideSymbolsPatch = resourcePatch(
 @Suppress("unused")
 val gboardZhuyinQuickTraditionalSimplifiedTogglePatch = resourcePatch(
     name = "Zhuyin Quick Traditional/Simplified Toggle",
-    description = "注音 ㄥ 上滑快速切換繁簡",
+    description = "注音 ㄥ 上滑快速切換繁簡\nSwipe up on Zhuyin ㄥ to quickly toggle Traditional and Simplified Chinese.",
     default = true
 ) {
     compatibleWith(COMPATIBILITY_GBOARD)
@@ -69,7 +84,7 @@ val gboardZhuyinQuickTraditionalSimplifiedTogglePatch = resourcePatch(
 @Suppress("unused")
 val gboardCustomSymbolsPatch = resourcePatch(
     name = "Custom Symbols",
-    description = "新增獨立的特殊符號分頁，長按逗號->愛心",
+    description = "新增獨立的特殊符號分頁，長按逗號->愛心\nAdd a dedicated custom symbols tab and replace the long-press comma entry with a heart shortcut.",
     default = true
 ) {
     compatibleWith(COMPATIBILITY_GBOARD)
@@ -88,7 +103,7 @@ val gboardCustomSymbolsPatch = resourcePatch(
 @Suppress("unused")
 val gboardUndoRedoAccessPointPatch = resourcePatch(
     name = "Enable Undo/Redo feature",
-    description = "啟用 Undo/Redo 功能",
+    description = "啟用 Undo/Redo 功能\nEnable the Undo/Redo feature.",
     default = true
 ) {
     compatibleWith(COMPATIBILITY_GBOARD)
@@ -101,7 +116,7 @@ val gboardUndoRedoAccessPointPatch = resourcePatch(
 @Suppress("unused")
 val gboardChineseOnlineVoiceInputPatch = resourcePatch(
     name = "Chinese Online Voice Input",
-    description = "強制啟用中文語音",
+    description = "強制啟用中文語音\nForce-enable Chinese voice input.",
     default = true
 ) {
     compatibleWith(COMPATIBILITY_GBOARD)
@@ -114,9 +129,118 @@ val gboardChineseOnlineVoiceInputPatch = resourcePatch(
 }
 
 @Suppress("unused")
+val gboardClipboardRetentionPatch = resourcePatch(
+    name = "Clipboard Retention",
+    description = "自訂剪貼簿保留時間、數量上限與顯示資訊\nCustomize clipboard retention time, item count limit, and metadata display.",
+    default = true
+) {
+    compatibleWith(COMPATIBILITY_GBOARD)
+
+    dependsOn(
+        gboardAboutPageResourcePatch,
+        gboardPatchesSettingsPatch,
+        gboardClipboardFeatureMarkerPatch,
+        gboardClipboardLoaderPatch,
+        gboardClipboardPrunePatch,
+        gboardClipboardAdapterTrimPatch,
+        gboardClipboardItemBindPatch
+    )
+}
+
+@Suppress("unused")
+val gboardClipboardEntityExtractionFlagPatch = resourcePatch(
+    name = "Clipboard Entity Extraction",
+    description = "啟用 剪貼簿 > 顯示從最近複製文字中攝取的資訊，例如地址、電話號碼和其他項目\nEnable Clipboard > Show addresses, phone numbers, and other items pulled from recently copied text.",
+    default = true
+) {
+    compatibleWith(COMPATIBILITY_GBOARD)
+
+    dependsOn(
+        gboardPatchesExtensionCarrierPatch,
+        gboardFeatureFlagsBytecodePatch,
+        gboardClipboardEntityExtractionFeatureMarkerPatch
+    )
+}
+
+@Suppress("unused")
+val gboardClipboardItemEditFlagPatch = resourcePatch(
+    name = "Clipboard Item Edit",
+    description = "長按 剪貼簿 顯示編輯\nEnable Edit when long-pressing a clipboard item.",
+    default = true
+) {
+    compatibleWith(COMPATIBILITY_GBOARD)
+
+    dependsOn(
+        gboardPatchesExtensionCarrierPatch,
+        gboardFeatureFlagsBytecodePatch,
+        gboardClipboardItemEditFeatureMarkerPatch
+    )
+}
+
+@Suppress("unused")
+val gboardGrammarCheckerFlagPatch = resourcePatch(
+    name = "Grammar Checker",
+    description = "啟用 修正和建議 > 文法檢查\nEnable Text correction > Grammar check.",
+    default = true
+) {
+    compatibleWith(COMPATIBILITY_GBOARD)
+
+    dependsOn(
+        gboardPatchesExtensionCarrierPatch,
+        gboardFeatureFlagsBytecodePatch,
+        gboardGrammarCheckerFeatureMarkerPatch
+    )
+}
+
+@Suppress("unused")
+val gboardInlineSuggestionsFlagPatch = resourcePatch(
+    name = "Inline Suggestions",
+    description = "啟用 修正和建議 > 智慧撰寫\nEnable Text correction > Smart Compose.",
+    default = true
+) {
+    compatibleWith(COMPATIBILITY_GBOARD)
+
+    dependsOn(
+        gboardPatchesExtensionCarrierPatch,
+        gboardFeatureFlagsBytecodePatch,
+        gboardInlineSuggestionsFeatureMarkerPatch
+    )
+}
+
+@Suppress("unused")
+val gboardKeyShapeSelectionFlagPatch = resourcePatch(
+    name = "Key Shape Selection",
+    description = "啟用圓角按鍵，主題詳情 > 按鍵形狀\nEnable Key shape in Theme details.",
+    default = true
+) {
+    compatibleWith(COMPATIBILITY_GBOARD)
+
+    dependsOn(
+        gboardPatchesExtensionCarrierPatch,
+        gboardFeatureFlagsBytecodePatch,
+        gboardKeyShapeSelectionFeatureMarkerPatch
+    )
+}
+
+@Suppress("unused")
+val gboardSettingsHomepagePatch = resourcePatch(
+    name = "Settings Homepage Override",
+    description = "允許切換新版或舊版 Gboard 設定頁面\nAllow switching between the new and legacy Gboard settings pages.",
+    default = true
+) {
+    compatibleWith(COMPATIBILITY_GBOARD)
+
+    dependsOn(
+        gboardPatchesSettingsPatch,
+        gboardSettingsHomepageFeatureMarkerPatch,
+        gboardSettingsHomepageBytecodePatch
+    )
+}
+
+@Suppress("unused")
 val gboardPackageRenamePatch = resourcePatch(
     name = "Package Rename",
-    description = "將套件名稱改成 dev.jason.com.google.android.inputmethod.latin 以便共存安裝",
+    description = "將套件名稱改成 dev.jason.com.google.android.inputmethod.latin 以便共存安裝\nRename the package to dev.jason.com.google.android.inputmethod.latin so it can be installed alongside the official Gboard.",
     default = true
 ) {
     compatibleWith(COMPATIBILITY_GBOARD)
@@ -129,7 +253,7 @@ val gboardPackageRenamePatch = resourcePatch(
 @Suppress("unused")
 val gboardSignatureBypassPatch = resourcePatch(
     name = "Add Gboard Signature Bypass",
-    description = "攔截 Gboard 的簽章白名單檢查並強制通過。",
+    description = "攔截 Gboard 的簽章白名單檢查並強制通過\nBypass Gboard signature whitelist checks and force them to pass.",
     default = true
 ) {
     compatibleWith(COMPATIBILITY_GBOARD)

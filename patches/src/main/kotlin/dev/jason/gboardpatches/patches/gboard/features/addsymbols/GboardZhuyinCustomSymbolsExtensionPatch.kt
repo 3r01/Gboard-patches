@@ -1,9 +1,5 @@
 package dev.jason.gboardpatches.patches.gboard.features.addsymbols
 
-import app.morphe.patcher.patch.bytecodePatch
+import dev.jason.gboardpatches.patches.gboard.shared.gboardPatchesExtensionCarrierPatch
 
-internal val gboardZhuyinCustomSymbolsExtensionPatch = bytecodePatch(
-    description = "將 add-symbols runtime helper extension 併入 target APK。"
-) {
-    extendWith("extensions/gboard-patches.rve")
-}
+internal val gboardZhuyinCustomSymbolsExtensionPatch = gboardPatchesExtensionCarrierPatch

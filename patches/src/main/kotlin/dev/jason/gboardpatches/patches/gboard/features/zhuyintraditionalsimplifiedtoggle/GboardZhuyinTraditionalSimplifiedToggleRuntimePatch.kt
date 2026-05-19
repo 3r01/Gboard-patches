@@ -24,8 +24,8 @@ internal val gboardZhuyinTraditionalSimplifiedToggleRuntimePatch = bytecodePatch
     }
 }
 
-context(BytecodePatchContext)
-private fun patchOfiDispatch() {
+context(context: BytecodePatchContext)
+private fun patchOfiDispatch() = with(context) {
     addHelperMethodIfMissing(
         classType = OFI_CLASS,
         name = "jasondevDispatchOrToggle",
@@ -90,8 +90,8 @@ private fun patchOfiDispatch() {
     mutableMethod.addInstructions(0, OFI_F_DELEGATE_INSTRUCTIONS)
 }
 
-context(BytecodePatchContext)
-private fun patchSoftKeyboardView() {
+context(context: BytecodePatchContext)
+private fun patchSoftKeyboardView() = with(context) {
     addHelperMethodIfMissing(
         classType = SOFT_KEYBOARD_VIEW_CLASS,
         name = "jasondevPatchTogglePopupMetadata",
@@ -111,8 +111,8 @@ private fun patchSoftKeyboardView() {
     mutableMethod.addInstructions(0, SOFT_KEYBOARD_VIEW_Z_DELEGATE)
 }
 
-context(BytecodePatchContext)
-private fun patchBasicPopupView() {
+context(context: BytecodePatchContext)
+private fun patchBasicPopupView() = with(context) {
     addHelperMethodIfMissing(
         classType = BASIC_POPUP_VIEW_CLASS,
         name = "jasondevResolveTogglePopupLabel",

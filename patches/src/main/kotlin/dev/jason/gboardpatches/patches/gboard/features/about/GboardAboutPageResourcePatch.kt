@@ -20,23 +20,34 @@ private const val ABOUT_PREFERENCE_CLASS =
 internal val gboardAboutPageResourcePatch = resourcePatch(
     description = "在關於頁加入 patch 資訊。"
 ) {
-    finalize {
+    execute {
         applyAboutPagePatch()
     }
 }
-
-context(ResourcePatchContext)
+context(context: ResourcePatchContext)
 private fun applyAboutPagePatch() {
-    document(ABOUT_XML).use { document ->
-        val screen = document.documentElement
-        val versionPreference = screen.childElements().firstOrNull {
-            it.getAttributeNS(ANDROID_NS, "key") == ABOUT_VERSION_KEY_REF ||
-                it.getAttribute("android:key") == ABOUT_VERSION_KEY_REF
-        } ?: screen.childElements().lastOrNull()
-        ?: error("Could not find any preference node in $ABOUT_XML")
+    val aboutDocument = context.document(ABOUT_XML)
+    try {
+        val screen = aboutDocument.documentElement
+        val childElements = screen.childElements()
+        var versionPreference: Element? = null
+        for (child in childElements) {
+            if (child.getAttributeNS(ANDROID_NS, "key") == ABOUT_VERSION_KEY_REF ||
+                child.getAttribute("android:key") == ABOUT_VERSION_KEY_REF
+            ) {
+                versionPreference = child
+                break
+            }
+        }
+        if (versionPreference == null) {
+            versionPreference = childElements.lastOrNull()
+        }
+        if (versionPreference == null) {
+            error("Could not find any preference node in $ABOUT_XML")
+        }
 
         val authorPreference = ensureAboutPreference(
-            document = document,
+            document = aboutDocument,
             key = "gboard_about_author",
             title = "Author",
             summary = GBOARD_PATCH_AUTHOR,
@@ -45,13 +56,15 @@ private fun applyAboutPagePatch() {
         screen.insertAfter(authorPreference, versionPreference)
 
         val patchVersionPreference = ensureAboutPreference(
-            document = document,
+            document = aboutDocument,
             key = "gboard_about_patch_version",
             title = "Patch Version",
             summary = GBOARD_PATCH_VERSION,
             intentUrl = GBOARD_PATCH_REPOSITORY_URL
         )
         screen.insertAfter(patchVersionPreference, authorPreference)
+    } finally {
+        aboutDocument.close()
     }
 }
 
@@ -63,13 +76,21 @@ private fun ensureAboutPreference(
     intentUrl: String? = null
 ): Element {
     val screen = document.documentElement
-    val preference = screen.childElements().firstOrNull {
-        it.tagName == ABOUT_PREFERENCE_CLASS &&
+    var preference: Element? = null
+    for (child in screen.childElements()) {
+        if (child.tagName == ABOUT_PREFERENCE_CLASS &&
             (
-                it.getAttributeNS(ANDROID_NS, "key") == key ||
-                    it.getAttribute("android:key") == key
+                child.getAttributeNS(ANDROID_NS, "key") == key ||
+                    child.getAttribute("android:key") == key
             )
-    } ?: document.createElement(ABOUT_PREFERENCE_CLASS)
+        ) {
+            preference = child
+            break
+        }
+    }
+    if (preference == null) {
+        preference = document.createElement(ABOUT_PREFERENCE_CLASS)
+    }
 
     preference.setAndroidAttribute("persistent", "false")
     preference.setAndroidAttribute("focusable", "false")
@@ -78,11 +99,10 @@ private fun ensureAboutPreference(
     preference.setAndroidAttribute("selectable", if (intentUrl != null) "true" else "false")
     preference.setAndroidAttribute("key", key)
     preference.setAndroidAttribute("summary", summary)
-    intentUrl?.let { url ->
-        preference.ensureIntent().apply {
-            setAndroidAttribute("action", "android.intent.action.VIEW")
-            setAndroidAttribute("data", url)
-        }
+    if (intentUrl != null) {
+        val intent = preference.ensureIntent()
+        intent.setAndroidAttribute("action", "android.intent.action.VIEW")
+        intent.setAndroidAttribute("data", intentUrl)
     }
     return preference
 }
@@ -91,7 +111,13 @@ private fun Element.setAndroidAttribute(localName: String, value: String) {
     setAttributeNS(ANDROID_NS, "android:$localName", value)
 }
 
-private fun Element.ensureIntent(): Element =
-    childElements("intent").firstOrNull() ?: ownerDocument.createElement("intent").also {
-        appendChild(it)
+private fun Element.ensureIntent(): Element {
+    val existingIntent = childElements("intent").firstOrNull()
+    if (existingIntent != null) {
+        return existingIntent
     }
+
+    val intent = ownerDocument.createElement("intent")
+    appendChild(intent)
+    return intent
+}

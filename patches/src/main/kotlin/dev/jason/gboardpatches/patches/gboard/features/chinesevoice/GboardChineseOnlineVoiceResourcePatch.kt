@@ -16,8 +16,8 @@ internal val gboardChineseOnlineVoiceResourcePatch = resourcePatch(
     }
 }
 
-context(ResourcePatchContext)
-private fun applyChineseVoiceInputResourcePatch() {
+context(context: ResourcePatchContext)
+private fun applyChineseVoiceInputResourcePatch() = with(context) {
     document(STRINGS_XML).use { document ->
         val stringElement = document.getElementsByTagName("string").elements().firstOrNull {
             it.getAttribute("name") == ENABLE_VOICE_IN_CHINESE_STRING_NAME

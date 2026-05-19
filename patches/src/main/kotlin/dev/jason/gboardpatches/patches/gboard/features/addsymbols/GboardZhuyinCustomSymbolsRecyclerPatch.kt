@@ -21,8 +21,8 @@ internal val gboardZhuyinCustomSymbolsRecyclerPatch = bytecodePatch(
     }
 }
 
-context(BytecodePatchContext)
-private fun patchConstructor() {
+context(context: BytecodePatchContext)
+private fun patchConstructor() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = EMOTICON_RECYCLER_ADAPTER_CLASS,
         name = "<init>",
@@ -44,8 +44,8 @@ private fun patchConstructor() {
     mutableMethod.addInstructions(superConstructorIndex + 1, CONSTRUCTOR_DELEGATE)
 }
 
-context(BytecodePatchContext)
-private fun patchBindViewHolder() {
+context(context: BytecodePatchContext)
+private fun patchBindViewHolder() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = EMOTICON_RECYCLER_ADAPTER_CLASS,
         name = "p",
@@ -55,8 +55,8 @@ private fun patchBindViewHolder() {
     mutableMethod.addInstructions(0, BIND_VIEW_HOLDER_DELEGATE)
 }
 
-context(BytecodePatchContext)
-private fun patchViewType() {
+context(context: BytecodePatchContext)
+private fun patchViewType() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = BASE_RECYCLER_ADAPTER_CLASS,
         name = "fW",
@@ -66,8 +66,8 @@ private fun patchViewType() {
     mutableMethod.addInstructions(0, VIEW_TYPE_DELEGATE)
 }
 
-context(BytecodePatchContext)
-private fun patchCreateViewHolder() {
+context(context: BytecodePatchContext)
+private fun patchCreateViewHolder() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = EMOTICON_RECYCLER_ADAPTER_CLASS,
         name = "d",

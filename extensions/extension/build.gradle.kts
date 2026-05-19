@@ -4,4 +4,19 @@ extension {
 
 android {
     namespace = "dev.jason.gboardpatches.extension"
+
+    buildFeatures {
+        buildConfig = true
+    }
+
+    defaultConfig {
+        buildConfigField("String", "PATCH_AUTHOR", "\"jasonwu1994\"")
+        buildConfigField("String", "PATCH_AUTHOR_URL", "\"https://github.com/jasonwu1994\"")
+        buildConfigField(
+            "String",
+            "PATCH_REPOSITORY_URL",
+            "\"https://github.com/jasonwu1994/Gboard-patches\""
+        )
+        buildConfigField("String", "PATCH_VERSION", "\"${project.version}\"")
+    }
 }

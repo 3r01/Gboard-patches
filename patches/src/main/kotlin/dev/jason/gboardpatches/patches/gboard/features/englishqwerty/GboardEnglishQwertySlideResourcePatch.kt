@@ -50,8 +50,8 @@ internal val gboardEnglishQwertySlideResourcePatch = resourcePatch(
     }
 }
 
-context(ResourcePatchContext)
-private fun applyEnglishQwertyResourcePatch() {
+context(context: ResourcePatchContext)
+private fun applyEnglishQwertyResourcePatch() = with(context) {
     document(ENGLISH_QWERTY_XML).use { document ->
         val template = document.findSoftkeyTemplate(ENGLISH_QWERTY_TEMPLATE_ID)
         template.setAttribute("layout", ENGLISH_QWERTY_LAYOUT)

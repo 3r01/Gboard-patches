@@ -160,6 +160,13 @@ internal fun MutableMethod.instructionIndices(opcodeName: String): List<Int> {
     }
 }
 
+internal fun MutableMethod.returnInstructionIndices(): List<Int> {
+    val instructions = implementation?.instructions ?: return emptyList()
+    return instructions.indices.filter { index ->
+        instructions[index].opcode.name.normalizedOpcodeName().startsWith("RETURN")
+    }
+}
+
 internal fun MutableMethod.indexOfFirstFieldAccess(
     definingClass: String,
     name: String,

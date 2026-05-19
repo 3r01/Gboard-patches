@@ -26,8 +26,8 @@ internal val gboardZhuyinSlidePointerAnchorPatch = bytecodePatch(
     }
 }
 
-context(BytecodePatchContext)
-private fun ensurePointerAnchorField() {
+context(context: BytecodePatchContext)
+private fun ensurePointerAnchorField() = with(context) {
     addFieldIfMissing(
         classType = OFK_CLASS,
         fieldName = ANCHOR_FIELD_NAME,
@@ -36,8 +36,8 @@ private fun ensurePointerAnchorField() {
     )
 }
 
-context(BytecodePatchContext)
-private fun ensurePointerAnchorMetadataHelper() {
+context(context: BytecodePatchContext)
+private fun ensurePointerAnchorMetadataHelper() = with(context) {
     addHelperMethodIfMissing(
         classType = OFK_CLASS,
         name = IS_ZHUYIN_METADATA_METHOD_NAME,
@@ -49,8 +49,8 @@ private fun ensurePointerAnchorMetadataHelper() {
     )
 }
 
-context(BytecodePatchContext)
-private fun ensurePointerAnchorHelper() {
+context(context: BytecodePatchContext)
+private fun ensurePointerAnchorHelper() = with(context) {
     addHelperMethodIfMissing(
         classType = OFK_CLASS,
         name = RESOLVE_ANCHOR_METHOD_NAME,
@@ -62,8 +62,8 @@ private fun ensurePointerAnchorHelper() {
     )
 }
 
-context(BytecodePatchContext)
-private fun injectPointerAnchorGuard() {
+context(context: BytecodePatchContext)
+private fun injectPointerAnchorGuard() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = OFK_CLASS,
         name = "B",

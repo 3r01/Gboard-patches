@@ -32,8 +32,8 @@ internal val gboardZhuyinCustomSymbolsEmoticonStatePatch = bytecodePatch(
     }
 }
 
-context(BytecodePatchContext)
-private fun patchConstructor() {
+context(context: BytecodePatchContext)
+private fun patchConstructor() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = EMOTICON_KEYBOARD_CLASS,
         name = "<init>",
@@ -61,8 +61,8 @@ private fun patchConstructor() {
     mutableMethod.addInstructions(superConstructorIndex + 1, CONSTRUCTOR_DELEGATE)
 }
 
-context(BytecodePatchContext)
-private fun patchBodyReady() {
+context(context: BytecodePatchContext)
+private fun patchBodyReady() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = EMOTICON_KEYBOARD_CLASS,
         name = "ek",
@@ -84,8 +84,8 @@ private fun patchBodyReady() {
     mutableMethod.addInstructions(emptyStateFieldWriteIndex + 1, BODY_READY_DELEGATE)
 }
 
-context(BytecodePatchContext)
-private fun patchCategoryNameLookup() {
+context(context: BytecodePatchContext)
+private fun patchCategoryNameLookup() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = EMOTICON_KEYBOARD_CLASS,
         name = "k",
@@ -95,8 +95,8 @@ private fun patchCategoryNameLookup() {
     mutableMethod.addInstructions(0, CATEGORY_NAME_LOOKUP_DELEGATE)
 }
 
-context(BytecodePatchContext)
-private fun patchSelectedIndex() {
+context(context: BytecodePatchContext)
+private fun patchSelectedIndex() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = EMOTICON_KEYBOARD_CLASS,
         name = "j",
@@ -106,8 +106,8 @@ private fun patchSelectedIndex() {
     mutableMethod.addInstructions(0, SELECTED_INDEX_DELEGATE)
 }
 
-context(BytecodePatchContext)
-private fun patchCategoryChange() {
+context(context: BytecodePatchContext)
+private fun patchCategoryChange() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = EMOTICON_KEYBOARD_CLASS,
         name = "B",
@@ -117,8 +117,8 @@ private fun patchCategoryChange() {
     mutableMethod.addInstructions(0, CATEGORY_CHANGE_DELEGATE)
 }
 
-context(BytecodePatchContext)
-private fun patchCategoryBind() {
+context(context: BytecodePatchContext)
+private fun patchCategoryBind() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = EMOTICON_KEYBOARD_CLASS,
         name = "A",
@@ -131,8 +131,8 @@ private fun patchCategoryBind() {
     mutableMethod.addInstructions(0, CATEGORY_BIND_DELEGATE)
 }
 
-context(BytecodePatchContext)
-private fun patchHeaderCallback() {
+context(context: BytecodePatchContext)
+private fun patchHeaderCallback() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = EMOTICON_HEADER_CALLBACK_CLASS,
         name = "accept",
@@ -149,8 +149,8 @@ private fun patchHeaderCallback() {
     }
 }
 
-context(BytecodePatchContext)
-private fun patchHeaderStartEdgeGuard() {
+context(context: BytecodePatchContext)
+private fun patchHeaderStartEdgeGuard() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = HEADER_VIEW_CLASS,
         name = "n",
@@ -160,8 +160,8 @@ private fun patchHeaderStartEdgeGuard() {
     mutableMethod.addInstructions(0, HEADER_START_EDGE_GUARD_DELEGATE)
 }
 
-context(BytecodePatchContext)
-private fun patchViewUtilTransformGuard() {
+context(context: BytecodePatchContext)
+private fun patchViewUtilTransformGuard() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = VIEW_UTIL_CLASS,
         name = "h",

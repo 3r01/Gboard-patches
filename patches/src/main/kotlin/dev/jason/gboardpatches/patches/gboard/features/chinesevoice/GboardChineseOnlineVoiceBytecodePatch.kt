@@ -19,8 +19,8 @@ internal val gboardChineseOnlineVoiceBytecodePatch = bytecodePatch(
     }
 }
 
-context(BytecodePatchContext)
-private fun addZhRequestHelper() {
+context(context: BytecodePatchContext)
+private fun addZhRequestHelper() = with(context) {
     addHelperMethodIfMissing(
         classType = NEW_S3_PROVIDER_CLASS,
         name = "jasondevShouldForceZhRequest",
@@ -32,8 +32,8 @@ private fun addZhRequestHelper() {
     )
 }
 
-context(BytecodePatchContext)
-private fun addForceResultHelper() {
+context(context: BytecodePatchContext)
+private fun addForceResultHelper() = with(context) {
     addHelperMethodIfMissing(
         classType = NEW_S3_PROVIDER_CLASS,
         name = "jasondevForceZhProviderResult",
@@ -45,8 +45,8 @@ private fun addForceResultHelper() {
     )
 }
 
-context(BytecodePatchContext)
-private fun injectNewS3ProviderForce() {
+context(context: BytecodePatchContext)
+private fun injectNewS3ProviderForce() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = NEW_S3_PROVIDER_CLASS,
         name = "b",

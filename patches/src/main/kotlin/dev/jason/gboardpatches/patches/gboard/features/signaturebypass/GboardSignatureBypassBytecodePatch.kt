@@ -18,8 +18,8 @@ internal val gboardSignatureBypassBytecodePatch = bytecodePatch(
     }
 }
 
-context(BytecodePatchContext)
-private fun injectSignatureBypass() {
+context(context: BytecodePatchContext)
+private fun injectSignatureBypass() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = SIGNATURE_UTILS_CLASS,
         name = "a",

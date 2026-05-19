@@ -29,8 +29,8 @@ internal val gboardZhuyinSlideResourcePatch = resourcePatch(
     }
 }
 
-context(ResourcePatchContext)
-private fun applyZhuyinResourcePatch() {
+context(context: ResourcePatchContext)
+private fun applyZhuyinResourcePatch() = with(context) {
     document(ZHUYIN_TEMPLATE_XML).use { templateDocument ->
         val topTemplate = templateDocument.findSoftkeyTemplate(ZHUYIN_TOP_TEMPLATE_ID)
         ensureTemplateAction(

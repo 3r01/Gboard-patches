@@ -21,8 +21,8 @@ internal val gboardEnglishQwertySoftKeyPatch = bytecodePatch(
     }
 }
 
-context(BytecodePatchContext)
-private fun addHelperMethods() {
+context(context: BytecodePatchContext)
+private fun addHelperMethods() = with(context) {
     addHelperMethodIfMissing(
         classType = SOFT_KEY_VIEW_CLASS,
         name = "jasondevToggleAsciiCase",
@@ -106,8 +106,8 @@ private fun addHelperMethods() {
     )
 }
 
-context(BytecodePatchContext)
-private fun injectMethodDelegates() {
+context(context: BytecodePatchContext)
+private fun injectMethodDelegates() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = SOFT_KEY_VIEW_CLASS,
         name = "p",

@@ -18,8 +18,8 @@ internal val gboardUndoRedoAccessPointBytecodePatch = bytecodePatch(
     }
 }
 
-context(BytecodePatchContext)
-private fun injectUndoRedoAccessPointOverride() {
+context(context: BytecodePatchContext)
+private fun injectUndoRedoAccessPointOverride() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = FLAG_FACTORY_CLASS,
         name = "a",

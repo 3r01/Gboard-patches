@@ -19,8 +19,8 @@ internal val gboardZhuyinTraditionalSimplifiedToggleSoftKeyPatch = bytecodePatch
     }
 }
 
-context(BytecodePatchContext)
-private fun addHelperMethod() {
+context(context: BytecodePatchContext)
+private fun addHelperMethod() = with(context) {
     addHelperMethodIfMissing(
         classType = SOFT_KEY_VIEW_CLASS,
         name = "jasondevPatchToggleIncomingMetadata",
@@ -32,8 +32,8 @@ private fun addHelperMethod() {
     )
 }
 
-context(BytecodePatchContext)
-private fun injectMethodDelegate() {
+context(context: BytecodePatchContext)
+private fun injectMethodDelegate() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = SOFT_KEY_VIEW_CLASS,
         name = "p",

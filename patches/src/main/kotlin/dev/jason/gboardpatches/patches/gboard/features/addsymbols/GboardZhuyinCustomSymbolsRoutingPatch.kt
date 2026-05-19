@@ -28,8 +28,8 @@ internal val gboardZhuyinCustomSymbolsRoutingPatch = bytecodePatch(
     }
 }
 
-context(BytecodePatchContext)
-private fun patchExtensionManager() {
+context(context: BytecodePatchContext)
+private fun patchExtensionManager() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = EXTENSION_MANAGER_CLASS,
         name = "c",
@@ -39,8 +39,8 @@ private fun patchExtensionManager() {
     mutableMethod.addInstructions(0, EXTENSION_MANAGER_DELEGATE)
 }
 
-context(BytecodePatchContext)
-private fun patchProviderRequest() {
+context(context: BytecodePatchContext)
+private fun patchProviderRequest() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = EMOTICON_PROVIDER_CLASS,
         name = "F",
@@ -58,8 +58,8 @@ private fun patchProviderRequest() {
     mutableMethod.addInstructions(0, PROVIDER_REQUEST_DELEGATE)
 }
 
-context(BytecodePatchContext)
-private fun patchProviderWrapper() {
+context(context: BytecodePatchContext)
+private fun patchProviderWrapper() = with(context) {
     val onKeyboardCreated = findMutableMethodOrThrow(
         classType = PROVIDER_RECEIVER_WRAPPER_CLASS,
         name = "a",
@@ -85,8 +85,8 @@ private fun patchProviderWrapper() {
     canHandle.addInstructions(0, PROVIDER_WRAPPER_TYPE_DELEGATE)
 }
 
-context(BytecodePatchContext)
-private fun patchMetricsAlias() {
+context(context: BytecodePatchContext)
+private fun patchMetricsAlias() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = METRICS_UTILS_CLASS,
         name = "b",
@@ -96,8 +96,8 @@ private fun patchMetricsAlias() {
     mutableMethod.addInstructions(0, METRICS_ALIAS_DELEGATE)
 }
 
-context(BytecodePatchContext)
-private fun patchNavigationIdentity() {
+context(context: BytecodePatchContext)
+private fun patchNavigationIdentity() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = SCROLLABLE_NAVIGATION_VIEW_CLASS,
         name = "a",
@@ -115,8 +115,8 @@ private fun patchNavigationIdentity() {
     mutableMethod.addInstructions(0, NAVIGATION_IDENTITY_DELEGATE)
 }
 
-context(BytecodePatchContext)
-private fun patchKeyboardReady() {
+context(context: BytecodePatchContext)
+private fun patchKeyboardReady() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = KEYBOARD_WRAPPER_CLASS,
         name = "a",

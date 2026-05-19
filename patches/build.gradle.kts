@@ -1,7 +1,16 @@
 group = "dev.jason.gboardpatches"
 
 val generatedPatchInfoDir = layout.buildDirectory.dir("generated/sources/patchBuildInfo/kotlin/main")
+val generatedPreviewAssetsResourcesDir = layout.buildDirectory.dir("generated/resources/previewAssets/main")
+val patchMetadataSourceSet = sourceSets.create("patchMetadata") {
+    java.srcDir("src/patchMetadata/kotlin")
+}
 val utf8Bom = byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte())
+val previewAssetsSourceDir = layout.projectDirectory.dir("src/main/resources/settings-previews")
+
+configurations.named(patchMetadataSourceSet.implementationConfigurationName) {
+    extendsFrom(configurations["implementation"])
+}
 
 val generatePatchBuildInfo by tasks.registering {
     val outputDir = generatedPatchInfoDir
@@ -26,6 +35,43 @@ val generatePatchBuildInfo by tasks.registering {
     }
 }
 
+val generatePreviewAssetsIndex by tasks.registering {
+    val sourceDir = previewAssetsSourceDir
+    val outputFile = generatedPreviewAssetsResourcesDir.map { directory ->
+        directory.file("settings-previews/index.txt")
+    }
+
+    inputs.dir(sourceDir)
+    outputs.file(outputFile)
+
+    doLast {
+        val sourceRoot = sourceDir.asFile
+        if (!sourceRoot.exists()) {
+            throw GradleException("Preview assets directory not found: $sourceRoot")
+        }
+
+        val indexedAssets = sourceRoot.walkTopDown()
+            .filter { file -> file.isFile && file.name != "index.txt" }
+            .map { file -> file.relativeTo(sourceRoot).invariantSeparatorsPath }
+            .sorted()
+            .toList()
+
+        if (indexedAssets.isEmpty()) {
+            throw GradleException("No preview assets found under $sourceRoot")
+        }
+
+        val output = outputFile.get().asFile
+        output.parentFile.mkdirs()
+        output.writeText(
+            indexedAssets.joinToString(
+                separator = System.lineSeparator(),
+                postfix = System.lineSeparator()
+            ),
+            Charsets.UTF_8
+        )
+    }
+}
+
 patches {
     about {
         name = "Gboard Patches"
@@ -40,17 +86,17 @@ patches {
 
 kotlin {
     compilerOptions {
-        freeCompilerArgs.add("-Xcontext-receivers")
+        freeCompilerArgs.add("-Xcontext-parameters")
     }
 }
 
 sourceSets.named("main") {
     java.srcDir(generatedPatchInfoDir)
+    resources.srcDir(generatedPreviewAssetsResourcesDir)
 }
 
 dependencies {
-    // Used by JsonGenerator.
-    implementation(libs.gson)
+    add(patchMetadataSourceSet.implementationConfigurationName, libs.gson)
 }
 
 tasks {
@@ -58,16 +104,23 @@ tasks {
         dependsOn(generatePatchBuildInfo)
     }
 
+    named("processResources") {
+        dependsOn(generatePreviewAssetsIndex)
+    }
+
     named("sourcesJar") {
-        dependsOn(generatePatchBuildInfo)
+        dependsOn(
+            generatePatchBuildInfo,
+            generatePreviewAssetsIndex
+        )
     }
 
     register<JavaExec>("generatePatchesList") {
         description = "Build patch with patch list"
 
-        dependsOn(build)
+        dependsOn(build, patchMetadataSourceSet.classesTaskName)
 
-        classpath = sourceSets["main"].runtimeClasspath
+        classpath = patchMetadataSourceSet.runtimeClasspath
         mainClass.set("dev.jason.gboardpatches.util.PatchListGeneratorKt")
     }
 

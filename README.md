@@ -1,7 +1,7 @@
 <h1 align="center">Gboard Patches</h1>
 
 <p align="center">
-  Morphe patches for Gboard focused on improving the experience for users in Taiwan.
+  Morphe patches for Gboard with a mix of global improvements and Taiwan-focused enhancements.
 </p>
 
 <p align="center">
@@ -13,9 +13,11 @@
 
 ## Overview
 
-Gboard Patches is a public Morphe source for a curated set of Gboard enhancements focused on improving the overall Gboard experience for users in Taiwan, with emphasis on local input habits and day-to-day usability.
+Gboard Patches is a public Morphe source for a curated set of Gboard enhancements, including both global usability improvements and Taiwan-focused features for local input habits and day-to-day use.
 
 ## Included Patches
+
+### Global Users
 
 <details>
   <summary><code>Package Rename</code></summary>
@@ -34,6 +36,56 @@ Gboard Patches is a public Morphe source for a curated set of Gboard enhancement
 
   On the English QWERTY keyboard, swipe down to enter symbols and swipe up to quickly enter letters in uppercase or lowercase without switching layers.
 </details>
+
+<details>
+  <summary><code>Enable Undo/Redo feature</code></summary>
+
+  Enables Gboard's Undo and Redo entry points.
+</details>
+
+<details>
+  <summary><code>Clipboard Retention</code></summary>
+
+  Lets you customize clipboard retention time, item count limits, and metadata display.
+</details>
+
+<details>
+  <summary><code>Clipboard Entity Extraction</code></summary>
+
+  Enables Clipboard settings that show information extracted from recently copied text, such as addresses, phone numbers, and similar items.
+</details>
+
+<details>
+  <summary><code>Clipboard Item Edit</code></summary>
+
+  Enables the <code>Edit</code> action when long-pressing a clipboard item, subject to Gboard's remaining stock item gates.
+</details>
+
+<details>
+  <summary><code>Grammar Checker</code></summary>
+
+  Enables the <code>Text correction &gt; Grammar check</code> setting and its related rollout gate.
+</details>
+
+<details>
+  <summary><code>Inline Suggestions</code></summary>
+
+  Enables the <code>Text correction &gt; Smart Compose</code> setting and its related rollout gate.
+</details>
+
+<details>
+  <summary><code>Key Shape Selection</code></summary>
+
+  Enables the <code>Key shape</code> option inside theme details without forcing rounded keys by default.
+</details>
+
+<details>
+  <summary><code>Settings Homepage Override</code></summary>
+
+  Lets you switch between the new and legacy Gboard settings homepage styles.
+</details>
+
+### Taiwan Users
 
 <details>
   <summary><code>Zhuyin Slide Input</code></summary>

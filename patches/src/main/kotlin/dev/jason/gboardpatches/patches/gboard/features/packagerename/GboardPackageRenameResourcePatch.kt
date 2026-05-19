@@ -17,11 +17,11 @@ internal val gboardPackageRenameResourcePatch = resourcePatch(
     }
 }
 
-context(ResourcePatchContext)
+context(context: ResourcePatchContext)
 private fun applyManifestPackageOverride(
     originalPackageName: String,
     packageNameOverride: String
-) {
+) = with(context) {
     document("AndroidManifest.xml").use { document ->
         val manifest = document.documentElement
         if (manifest.getAttribute("package") == originalPackageName) {
