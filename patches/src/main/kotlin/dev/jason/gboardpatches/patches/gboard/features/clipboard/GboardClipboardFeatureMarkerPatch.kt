@@ -48,4 +48,4 @@ private fun Element.setAndroidAttribute(localName: String, value: String) {
 }
 
 private const val CLIPBOARD_FEATURE_MARKER_NAME =
-    "dev.jason.gboardpatches.feature.clipboard_retention"
+    "dev.jason.gboardpatches.feature.clipboard_enhancements"

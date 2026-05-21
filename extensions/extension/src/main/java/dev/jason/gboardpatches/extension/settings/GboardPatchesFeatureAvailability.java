@@ -7,8 +7,8 @@ import android.os.Bundle;
 import android.util.Log;
 
 public final class GboardPatchesFeatureAvailability {
-    public static final String FEATURE_CLIPBOARD_RETENTION =
-            "dev.jason.gboardpatches.feature.clipboard_retention";
+    public static final String FEATURE_CLIPBOARD_ENHANCEMENTS =
+            "dev.jason.gboardpatches.feature.clipboard_enhancements";
     public static final String FEATURE_CLIPBOARD_ENTITY_EXTRACTION =
             "dev.jason.gboardpatches.feature.clipboard_entity_extraction";
     public static final String FEATURE_CLIPBOARD_ITEM_EDIT =
@@ -19,8 +19,12 @@ public final class GboardPatchesFeatureAvailability {
             "dev.jason.gboardpatches.feature.inline_suggestions";
     public static final String FEATURE_KEY_SHAPE_SELECTION =
             "dev.jason.gboardpatches.feature.key_shape_selection";
+    public static final String FEATURE_CUSTOM_SYMBOLS =
+            "dev.jason.gboardpatches.feature.custom_symbols";
     public static final String FEATURE_SETTINGS_HOMEPAGE =
             "dev.jason.gboardpatches.feature.settings_homepage";
+    public static final String FEATURE_SYMBOL_FOOTER_ORDER =
+            "dev.jason.gboardpatches.feature.symbol_footer_order";
 
     private static final String TAG = "GboardPatches";
 

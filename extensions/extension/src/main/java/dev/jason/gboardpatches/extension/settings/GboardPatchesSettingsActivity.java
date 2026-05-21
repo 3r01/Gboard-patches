@@ -2,6 +2,7 @@ package dev.jason.gboardpatches.extension.settings;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +22,8 @@ import android.graphics.drawable.RippleDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.TypedValue;
 import android.util.Log;
 import android.view.Gravity;
@@ -28,8 +31,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowInsets;
-import android.window.OnBackInvokedCallback;
-import android.window.OnBackInvokedDispatcher;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -37,7 +38,10 @@ import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import java.lang.reflect.Proxy;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 import dev.jason.gboardpatches.extension.BuildConfig;
@@ -58,6 +62,10 @@ public class GboardPatchesSettingsActivity extends Activity
     private static final String ERROR_ROW_TITLE = "Unable to load feature";
     private static final String ERROR_ROW_SUMMARY =
             "The host app stayed alive. Reopen Gboard settings and try again.";
+    private static final String FATAL_FALLBACK_TITLE = "Patches temporarily unavailable";
+    private static final String FATAL_FALLBACK_SUMMARY =
+            "This screen hit an internal error and was safely disabled. "
+                    + "Gboard stays alive. Reopen settings and try again.";
     private static final String ABOUT_AUTHOR_TITLE = "Author";
     private static final String ABOUT_PATCH_VERSION_TITLE = "Patch Version";
     private static final String DIALOG_SAVE = "Save";
@@ -75,39 +83,56 @@ public class GboardPatchesSettingsActivity extends Activity
     private TextView headerSummaryView;
     private LinearLayout panelContainer;
     private ScrollView contentScrollView;
-    private List<GboardPatchesSettingsContract.Feature> features;
-    private GboardPatchesSettingsContract.Feature currentFeature;
-    private OnBackInvokedCallback backInvokedCallback;
+    private List<GboardPatchesSettingsContract.Feature> rootFeatures;
+    private final Deque<GboardPatchesSettingsContract.Feature> featureNavigationStack =
+            new ArrayDeque<GboardPatchesSettingsContract.Feature>();
+    private Object backInvokedCallback;
+    private boolean fatalFallbackShown;
+    private final Handler screenRefreshHandler = new Handler(Looper.getMainLooper());
+    private final Runnable screenRefreshRunnable = this::refresh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(resolveActivityTheme());
         super.onCreate(savedInstanceState);
-        palette = Palette.forConfiguration(getResources().getConfiguration());
-        features = GboardPatchesSettingsFeatureRegistry.features(this);
-        configureWindow();
-        View contentView = buildContentView();
-        setContentView(contentView);
-        installWindowInsetsHandling(contentView);
-        registerBackCallback();
-        renderCurrentScreen();
+        try {
+            fatalFallbackShown = false;
+            palette = Palette.forConfiguration(getResources().getConfiguration());
+            rootFeatures = GboardPatchesSettingsFeatureRegistry.features(this);
+            configureWindow();
+            View contentView = buildContentView();
+            setContentView(contentView);
+            installWindowInsetsHandling(contentView);
+            registerBackCallback();
+            renderCurrentScreenSafely();
+        } catch (Throwable throwable) {
+            showFatalFallbackScreen("Failed to initialize patches settings activity", throwable);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        renderCurrentScreen();
+        renderCurrentScreenSafely();
+    }
+
+    @Override
+    protected void onPause() {
+        cancelScheduledScreenRefresh();
+        super.onPause();
     }
 
     @Override
     protected void onDestroy() {
+        cancelScheduledScreenRefresh();
         unregisterBackCallback();
         super.onDestroy();
     }
 
     @Override
+    @SuppressLint("GestureBackNavigation")
     public void onBackPressed() {
-        if (navigateToRootIfNeeded()) {
+        if (navigateUpIfNeeded()) {
             return;
         }
         super.onBackPressed();
@@ -120,13 +145,16 @@ public class GboardPatchesSettingsActivity extends Activity
 
     @Override
     public void refresh() {
-        renderCurrentScreen();
+        renderCurrentScreenSafely();
     }
 
     @Override
     public void openFeature(GboardPatchesSettingsContract.Feature feature) {
-        currentFeature = feature;
-        renderCurrentScreen();
+        if (feature == null) {
+            return;
+        }
+        featureNavigationStack.addLast(feature);
+        renderCurrentScreenSafely();
     }
 
     @Override
@@ -147,7 +175,7 @@ public class GboardPatchesSettingsActivity extends Activity
                             customAction.run();
                         } else {
                             valueConsumer.accept(selectedValue);
-                            renderCurrentScreen();
+                            renderCurrentScreenSafely();
                         }
                     });
                 })
@@ -190,7 +218,7 @@ public class GboardPatchesSettingsActivity extends Activity
                 try {
                     consumer.accept(value);
                     dialog.dismiss();
-                    renderCurrentScreen();
+                    renderCurrentScreenSafely();
                 } catch (Throwable throwable) {
                     Log.w(TAG, "Failed to persist positive integer setting", throwable);
                     input.setError(DIALOG_ERROR_SAVE_FAILED);
@@ -535,7 +563,7 @@ public class GboardPatchesSettingsActivity extends Activity
     }
 
     private void goBackOrFinish() {
-        if (navigateToRootIfNeeded()) {
+        if (navigateUpIfNeeded()) {
             return;
         }
         finish();
@@ -553,12 +581,12 @@ public class GboardPatchesSettingsActivity extends Activity
         }
     }
 
-    private boolean navigateToRootIfNeeded() {
-        if (currentFeature == null) {
+    private boolean navigateUpIfNeeded() {
+        if (featureNavigationStack.isEmpty()) {
             return false;
         }
-        currentFeature = null;
-        renderCurrentScreen();
+        featureNavigationStack.removeLast();
+        renderCurrentScreenSafely();
         return true;
     }
 
@@ -566,24 +594,63 @@ public class GboardPatchesSettingsActivity extends Activity
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             return;
         }
-        backInvokedCallback = new OnBackInvokedCallback() {
-            @Override
-            public void onBackInvoked() {
-                if (!navigateToRootIfNeeded()) {
-                    finish();
-                }
+        try {
+            Class<?> callbackClass = Class.forName("android.window.OnBackInvokedCallback");
+            Class<?> dispatcherClass = Class.forName("android.window.OnBackInvokedDispatcher");
+            Object callback = Proxy.newProxyInstance(
+                    callbackClass.getClassLoader(),
+                    new Class<?>[] { callbackClass },
+                    (proxy, method, args) -> {
+                        if (method.getDeclaringClass() == Object.class) {
+                            if ("hashCode".equals(method.getName())) {
+                                return Integer.valueOf(System.identityHashCode(proxy));
+                            }
+                            if ("equals".equals(method.getName())) {
+                                Object other = args != null && args.length > 0 ? args[0] : null;
+                                return Boolean.valueOf(proxy == other);
+                            }
+                            if ("toString".equals(method.getName())) {
+                                return "GboardPatchesOnBackInvokedCallbackProxy";
+                            }
+                        }
+                        if ("onBackInvoked".equals(method.getName())) {
+                            if (!navigateUpIfNeeded()) {
+                                finish();
+                            }
+                        }
+                        return null;
+                    });
+            Object dispatcher = Activity.class.getMethod("getOnBackInvokedDispatcher")
+                    .invoke(this);
+            if (dispatcher == null) {
+                return;
             }
-        };
-        getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
-                OnBackInvokedDispatcher.PRIORITY_DEFAULT,
-                backInvokedCallback);
+            int priorityDefault = dispatcherClass.getField("PRIORITY_DEFAULT").getInt(null);
+            dispatcherClass.getMethod("registerOnBackInvokedCallback", int.class, callbackClass)
+                    .invoke(dispatcher, priorityDefault, callback);
+            backInvokedCallback = callback;
+        } catch (Throwable throwable) {
+            Log.w(TAG, "Failed to register platform back callback", throwable);
+            backInvokedCallback = null;
+        }
     }
 
     private void unregisterBackCallback() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || backInvokedCallback == null) {
             return;
         }
-        getOnBackInvokedDispatcher().unregisterOnBackInvokedCallback(backInvokedCallback);
+        try {
+            Class<?> callbackClass = Class.forName("android.window.OnBackInvokedCallback");
+            Class<?> dispatcherClass = Class.forName("android.window.OnBackInvokedDispatcher");
+            Object dispatcher = Activity.class.getMethod("getOnBackInvokedDispatcher")
+                    .invoke(this);
+            if (dispatcher != null) {
+                dispatcherClass.getMethod("unregisterOnBackInvokedCallback", callbackClass)
+                        .invoke(dispatcher, backInvokedCallback);
+            }
+        } catch (Throwable throwable) {
+            Log.w(TAG, "Failed to unregister platform back callback", throwable);
+        }
         backInvokedCallback = null;
     }
 
@@ -627,12 +694,24 @@ public class GboardPatchesSettingsActivity extends Activity
         return insets.getSystemWindowInsetBottom();
     }
 
+    private void renderCurrentScreenSafely() {
+        if (fatalFallbackShown) {
+            return;
+        }
+        try {
+            renderCurrentScreen();
+        } catch (Throwable throwable) {
+            showFatalFallbackScreen("Failed to render patches settings screen", throwable);
+        }
+    }
+
     private void renderCurrentScreen() {
         GboardPatchesSettingsContract.Screen screen;
+        GboardPatchesSettingsContract.Feature activeFeature = currentFeature();
         try {
-            screen = currentFeature == null
+            screen = activeFeature == null
                     ? buildRootScreen()
-                    : currentFeature.buildScreen(this);
+                    : activeFeature.buildScreen(this);
         } catch (Throwable throwable) {
             Log.w(TAG, "Failed to render settings screen", throwable);
             screen = buildFeatureErrorScreen();
@@ -645,12 +724,76 @@ public class GboardPatchesSettingsActivity extends Activity
         for (GboardPatchesSettingsContract.Row row : screen.getRows()) {
             panelContainer.addView(createRowView(row));
         }
+        scheduleScreenRefresh(screen.getRefreshIntervalMs());
+    }
+
+    private void scheduleScreenRefresh(long refreshIntervalMs) {
+        cancelScheduledScreenRefresh();
+        if (refreshIntervalMs <= 0L) {
+            return;
+        }
+        screenRefreshHandler.postDelayed(screenRefreshRunnable, refreshIntervalMs);
+    }
+
+    private void cancelScheduledScreenRefresh() {
+        screenRefreshHandler.removeCallbacks(screenRefreshRunnable);
+    }
+
+    private void showFatalFallbackScreen(String reason, Throwable throwable) {
+        cancelScheduledScreenRefresh();
+        fatalFallbackShown = true;
+        Log.e(TAG, reason, throwable);
+        if (palette == null) {
+            palette = Palette.forConfiguration(getResources().getConfiguration());
+        }
+        toolbarView = null;
+        toolbarTitleView = null;
+        headerBadgeView = null;
+        headerTitleView = null;
+        headerSummaryView = null;
+        panelContainer = null;
+        contentScrollView = null;
+        setContentView(buildFatalFallbackView());
+    }
+
+    private View buildFatalFallbackView() {
+        LinearLayout root = new LinearLayout(this);
+        root.setOrientation(LinearLayout.VERTICAL);
+        root.setGravity(Gravity.CENTER);
+        root.setBackgroundColor(palette.windowBackground);
+        int padding = dp(24);
+        root.setPadding(padding, padding, padding, padding);
+        root.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+
+        TextView titleView = new TextView(this);
+        titleView.setText(FATAL_FALLBACK_TITLE);
+        titleView.setTextColor(palette.textPrimary);
+        titleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22f);
+        titleView.setTypeface(Typeface.DEFAULT_BOLD);
+        titleView.setGravity(Gravity.CENTER_HORIZONTAL);
+
+        TextView summaryView = new TextView(this);
+        summaryView.setText(FATAL_FALLBACK_SUMMARY);
+        summaryView.setTextColor(palette.textSecondary);
+        summaryView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f);
+        summaryView.setGravity(Gravity.CENTER_HORIZONTAL);
+        summaryView.setLineSpacing(0f, 1.15f);
+        LinearLayout.LayoutParams summaryParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        summaryParams.topMargin = dp(12);
+
+        root.addView(titleView);
+        root.addView(summaryView, summaryParams);
+        return root;
     }
 
     private GboardPatchesSettingsContract.Screen buildRootScreen() {
         List<GboardPatchesSettingsContract.Row> rows =
                 new ArrayList<GboardPatchesSettingsContract.Row>();
-        for (GboardPatchesSettingsContract.Feature feature : features) {
+        for (GboardPatchesSettingsContract.Feature feature : rootFeatures) {
             rows.add(new GboardPatchesSettingsContract.ActionRow(
                     feature.getEntryTitle(),
                     feature.getEntrySummary(),
@@ -678,8 +821,9 @@ public class GboardPatchesSettingsActivity extends Activity
     }
 
     private GboardPatchesSettingsContract.Screen buildFeatureErrorScreen() {
-        String toolbarTitle = currentFeature != null
-                ? currentFeature.getEntryTitle()
+        GboardPatchesSettingsContract.Feature activeFeature = currentFeature();
+        String toolbarTitle = activeFeature != null
+                ? activeFeature.getEntryTitle()
                 : TOOLBAR_TITLE_PATCHES;
         List<GboardPatchesSettingsContract.Row> rows =
                 new ArrayList<GboardPatchesSettingsContract.Row>();
@@ -693,6 +837,10 @@ public class GboardPatchesSettingsActivity extends Activity
                 ERROR_HEADER_TITLE,
                 ERROR_HEADER_SUMMARY,
                 rows);
+    }
+
+    private GboardPatchesSettingsContract.Feature currentFeature() {
+        return featureNavigationStack.peekLast();
     }
 
     private View createRowView(GboardPatchesSettingsContract.Row row) {

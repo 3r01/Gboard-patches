@@ -26,12 +26,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 @SuppressWarnings({"unused", "unchecked"})
 public final class GboardAddSymbolsRuntime {
     private static final String TAG = "GboardAddSymbols";
     private static final long PENDING_FLOW_WINDOW_MS = 5_000L;
+    private static final long PENDING_STOCK_EMOTICON_TAB_SWITCH_WINDOW_MS = 2_500L;
 
     private static final String CUSTOM_CATEGORY_RECENTS = "RECENTS";
     private static final String[] CUSTOM_EMOTICON_CATEGORY_KEYS = buildCustomCategoryKeys();
@@ -93,12 +95,21 @@ public final class GboardAddSymbolsRuntime {
             new ThreadLocal<>();
     private static final ThreadLocal<Boolean> CUSTOM_EMOTICON_ADAPTER_CONSTRUCTION =
             new ThreadLocal<>();
+    private static final AtomicBoolean ACTIVE_CUSTOM_EMOTICON_SESSION =
+            new AtomicBoolean(false);
     private static final AtomicReference<Object> CURRENT_CUSTOM_EMOTICON_SESSION_KEYBOARD =
             new AtomicReference<>();
+    private static final AtomicReference<Object> PENDING_STOCK_EMOTICON_TAB_SWITCH_KEYBOARD =
+            new AtomicReference<>();
+    private static final AtomicReference<Boolean> PENDING_STOCK_EMOTICON_TAB_SWITCH_RENDER_MODE =
+            new AtomicReference<>();
+    private static final AtomicBoolean PENDING_STOCK_EMOTICON_TAB_SWITCH_ACTIVE_SESSION =
+            new AtomicBoolean(false);
     private static final AtomicReference<String> LAST_NON_RECENTS_CUSTOM_EMOTICON_CATEGORY =
             new AtomicReference<>(GboardAddSymbolsDataset.defaultCategoryKey());
 
     private static long pendingCustomFlowUntilUptimeMs;
+    private static long pendingStockEmoticonTabSwitchUntilUptimeMs;
 
     private GboardAddSymbolsRuntime() {
     }
@@ -259,7 +270,8 @@ public final class GboardAddSymbolsRuntime {
             if (!isStockEmoticonKeyboardType(keyboardTypeName)) {
                 return keyboardType;
             }
-            boolean aliasToCustom = hasPendingCustomFlow() || hasTrackedCustomEmoticonSessionKeyboard();
+            boolean aliasToCustom = shouldAliasStockEmoticonBackToCustomForSession(
+                    keyboardTypeName);
             Object rewrittenKeyboardType = handles.buildKeyboardType(
                     aliasToCustom ? JASONDEV_SYMBOL_KEYBOARD_DATA : STOCK_EMOTICON_KEYBOARD_DATA);
             logInfo("rewriteNavigationKeyboardType: stock->"
@@ -267,10 +279,43 @@ public final class GboardAddSymbolsRuntime {
                     + ", from=" + keyboardTypeName
                     + ", to=" + extractKeyboardTypeName(handles, rewrittenKeyboardType)
                     + ", pendingCustomFlow=" + hasPendingCustomFlow()
-                    + ", trackedCustomSession=" + hasTrackedCustomEmoticonSessionKeyboard());
+                    + ", pendingStockEmoticonTabSwitch=" + hasPendingStockEmoticonTabSwitch()
+                    + ", activeCustomSession=" + ACTIVE_CUSTOM_EMOTICON_SESSION.get());
             return rewrittenKeyboardType;
         } catch (Throwable throwable) {
             return keyboardType;
+        }
+    }
+
+    public static void onExpressionCorpusFooterTabClick(Object footerTabClickConsumer,
+            Object corpusItem) {
+        if (footerTabClickConsumer == null || corpusItem == null) {
+            return;
+        }
+        try {
+            restorePendingStockEmoticonTabSwitchStateIfExpired();
+            ClassLoader classLoader = footerTabClickConsumer.getClass().getClassLoader();
+            if (classLoader == null) {
+                return;
+            }
+            Handles handles = handles(classLoader);
+            if (!handles.expressionCorpusItemClass.isInstance(corpusItem)) {
+                return;
+            }
+            Object keyboardType = handles.expressionCorpusItemKeyboardTypeField.get(corpusItem);
+            String keyboardTypeName = extractKeyboardTypeName(handles, keyboardType);
+            if (!isStockEmoticonKeyboardType(keyboardTypeName)
+                    || !ACTIVE_CUSTOM_EMOTICON_SESSION.get()) {
+                return;
+            }
+            markPendingStockEmoticonTabSwitch();
+            logInfo("onExpressionCorpusFooterTabClick: selectedType=" + keyboardTypeName
+                    + ", pendingCustomFlow=" + hasPendingCustomFlow()
+                    + ", activeCustomSession=" + ACTIVE_CUSTOM_EMOTICON_SESSION.get()
+                    + ", pendingSourceKeyboard="
+                    + (PENDING_STOCK_EMOTICON_TAB_SWITCH_KEYBOARD.get() != null));
+        } catch (Throwable ignored) {
+            // Ignore drift.
         }
     }
 
@@ -291,14 +336,20 @@ public final class GboardAddSymbolsRuntime {
             String keyboardTypeName = extractKeyboardTypeName(handles, keyboardType);
             boolean isActiveCustomSession = isCustomSymbolKeyboardType(keyboardTypeName)
                     && ACTIVE_CUSTOM_EMOTICON_KEYBOARDS.containsKey(keyboard);
+            boolean pendingStockEmoticonTabSwitch = hasPendingStockEmoticonTabSwitch();
+            ACTIVE_CUSTOM_EMOTICON_SESSION.set(isActiveCustomSession);
             updateCurrentCustomEmoticonRenderMode(handles, keyboard, keyboardTypeName);
             logInfo("onKeyboardReady: type=" + keyboardTypeName
                     + ", activeCustomSession=" + isActiveCustomSession
                     + ", keyboard=" + keyboard.getClass().getName());
             if (isActiveCustomSession) {
                 rememberCurrentCustomEmoticonSessionKeyboard(keyboard);
+                clearPendingStockEmoticonTabSwitch();
                 clearPendingCustomFlow();
                 return;
+            }
+            if (pendingStockEmoticonTabSwitch && isStockEmoticonKeyboardType(keyboardTypeName)) {
+                clearPendingStockEmoticonTabSwitch();
             }
             clearCurrentCustomEmoticonSessionKeyboard();
             if (isEmoticonKeyboardInstance(handles, keyboard)) {
@@ -1458,7 +1509,6 @@ public final class GboardAddSymbolsRuntime {
             ClassLoader classLoader) throws Throwable {
         Class<?> emoticonExtensionClass = Class.forName(
                 EMOTICON_EXTENSION_INTERFACE_CLASS, false, classLoader);
-        Object emoticonKeyboardType = handles.buildKeyboardType(STOCK_EMOTICON_KEYBOARD_DATA);
         Object builder = handles.expressionCorpusItemBuilderFactoryMethod.invoke(null);
         handles.expressionCorpusItemBuilderNameResMethod.invoke(
                 builder, Integer.valueOf(RICH_SYMBOL_TAB_NAME_RES_ID));
@@ -1467,7 +1517,6 @@ public final class GboardAddSymbolsRuntime {
                 builder, Integer.valueOf(RICH_SYMBOL_TAB_ICON_RES_ID));
         Object keyboardTypesBuilder = handles.immutableListBuilderConstructor.newInstance();
         handles.immutableListBuilderAddMethod.invoke(keyboardTypesBuilder, customKeyboardType);
-        handles.immutableListBuilderAddMethod.invoke(keyboardTypesBuilder, emoticonKeyboardType);
         Object keyboardTypesSet = handles.immutableListBuilderBuildMethod.invoke(keyboardTypesBuilder);
         Object eligibleKeyboardTypes = handles.immutableSetToListMethod.invoke(keyboardTypesSet);
         handles.expressionCorpusItemBuilderEligibleKeyboardTypesField.set(builder, eligibleKeyboardTypes);
@@ -1576,7 +1625,15 @@ public final class GboardAddSymbolsRuntime {
         return isCustomSymbolKeyboardType(keyboardTypeName);
     }
 
+    private static boolean shouldAliasStockEmoticonBackToCustomForSession(
+            String keyboardTypeName) {
+        return isStockEmoticonKeyboardType(keyboardTypeName)
+                && !hasPendingStockEmoticonTabSwitch()
+                && (hasPendingCustomFlow() || ACTIVE_CUSTOM_EMOTICON_SESSION.get());
+    }
+
     private static void markPendingCustomFlow() {
+        clearPendingStockEmoticonTabSwitch();
         pendingCustomFlowUntilUptimeMs = SystemClock.uptimeMillis() + PENDING_FLOW_WINDOW_MS;
     }
 
@@ -1600,11 +1657,73 @@ public final class GboardAddSymbolsRuntime {
 
     private static void clearCurrentCustomEmoticonSessionKeyboard() {
         CURRENT_CUSTOM_EMOTICON_SESSION_KEYBOARD.set(null);
+        ACTIVE_CUSTOM_EMOTICON_SESSION.set(false);
     }
 
     private static boolean hasTrackedCustomEmoticonSessionKeyboard() {
+        restorePendingStockEmoticonTabSwitchStateIfExpired();
         Object keyboard = CURRENT_CUSTOM_EMOTICON_SESSION_KEYBOARD.get();
-        return keyboard != null && ACTIVE_CUSTOM_EMOTICON_KEYBOARDS.containsKey(keyboard);
+        return keyboard != null
+                && ACTIVE_CUSTOM_EMOTICON_KEYBOARDS.containsKey(keyboard)
+                && isCustomEmoticonRenderMode(keyboard);
+    }
+
+    private static void markPendingStockEmoticonTabSwitch() {
+        Object sessionKeyboard = CURRENT_CUSTOM_EMOTICON_SESSION_KEYBOARD.get();
+        PENDING_STOCK_EMOTICON_TAB_SWITCH_KEYBOARD.set(sessionKeyboard);
+        PENDING_STOCK_EMOTICON_TAB_SWITCH_ACTIVE_SESSION.set(
+                ACTIVE_CUSTOM_EMOTICON_SESSION.get());
+        if (sessionKeyboard != null) {
+            Boolean previousRenderMode = CURRENT_CUSTOM_EMOTICON_RENDER_MODE.get(sessionKeyboard);
+            if (previousRenderMode == null) {
+                previousRenderMode =
+                        Boolean.valueOf(ACTIVE_CUSTOM_EMOTICON_KEYBOARDS.containsKey(sessionKeyboard));
+            }
+            PENDING_STOCK_EMOTICON_TAB_SWITCH_RENDER_MODE.set(previousRenderMode);
+            CURRENT_CUSTOM_EMOTICON_RENDER_MODE.put(sessionKeyboard, Boolean.FALSE);
+        } else {
+            PENDING_STOCK_EMOTICON_TAB_SWITCH_RENDER_MODE.set(null);
+        }
+        ACTIVE_CUSTOM_EMOTICON_SESSION.set(false);
+        pendingStockEmoticonTabSwitchUntilUptimeMs =
+                SystemClock.uptimeMillis() + PENDING_STOCK_EMOTICON_TAB_SWITCH_WINDOW_MS;
+    }
+
+    private static boolean hasPendingStockEmoticonTabSwitch() {
+        restorePendingStockEmoticonTabSwitchStateIfExpired();
+        return pendingStockEmoticonTabSwitchUntilUptimeMs != 0L;
+    }
+
+    private static void clearPendingStockEmoticonTabSwitch() {
+        pendingStockEmoticonTabSwitchUntilUptimeMs = 0L;
+        PENDING_STOCK_EMOTICON_TAB_SWITCH_KEYBOARD.set(null);
+        PENDING_STOCK_EMOTICON_TAB_SWITCH_RENDER_MODE.set(null);
+        PENDING_STOCK_EMOTICON_TAB_SWITCH_ACTIVE_SESSION.set(false);
+    }
+
+    private static void restorePendingStockEmoticonTabSwitchState() {
+        pendingStockEmoticonTabSwitchUntilUptimeMs = 0L;
+        Object sessionKeyboard = PENDING_STOCK_EMOTICON_TAB_SWITCH_KEYBOARD.getAndSet(null);
+        Boolean renderMode = PENDING_STOCK_EMOTICON_TAB_SWITCH_RENDER_MODE.getAndSet(null);
+        boolean activeSession = PENDING_STOCK_EMOTICON_TAB_SWITCH_ACTIVE_SESSION.getAndSet(false);
+        if (sessionKeyboard != null) {
+            if (renderMode != null) {
+                CURRENT_CUSTOM_EMOTICON_RENDER_MODE.put(sessionKeyboard, renderMode);
+            } else {
+                CURRENT_CUSTOM_EMOTICON_RENDER_MODE.remove(sessionKeyboard);
+            }
+        }
+        ACTIVE_CUSTOM_EMOTICON_SESSION.set(activeSession);
+    }
+
+    private static void restorePendingStockEmoticonTabSwitchStateIfExpired() {
+        long pendingUntilUptimeMs = pendingStockEmoticonTabSwitchUntilUptimeMs;
+        if (pendingUntilUptimeMs == 0L) {
+            return;
+        }
+        if (pendingUntilUptimeMs < SystemClock.uptimeMillis()) {
+            restorePendingStockEmoticonTabSwitchState();
+        }
     }
 
     private static void updateCurrentCustomEmoticonRenderMode(
@@ -1622,6 +1741,7 @@ public final class GboardAddSymbolsRuntime {
         if (keyboard == null) {
             return false;
         }
+        restorePendingStockEmoticonTabSwitchStateIfExpired();
         Boolean explicit = CURRENT_CUSTOM_EMOTICON_RENDER_MODE.get(keyboard);
         if (explicit != null) {
             return explicit.booleanValue();

@@ -4,11 +4,17 @@ import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.patch.BytecodePatchContext
 import app.morphe.patcher.patch.bytecodePatch
 import dev.jason.gboardpatches.patches.gboard.shared.findMutableMethodOrThrow
+import dev.jason.gboardpatches.patches.gboard.shared.mutableClass
+import app.morphe.patcher.util.proxy.mutableTypes.MutableMethod
+import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
+import com.android.tools.smali.dexlib2.iface.reference.FieldReference
+import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 
 private const val EXTENSION_MANAGER_CLASS = "Lmiu;"
 private const val EMOTICON_PROVIDER_CLASS = "Lhvs;"
 private const val PROVIDER_RECEIVER_WRAPPER_CLASS = "Lniu;"
 private const val METRICS_UTILS_CLASS = "Lgsr;"
+private const val FOOTER_TAB_CLICK_CONSUMER_CLASS = "Lfsk;"
 private const val KEYBOARD_WRAPPER_CLASS = "Lmzu;"
 private const val SCROLLABLE_NAVIGATION_VIEW_CLASS =
     "Lcom/google/android/apps/inputmethod/libs/expression/navbar/ScrollableNavigationView;"
@@ -24,6 +30,7 @@ internal val gboardZhuyinCustomSymbolsRoutingPatch = bytecodePatch(
         patchProviderWrapper()
         patchMetricsAlias()
         patchNavigationIdentity()
+        patchFooterTabClick()
         patchKeyboardReady()
     }
 }
@@ -116,6 +123,19 @@ private fun patchNavigationIdentity() = with(context) {
 }
 
 context(context: BytecodePatchContext)
+private fun patchFooterTabClick() = with(context) {
+    val consumerClass = mutableClass(FOOTER_TAB_CLICK_CONSUMER_CLASS)
+    val mutableMethod = findMutableMethodOrThrow(
+        classType = FOOTER_TAB_CLICK_CONSUMER_CLASS,
+        name = "accept",
+        returnType = "V",
+        parameterTypes = listOf("Ljava/lang/Object;")
+    )
+    validateFooterTabClickConsumerOrThrow(consumerClass.fields.map { it.type }, mutableMethod)
+    mutableMethod.addInstructions(0, FOOTER_TAB_CLICK_DELEGATE)
+}
+
+context(context: BytecodePatchContext)
 private fun patchKeyboardReady() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = KEYBOARD_WRAPPER_CLASS,
@@ -170,6 +190,62 @@ private val NAVIGATION_IDENTITY_DELEGATE = """
     check-cast p2, Lnzd;
 """.trimIndent()
 
+private val FOOTER_TAB_CLICK_DELEGATE = """
+    invoke-static {p0, p1}, Ldev/jason/gboardpatches/extension/addsymbols/GboardAddSymbolsRuntime;->onExpressionCorpusFooterTabClick(Ljava/lang/Object;Ljava/lang/Object;)V
+""".trimIndent()
+
 private val KEYBOARD_READY_DELEGATE = """
     invoke-static/range {p0 .. p3}, Ldev/jason/gboardpatches/extension/addsymbols/GboardAddSymbolsRuntime;->onKeyboardReady(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V
 """.trimIndent()
+
+internal data class FooterTabClickConsumerShape(
+    val scrollableNavigationFieldCount: Int,
+    val acceptReadsScrollableNavigationField: Boolean,
+    val acceptCallsScrollableNavigationView: Boolean
+)
+
+internal fun isValidFooterTabClickConsumerShape(shape: FooterTabClickConsumerShape): Boolean =
+    shape.scrollableNavigationFieldCount == 1 &&
+        shape.acceptReadsScrollableNavigationField &&
+        shape.acceptCallsScrollableNavigationView
+
+private fun validateFooterTabClickConsumerOrThrow(
+    fieldTypes: List<String>,
+    method: MutableMethod
+) {
+    val shape = FooterTabClickConsumerShape(
+        scrollableNavigationFieldCount = fieldTypes.count { it == SCROLLABLE_NAVIGATION_VIEW_CLASS },
+        acceptReadsScrollableNavigationField =
+            method.referencesFieldType(
+                definingClass = FOOTER_TAB_CLICK_CONSUMER_CLASS,
+                fieldType = SCROLLABLE_NAVIGATION_VIEW_CLASS
+            ),
+        acceptCallsScrollableNavigationView = method.referencesMethodOwner(
+            SCROLLABLE_NAVIGATION_VIEW_CLASS
+        )
+    )
+    check(isValidFooterTabClickConsumerShape(shape)) {
+        "Footer tab click consumer drifted: $shape"
+    }
+}
+
+private fun MutableMethod.referencesFieldType(
+    definingClass: String,
+    fieldType: String
+): Boolean {
+    val instructions = implementation?.instructions ?: return false
+    return instructions.any { instruction ->
+        val reference = (instruction as? ReferenceInstruction)?.reference as? FieldReference
+            ?: return@any false
+        reference.definingClass == definingClass && reference.type == fieldType
+    }
+}
+
+private fun MutableMethod.referencesMethodOwner(definingClass: String): Boolean {
+    val instructions = implementation?.instructions ?: return false
+    return instructions.any { instruction ->
+        val reference = (instruction as? ReferenceInstruction)?.reference as? MethodReference
+            ?: return@any false
+        reference.definingClass == definingClass
+    }
+}

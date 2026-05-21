@@ -5,6 +5,7 @@ import dev.jason.gboardpatches.patches.gboard.features.about.gboardAboutPageReso
 import dev.jason.gboardpatches.patches.gboard.features.addsymbols.gboardZhuyinCustomSymbolsCorpusPatch
 import dev.jason.gboardpatches.patches.gboard.features.addsymbols.gboardZhuyinCustomSymbolsEmoticonStatePatch
 import dev.jason.gboardpatches.patches.gboard.features.addsymbols.gboardZhuyinCustomSymbolsEntryPatch
+import dev.jason.gboardpatches.patches.gboard.features.addsymbols.gboardCustomSymbolsFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.addsymbols.gboardZhuyinCustomSymbolsHistoryPatch
 import dev.jason.gboardpatches.patches.gboard.features.addsymbols.gboardZhuyinCustomSymbolsRecyclerPatch
 import dev.jason.gboardpatches.patches.gboard.features.addsymbols.gboardZhuyinCustomSymbolsRoutingPatch
@@ -12,6 +13,7 @@ import dev.jason.gboardpatches.patches.gboard.features.chinesevoice.gboardChines
 import dev.jason.gboardpatches.patches.gboard.features.chinesevoice.gboardChineseOnlineVoiceResourcePatch
 import dev.jason.gboardpatches.patches.gboard.features.clipboard.gboardClipboardFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.clipboard.gboardClipboardAdapterTrimPatch
+import dev.jason.gboardpatches.patches.gboard.features.clipboard.gboardClipboardColumnCountPatch
 import dev.jason.gboardpatches.patches.gboard.features.clipboard.gboardClipboardItemBindPatch
 import dev.jason.gboardpatches.patches.gboard.features.clipboard.gboardClipboardLoaderPatch
 import dev.jason.gboardpatches.patches.gboard.features.clipboard.gboardClipboardPrunePatch
@@ -27,6 +29,8 @@ import dev.jason.gboardpatches.patches.gboard.features.packagerename.gboardPacka
 import dev.jason.gboardpatches.patches.gboard.features.settingshomepage.gboardSettingsHomepageBytecodePatch
 import dev.jason.gboardpatches.patches.gboard.features.settingshomepage.gboardSettingsHomepageFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.signaturebypass.gboardSignatureBypassBytecodePatch
+import dev.jason.gboardpatches.patches.gboard.features.symbolfooter.gboardSymbolFooterOrderBytecodePatch
+import dev.jason.gboardpatches.patches.gboard.features.symbolfooter.gboardSymbolFooterOrderFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.shared.gboardPatchesExtensionCarrierPatch
 import dev.jason.gboardpatches.patches.gboard.shared.gboardPatchesSettingsPatch
 import dev.jason.gboardpatches.patches.gboard.features.undoredoaccesspoint.gboardUndoRedoAccessPointBytecodePatch
@@ -91,12 +95,28 @@ val gboardCustomSymbolsPatch = resourcePatch(
 
     dependsOn(
         gboardAboutPageResourcePatch,
+        gboardCustomSymbolsFeatureMarkerPatch,
         gboardZhuyinCustomSymbolsEntryPatch,
         gboardZhuyinCustomSymbolsCorpusPatch,
         gboardZhuyinCustomSymbolsRoutingPatch,
         gboardZhuyinCustomSymbolsEmoticonStatePatch,
         gboardZhuyinCustomSymbolsHistoryPatch,
         gboardZhuyinCustomSymbolsRecyclerPatch
+    )
+}
+
+@Suppress("unused")
+val gboardSymbolsFooterOrderPatch = resourcePatch(
+    name = "Emojis, stickers & GIFs Tab Order",
+    description = "自訂 Gboard「Emojis, stickers & GIFs」底部 tabs 的排序，支援拖曳調整\nCustomize the bottom tab order in Gboard's Emojis, stickers & GIFs panel with drag-and-drop reordering.",
+    default = true
+) {
+    compatibleWith(COMPATIBILITY_GBOARD)
+
+    dependsOn(
+        gboardPatchesSettingsPatch,
+        gboardSymbolFooterOrderFeatureMarkerPatch,
+        gboardSymbolFooterOrderBytecodePatch
     )
 }
 
@@ -129,9 +149,9 @@ val gboardChineseOnlineVoiceInputPatch = resourcePatch(
 }
 
 @Suppress("unused")
-val gboardClipboardRetentionPatch = resourcePatch(
-    name = "Clipboard Retention",
-    description = "自訂剪貼簿保留時間、數量上限與顯示資訊\nCustomize clipboard retention time, item count limit, and metadata display.",
+val gboardClipboardEnhancementsPatch = resourcePatch(
+    name = "Clipboard Enhancements",
+    description = "增強剪貼簿的保留時間、數量上限、預覽行數、倒數/建立時間、順序編號與欄數\nEnhance clipboard retention time, item count limit, preview lines, countdown/creation time labels, order index, and column count.",
     default = true
 ) {
     compatibleWith(COMPATIBILITY_GBOARD)
@@ -142,6 +162,7 @@ val gboardClipboardRetentionPatch = resourcePatch(
         gboardClipboardFeatureMarkerPatch,
         gboardClipboardLoaderPatch,
         gboardClipboardPrunePatch,
+        gboardClipboardColumnCountPatch,
         gboardClipboardAdapterTrimPatch,
         gboardClipboardItemBindPatch
     )

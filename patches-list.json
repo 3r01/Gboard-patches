@@ -1,5 +1,5 @@
 {
-  "version": "1.5.0-dev.3",
+  "version": "1.7.0",
   "patches": [
     {
       "name": "Add Gboard Signature Bypass",
@@ -16,6 +16,18 @@
     {
       "name": "Chinese Online Voice Input",
       "description": "強制啟用中文語音\nForce-enable Chinese voice input.",
+      "use": true,
+      "dependencies": [],
+      "compatiblePackages": {
+        "com.google.android.inputmethod.latin": [
+          "17.0.10.880768217-release-arm64-v8a"
+        ]
+      },
+      "options": []
+    },
+    {
+      "name": "Clipboard Enhancements",
+      "description": "增強剪貼簿的保留時間、數量上限、預覽行數、倒數/建立時間、順序編號與欄數\nEnhance clipboard retention time, item count limit, preview lines, countdown/creation time labels, order index, and column count.",
       "use": true,
       "dependencies": [],
       "compatiblePackages": {
@@ -50,8 +62,8 @@
       "options": []
     },
     {
-      "name": "Clipboard Retention",
-      "description": "自訂剪貼簿保留時間、數量上限與顯示資訊\nCustomize clipboard retention time, item count limit, and metadata display.",
+      "name": "Custom Symbols",
+      "description": "新增獨立的特殊符號分頁，長按逗號->愛心\nAdd a dedicated custom symbols tab and replace the long-press comma entry with a heart shortcut.",
       "use": true,
       "dependencies": [],
       "compatiblePackages": {
@@ -62,8 +74,8 @@
       "options": []
     },
     {
-      "name": "Custom Symbols",
-      "description": "新增獨立的特殊符號分頁，長按逗號->愛心\nAdd a dedicated custom symbols tab and replace the long-press comma entry with a heart shortcut.",
+      "name": "Emojis, stickers & GIFs Tab Order",
+      "description": "自訂 Gboard「Emojis, stickers & GIFs」底部 tabs 的排序，支援拖曳調整\nCustomize the bottom tab order in Gboard's Emojis, stickers & GIFs panel with drag-and-drop reordering.",
       "use": true,
       "dependencies": [],
       "compatiblePackages": {

@@ -7,6 +7,14 @@ public final class GboardSettingsHomepageRuntime {
     }
 
     public static boolean shouldUseNewSettingsStyle(Context context) {
-        return GboardSettingsHomepageSettings.shouldUseNewSettingsStyle(context);
+        try {
+            return GboardSettingsHomepageSettings.shouldUseNewSettingsStyle(context);
+        } catch (Throwable throwable) {
+            GboardSettingsHomepageSettings.recoverForceNewFailure(
+                    context,
+                    "Failed to decide settings homepage style; falling back to legacy",
+                    throwable);
+            return false;
+        }
     }
 }

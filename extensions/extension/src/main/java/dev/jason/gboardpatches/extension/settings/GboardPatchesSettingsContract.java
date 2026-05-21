@@ -122,14 +122,21 @@ public final class GboardPatchesSettingsContract {
         private final String headerTitle;
         private final String headerSummary;
         private final List<Row> rows;
+        private final long refreshIntervalMs;
 
         public Screen(String toolbarTitle, String headerBadge, String headerTitle,
                 String headerSummary, List<Row> rows) {
+            this(toolbarTitle, headerBadge, headerTitle, headerSummary, rows, 0L);
+        }
+
+        public Screen(String toolbarTitle, String headerBadge, String headerTitle,
+                String headerSummary, List<Row> rows, long refreshIntervalMs) {
             this.toolbarTitle = toolbarTitle;
             this.headerBadge = headerBadge;
             this.headerTitle = headerTitle;
             this.headerSummary = headerSummary;
             this.rows = Collections.unmodifiableList(new ArrayList<Row>(rows));
+            this.refreshIntervalMs = refreshIntervalMs;
         }
 
         public String getToolbarTitle() {
@@ -150,6 +157,10 @@ public final class GboardPatchesSettingsContract {
 
         public List<Row> getRows() {
             return rows;
+        }
+
+        public long getRefreshIntervalMs() {
+            return refreshIntervalMs;
         }
     }
 

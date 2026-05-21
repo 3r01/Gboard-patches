@@ -3,7 +3,7 @@ package dev.jason.gboardpatches.extension.clipboard;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-public final class GboardClipboardRetentionSettings {
+public final class GboardClipboardSettings {
     public static final long MINUTE_MS = 60_000L;
     public static final long TTL_ONE_MINUTE_MS = MINUTE_MS;
     public static final long TTL_ONE_HOUR_MS = 60L * MINUTE_MS;
@@ -11,17 +11,29 @@ public final class GboardClipboardRetentionSettings {
     public static final int MAX_COUNT_TEN = 10;
     public static final int MAX_COUNT_ONE_HUNDRED = 100;
     public static final int INFINITE_MAX_COUNT = -1;
+    public static final int CLIPBOARD_COLUMN_COUNT_ONE = 1;
+    public static final int CLIPBOARD_COLUMN_COUNT_TWO = 2;
+    public static final int CLIPBOARD_COLUMN_COUNT_THREE = 3;
     public static final int CLIPBOARD_CONTENT_MAX_LINES_STOCK = 5;
     public static final int CLIPBOARD_CONTENT_MAX_LINES_EXTENDED = 10;
+    public static final String CLIPBOARD_ORDER_INDEX_MODE_NEWEST_FIRST = "newest_first";
+    public static final String CLIPBOARD_ORDER_INDEX_MODE_OLDEST_FIRST = "oldest_first";
     public static final String PREF_VALUE_CUSTOM = "custom";
 
-    public static final String PREF_FILE = GboardClipboardRetentionRuntime.SETTINGS_PREF_FILE;
+    public static final String PREF_FILE = GboardClipboardRuntime.SETTINGS_PREF_FILE;
+    public static final String LEGACY_PREF_FILE = GboardClipboardRuntime.LEGACY_SETTINGS_PREF_FILE;
 
     public static final String PREF_KEY_CLIPBOARD_ENABLED = "pref_clipboard_enabled";
     public static final String PREF_KEY_CLIPBOARD_SHOW_COUNTDOWN =
             "pref_clipboard_show_countdown";
     public static final String PREF_KEY_CLIPBOARD_SHOW_CREATION_TIME =
             "pref_clipboard_show_creation_time";
+    public static final String PREF_KEY_CLIPBOARD_SHOW_ORDER_INDEX =
+            "pref_clipboard_show_order_index";
+    public static final String PREF_KEY_CLIPBOARD_ORDER_INDEX_MODE =
+            "pref_clipboard_order_index_mode";
+    public static final String PREF_KEY_CLIPBOARD_COLUMN_COUNT =
+            "pref_clipboard_column_count";
     public static final String PREF_KEY_CLIPBOARD_TTL_MS = "pref_clipboard_ttl_ms";
     public static final String PREF_KEY_CLIPBOARD_MAX_COUNT = "pref_clipboard_max_count";
     public static final String PREF_KEY_CLIPBOARD_CONTENT_MAX_LINES =
@@ -36,6 +48,10 @@ public final class GboardClipboardRetentionSettings {
     public static final boolean DEFAULT_CLIPBOARD_ENABLED = true;
     public static final boolean DEFAULT_CLIPBOARD_SHOW_COUNTDOWN = true;
     public static final boolean DEFAULT_CLIPBOARD_SHOW_CREATION_TIME = false;
+    public static final boolean DEFAULT_CLIPBOARD_SHOW_ORDER_INDEX = true;
+    public static final String DEFAULT_CLIPBOARD_ORDER_INDEX_MODE =
+            CLIPBOARD_ORDER_INDEX_MODE_NEWEST_FIRST;
+    public static final int DEFAULT_CLIPBOARD_COLUMN_COUNT = CLIPBOARD_COLUMN_COUNT_TWO;
     public static final long DEFAULT_CLIPBOARD_TTL_MS = TTL_ONE_HOUR_MS;
     public static final int DEFAULT_CLIPBOARD_MAX_COUNT = MAX_COUNT_ONE_HUNDRED;
     public static final int DEFAULT_CLIPBOARD_CONTENT_MAX_LINES =
@@ -45,10 +61,11 @@ public final class GboardClipboardRetentionSettings {
     public static final int DEFAULT_CLIPBOARD_CONTENT_MAX_LINES_CUSTOM =
             CLIPBOARD_CONTENT_MAX_LINES_EXTENDED;
 
-    private GboardClipboardRetentionSettings() {
+    private GboardClipboardSettings() {
     }
 
     public static SharedPreferences preferences(Context context) {
+        migrateLegacyPreferences(context);
         return context.getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE);
     }
 
@@ -70,6 +87,15 @@ public final class GboardClipboardRetentionSettings {
         editor = putBooleanPreferenceIfMissing(editor, preferences,
                 PREF_KEY_CLIPBOARD_SHOW_CREATION_TIME,
                 DEFAULT_CLIPBOARD_SHOW_CREATION_TIME);
+        editor = putBooleanPreferenceIfMissing(editor, preferences,
+                PREF_KEY_CLIPBOARD_SHOW_ORDER_INDEX,
+                DEFAULT_CLIPBOARD_SHOW_ORDER_INDEX);
+        editor = putStringPreferenceIfMissing(editor, preferences,
+                PREF_KEY_CLIPBOARD_ORDER_INDEX_MODE,
+                DEFAULT_CLIPBOARD_ORDER_INDEX_MODE);
+        editor = putStringPreferenceIfMissing(editor, preferences,
+                PREF_KEY_CLIPBOARD_COLUMN_COUNT,
+                Integer.toString(DEFAULT_CLIPBOARD_COLUMN_COUNT));
         editor = putStringPreferenceIfMissing(editor, preferences,
                 PREF_KEY_CLIPBOARD_TTL_MS,
                 Long.toString(DEFAULT_CLIPBOARD_TTL_MS));
@@ -125,6 +151,37 @@ public final class GboardClipboardRetentionSettings {
     public static boolean readClipboardShowCreationTime(SharedPreferences preferences) {
         return readBooleanPreference(preferences, PREF_KEY_CLIPBOARD_SHOW_CREATION_TIME,
                 DEFAULT_CLIPBOARD_SHOW_CREATION_TIME);
+    }
+
+    public static boolean readClipboardShowOrderIndex(Context context) {
+        SharedPreferences preferences = preferences(context);
+        ensureDefaults(preferences);
+        return readClipboardShowOrderIndex(preferences);
+    }
+
+    public static boolean readClipboardShowOrderIndex(SharedPreferences preferences) {
+        return readBooleanPreference(preferences, PREF_KEY_CLIPBOARD_SHOW_ORDER_INDEX,
+                DEFAULT_CLIPBOARD_SHOW_ORDER_INDEX);
+    }
+
+    public static String readClipboardOrderIndexMode(Context context) {
+        SharedPreferences preferences = preferences(context);
+        ensureDefaults(preferences);
+        return readClipboardOrderIndexMode(preferences);
+    }
+
+    public static String readClipboardOrderIndexMode(SharedPreferences preferences) {
+        return resolveClipboardOrderIndexMode(preferences);
+    }
+
+    public static int readClipboardColumnCount(Context context) {
+        SharedPreferences preferences = preferences(context);
+        ensureDefaults(preferences);
+        return readClipboardColumnCount(preferences);
+    }
+
+    public static int readClipboardColumnCount(SharedPreferences preferences) {
+        return resolveClipboardColumnCount(preferences);
     }
 
     public static long readClipboardTtlMs(Context context) {
@@ -216,9 +273,37 @@ public final class GboardClipboardRetentionSettings {
 
     private static SharedPreferences.Editor normalizeStoredValues(SharedPreferences preferences,
             SharedPreferences.Editor editor) {
+        editor = normalizeClipboardOrderIndexModePreference(preferences, editor);
+        editor = normalizeClipboardColumnCountPreference(preferences, editor);
         editor = normalizeClipboardTtlPreference(preferences, editor);
         editor = normalizeClipboardMaxCountPreference(preferences, editor);
         editor = normalizeClipboardContentMaxLinesPreference(preferences, editor);
+        return editor;
+    }
+
+    private static SharedPreferences.Editor normalizeClipboardOrderIndexModePreference(
+            SharedPreferences preferences, SharedPreferences.Editor editor) {
+        Object rawValue = preferences.getAll().get(PREF_KEY_CLIPBOARD_ORDER_INDEX_MODE);
+        String normalizedValue = sanitizeClipboardOrderIndexMode(
+                readStringPreference(preferences, PREF_KEY_CLIPBOARD_ORDER_INDEX_MODE,
+                        DEFAULT_CLIPBOARD_ORDER_INDEX_MODE));
+        if (!(rawValue instanceof String) || !normalizedValue.equals(rawValue)) {
+            editor = ensureEditor(editor, preferences);
+            editor.putString(PREF_KEY_CLIPBOARD_ORDER_INDEX_MODE, normalizedValue);
+        }
+        return editor;
+    }
+
+    private static SharedPreferences.Editor normalizeClipboardColumnCountPreference(
+            SharedPreferences preferences, SharedPreferences.Editor editor) {
+        Object rawValue = preferences.getAll().get(PREF_KEY_CLIPBOARD_COLUMN_COUNT);
+        int normalizedValue = sanitizeClipboardColumnCount(parseIntPreferenceValue(rawValue,
+                DEFAULT_CLIPBOARD_COLUMN_COUNT));
+        String normalizedSelection = Integer.toString(normalizedValue);
+        if (!(rawValue instanceof String) || !normalizedSelection.equals(rawValue)) {
+            editor = ensureEditor(editor, preferences);
+            editor.putString(PREF_KEY_CLIPBOARD_COLUMN_COUNT, normalizedSelection);
+        }
         return editor;
     }
 
@@ -415,6 +500,17 @@ public final class GboardClipboardRetentionSettings {
                 PREF_KEY_CLIPBOARD_CONTENT_MAX_LINES, DEFAULT_CLIPBOARD_CONTENT_MAX_LINES));
     }
 
+    private static String resolveClipboardOrderIndexMode(SharedPreferences preferences) {
+        return sanitizeClipboardOrderIndexMode(readStringPreference(preferences,
+                PREF_KEY_CLIPBOARD_ORDER_INDEX_MODE,
+                DEFAULT_CLIPBOARD_ORDER_INDEX_MODE));
+    }
+
+    private static int resolveClipboardColumnCount(SharedPreferences preferences) {
+        return sanitizeClipboardColumnCount(readIntPreference(preferences,
+                PREF_KEY_CLIPBOARD_COLUMN_COUNT, DEFAULT_CLIPBOARD_COLUMN_COUNT));
+    }
+
     private static long readLongPreference(SharedPreferences preferences, String key,
             long defaultValue) {
         Object value = preferences.getAll().get(key);
@@ -518,5 +614,60 @@ public final class GboardClipboardRetentionSettings {
 
     private static int sanitizeClipboardContentMaxLines(int value) {
         return sanitizePositiveInt(value, DEFAULT_CLIPBOARD_CONTENT_MAX_LINES);
+    }
+
+    private static String sanitizeClipboardOrderIndexMode(String value) {
+        if (CLIPBOARD_ORDER_INDEX_MODE_OLDEST_FIRST.equals(value)) {
+            return CLIPBOARD_ORDER_INDEX_MODE_OLDEST_FIRST;
+        }
+        return CLIPBOARD_ORDER_INDEX_MODE_NEWEST_FIRST;
+    }
+
+    private static int sanitizeClipboardColumnCount(int value) {
+        if (value == CLIPBOARD_COLUMN_COUNT_ONE
+                || value == CLIPBOARD_COLUMN_COUNT_TWO
+                || value == CLIPBOARD_COLUMN_COUNT_THREE) {
+            return value;
+        }
+        return DEFAULT_CLIPBOARD_COLUMN_COUNT;
+    }
+
+    private static void migrateLegacyPreferences(Context context) {
+        if (context == null) {
+            return;
+        }
+        SharedPreferences currentPreferences =
+                context.getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE);
+        SharedPreferences legacyPreferences =
+                context.getSharedPreferences(LEGACY_PREF_FILE, Context.MODE_PRIVATE);
+        if (legacyPreferences.getAll().isEmpty()) {
+            return;
+        }
+
+        SharedPreferences.Editor editor = null;
+        for (java.util.Map.Entry<String, ?> entry : legacyPreferences.getAll().entrySet()) {
+            String key = entry.getKey();
+            if (currentPreferences.contains(key)) {
+                continue;
+            }
+            Object value = entry.getValue();
+            if (editor == null) {
+                editor = currentPreferences.edit();
+            }
+            if (value instanceof String) {
+                editor.putString(key, (String) value);
+            } else if (value instanceof Boolean) {
+                editor.putBoolean(key, ((Boolean) value).booleanValue());
+            } else if (value instanceof Integer) {
+                editor.putInt(key, ((Integer) value).intValue());
+            } else if (value instanceof Long) {
+                editor.putLong(key, ((Long) value).longValue());
+            } else if (value instanceof Float) {
+                editor.putFloat(key, ((Float) value).floatValue());
+            }
+        }
+        if (editor != null) {
+            editor.apply();
+        }
     }
 }

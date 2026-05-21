@@ -44,9 +44,9 @@ Gboard Patches is a public Morphe source for a curated set of Gboard enhancement
 </details>
 
 <details>
-  <summary><code>Clipboard Retention</code></summary>
+  <summary><code>Clipboard Enhancements</code></summary>
 
-  Lets you customize clipboard retention time, item count limits, and metadata display.
+  Lets you enhance clipboard retention time, item count limits, preview lines, countdown and creation-time labels, order index, and grid columns.
 </details>
 
 <details>

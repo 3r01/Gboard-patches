@@ -26,6 +26,7 @@ private fun applyPatchesSettingsPatch() = with(context) {
         val manifest = document.documentElement
         val application = manifest.childElements("application").firstOrNull()
             ?: error("Could not find application element in AndroidManifest.xml")
+        val packageName = manifest.getAttribute("package")
 
         val activity = application.childElements("activity").firstOrNull {
             it.getAttributeNS(ANDROID_NS, "name") == PATCHES_SETTINGS_ACTIVITY_CLASS ||
@@ -36,7 +37,18 @@ private fun applyPatchesSettingsPatch() = with(context) {
 
         activity.setAndroidAttribute("name", PATCHES_SETTINGS_ACTIVITY_CLASS)
         activity.setAndroidAttribute("exported", "false")
-        manifest.getAttribute("package")
+
+        val provider = application.childElements("provider").firstOrNull {
+            it.getAttributeNS(ANDROID_NS, "name") == PATCHES_SETTINGS_PROVIDER_CLASS ||
+                it.getAttribute("android:name") == PATCHES_SETTINGS_PROVIDER_CLASS
+        } ?: document.createElement("provider").also { createdProvider ->
+            application.appendChild(createdProvider)
+        }
+
+        provider.setAndroidAttribute("name", PATCHES_SETTINGS_PROVIDER_CLASS)
+        provider.setAndroidAttribute("authorities", packageName + PATCHES_SETTINGS_PROVIDER_AUTHORITY_SUFFIX)
+        provider.setAndroidAttribute("exported", "false")
+        packageName
     }
 
     SETTINGS_XML_PATHS.forEach { xmlPath ->
@@ -122,6 +134,9 @@ private fun Element.setAndroidAttribute(localName: String, value: String) {
 
 private const val PATCHES_SETTINGS_ACTIVITY_CLASS =
     "dev.jason.gboardpatches.extension.settings.GboardPatchesSettingsActivity"
+private const val PATCHES_SETTINGS_PROVIDER_CLASS =
+    "dev.jason.gboardpatches.extension.settings.GboardPatchesSettingsProvider"
+private const val PATCHES_SETTINGS_PROVIDER_AUTHORITY_SUFFIX = ".gboard_patches"
 private const val PATCHES_SETTINGS_ENTRY_KEY = "gboard_patches_entry"
 private const val PATCHES_SETTINGS_ENTRY_TITLE = "Patches"
 private const val HEADER_PREFERENCE_TAG =
