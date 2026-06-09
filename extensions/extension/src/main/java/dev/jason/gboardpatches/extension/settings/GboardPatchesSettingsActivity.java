@@ -45,10 +45,15 @@ import java.util.Deque;
 import java.util.List;
 
 import dev.jason.gboardpatches.extension.BuildConfig;
+import dev.jason.gboardpatches.extension.clipboard.GboardClipboardSettingsFeature;
 
 public class GboardPatchesSettingsActivity extends Activity
         implements GboardPatchesSettingsContract.Host {
     private static final String TAG = "GboardPatches";
+    private static final String ACTION_QS_TILE_PREFERENCES =
+            "android.service.quicksettings.action.QS_TILE_PREFERENCES";
+    private static final String EXTRA_OPEN_WEB_CLIPBOARD =
+            "dev.jason.gboardpatches.extension.extra.OPEN_WEB_CLIPBOARD";
     private static final int TOOLBAR_HEIGHT_DP = 56;
     private static final String TOOLBAR_TITLE_PATCHES = "Patches";
     private static final String HEADER_BADGE = "Gboard";
@@ -91,6 +96,12 @@ public class GboardPatchesSettingsActivity extends Activity
     private final Handler screenRefreshHandler = new Handler(Looper.getMainLooper());
     private final Runnable screenRefreshRunnable = this::refresh;
 
+    public static Intent createWebClipboardSettingsIntent(Context context) {
+        Intent intent = new Intent(context, GboardPatchesSettingsActivity.class);
+        intent.putExtra(EXTRA_OPEN_WEB_CLIPBOARD, true);
+        return intent;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(resolveActivityTheme());
@@ -104,6 +115,7 @@ public class GboardPatchesSettingsActivity extends Activity
             setContentView(contentView);
             installWindowInsetsHandling(contentView);
             registerBackCallback();
+            openInitialFeatureFromIntentIfNeeded();
             renderCurrentScreenSafely();
         } catch (Throwable throwable) {
             showFatalFallbackScreen("Failed to initialize patches settings activity", throwable);
@@ -221,6 +233,49 @@ public class GboardPatchesSettingsActivity extends Activity
                     renderCurrentScreenSafely();
                 } catch (Throwable throwable) {
                     Log.w(TAG, "Failed to persist positive integer setting", throwable);
+                    input.setError(DIALOG_ERROR_SAVE_FAILED);
+                }
+            });
+        });
+        dialog.show();
+        input.requestFocus();
+        input.setSelection(input.getText().length());
+    }
+
+    @Override
+    public void showTextInputDialog(String title, String hint, String initialValue,
+            GboardPatchesSettingsContract.TextValueConsumer consumer) {
+        EditText input = new EditText(this);
+        input.setInputType(android.text.InputType.TYPE_CLASS_TEXT
+                | android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        input.setHint(hint);
+        input.setText(initialValue == null ? "" : initialValue);
+        input.setSelectAllOnFocus(true);
+
+        LinearLayout container = new LinearLayout(this);
+        container.setOrientation(LinearLayout.VERTICAL);
+        container.setPadding(dp(24), dp(8), dp(24), 0);
+        container.addView(input, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setView(container)
+                .setPositiveButton(DIALOG_SAVE, null)
+                .setNegativeButton(DIALOG_CANCEL, null)
+                .create();
+        dialog.setOnShowListener(ignored -> {
+            tintDialogButtons(dialog);
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
+                try {
+                    consumer.accept(input.getText() == null ? "" : input.getText().toString());
+                    dialog.dismiss();
+                    renderCurrentScreenSafely();
+                } catch (IllegalArgumentException exception) {
+                    input.setError(exception.getMessage());
+                } catch (Throwable throwable) {
+                    Log.w(TAG, "Failed to persist text setting", throwable);
                     input.setError(DIALOG_ERROR_SAVE_FAILED);
                 }
             });
@@ -837,6 +892,44 @@ public class GboardPatchesSettingsActivity extends Activity
                 ERROR_HEADER_TITLE,
                 ERROR_HEADER_SUMMARY,
                 rows);
+    }
+
+    private void openInitialFeatureFromIntentIfNeeded() {
+        Intent intent = getIntent();
+        if (intent == null) {
+            return;
+        }
+        boolean tilePreferencesIntent = ACTION_QS_TILE_PREFERENCES.equals(intent.getAction());
+        boolean openWebClipboard = intent.getBooleanExtra(EXTRA_OPEN_WEB_CLIPBOARD, false);
+        if (!tilePreferencesIntent && !openWebClipboard) {
+            return;
+        }
+
+        GboardClipboardSettingsFeature clipboardFeature = findClipboardFeature();
+        if (clipboardFeature == null || !clipboardFeature.isAvailable(this)) {
+            return;
+        }
+        GboardPatchesSettingsContract.Feature webClipboardFeature =
+                clipboardFeature.getWebClipboardFeature();
+        if (webClipboardFeature == null || !webClipboardFeature.isAvailable(this)) {
+            return;
+        }
+
+        featureNavigationStack.clear();
+        featureNavigationStack.addLast(clipboardFeature);
+        featureNavigationStack.addLast(webClipboardFeature);
+    }
+
+    private GboardClipboardSettingsFeature findClipboardFeature() {
+        if (rootFeatures == null) {
+            return null;
+        }
+        for (GboardPatchesSettingsContract.Feature feature : rootFeatures) {
+            if (feature instanceof GboardClipboardSettingsFeature clipboardFeature) {
+                return clipboardFeature;
+            }
+        }
+        return null;
     }
 
     private GboardPatchesSettingsContract.Feature currentFeature() {

@@ -36,7 +36,9 @@ private fun applyPatchesSettingsPatch() = with(context) {
         }
 
         activity.setAndroidAttribute("name", PATCHES_SETTINGS_ACTIVITY_CLASS)
-        activity.setAndroidAttribute("exported", "false")
+        if (activity.androidAttribute("exported").isNullOrBlank()) {
+            activity.setAndroidAttribute("exported", "false")
+        }
 
         val provider = application.childElements("provider").firstOrNull {
             it.getAttributeNS(ANDROID_NS, "name") == PATCHES_SETTINGS_PROVIDER_CLASS ||

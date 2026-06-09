@@ -9,6 +9,8 @@ import android.util.Log;
 public final class GboardPatchesFeatureAvailability {
     public static final String FEATURE_CLIPBOARD_ENHANCEMENTS =
             "dev.jason.gboardpatches.feature.clipboard_enhancements";
+    public static final String FEATURE_WEB_CLIPBOARD =
+            "dev.jason.gboardpatches.feature.web_clipboard";
     public static final String FEATURE_CLIPBOARD_ENTITY_EXTRACTION =
             "dev.jason.gboardpatches.feature.clipboard_entity_extraction";
     public static final String FEATURE_CLIPBOARD_ITEM_EDIT =
@@ -35,6 +37,18 @@ public final class GboardPatchesFeatureAvailability {
         if (context == null || featureKey == null || featureKey.isEmpty()) {
             return false;
         }
+        return hasAnyFeature(context, featureKey);
+    }
+
+    public static boolean hasAnyFeature(Context context, String... featureKeys) {
+        if (context == null || featureKeys == null || featureKeys.length == 0) {
+            return false;
+        }
+        for (String featureKey : featureKeys) {
+            if (featureKey == null || featureKey.isEmpty()) {
+                return false;
+            }
+        }
 
         Context applicationContext = context.getApplicationContext();
         Context lookupContext = applicationContext != null ? applicationContext : context;
@@ -47,10 +61,34 @@ public final class GboardPatchesFeatureAvailability {
                     lookupContext.getPackageName(),
                     PackageManager.GET_META_DATA);
             Bundle metaData = applicationInfo.metaData;
-            return metaData != null && metaData.getBoolean(featureKey, false);
+            if (metaData == null) {
+                return false;
+            }
+            for (String featureKey : featureKeys) {
+                if (metaData.getBoolean(featureKey, false)) {
+                    return true;
+                }
+            }
+            return false;
         } catch (Throwable throwable) {
-            Log.w(TAG, "Failed to resolve feature marker: " + featureKey, throwable);
+            Log.w(TAG, "Failed to resolve feature marker: " + describeFeatures(featureKeys),
+                    throwable);
             return false;
         }
+    }
+
+    private static String describeFeatures(String[] featureKeys) {
+        if (featureKeys.length == 1) {
+            return featureKeys[0];
+        }
+
+        StringBuilder builder = new StringBuilder();
+        for (int index = 0; index < featureKeys.length; index++) {
+            if (index > 0) {
+                builder.append(", ");
+            }
+            builder.append(featureKeys[index]);
+        }
+        return builder.toString();
     }
 }

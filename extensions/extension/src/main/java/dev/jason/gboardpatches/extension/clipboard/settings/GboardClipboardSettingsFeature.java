@@ -16,7 +16,7 @@ public final class GboardClipboardSettingsFeature
     private static final String HEADER_BADGE = "Gboard";
     private static final String ENTRY_TITLE = "Clipboard";
     private static final String ENTRY_SUMMARY =
-            "Adjusts clipboard retention, item limits, preview lines, metadata labels, order index, and columns.";
+            "Adjusts clipboard retention, item limits, preview lines, metadata labels, order index, and columns, and hosts Web Clipboard settings.";
     private static final String ERROR_TITLE = "Clipboard settings unavailable";
     private static final String ERROR_SUMMARY =
             "The clipboard settings screen failed to load. Reopen Gboard settings and try again.";
@@ -27,6 +27,8 @@ public final class GboardClipboardSettingsFeature
             new GboardClipboardLayoutSettingsSection();
     private final GboardClipboardRetentionSettingsSection retentionSection =
             new GboardClipboardRetentionSettingsSection();
+    private final GboardPatchesSettingsContract.Feature webClipboardFeature =
+            new GboardWebClipboardSettingsFeature();
 
     @Override
     public String getEntryTitle() {
@@ -38,11 +40,16 @@ public final class GboardClipboardSettingsFeature
         return ENTRY_SUMMARY;
     }
 
+    public GboardPatchesSettingsContract.Feature getWebClipboardFeature() {
+        return webClipboardFeature;
+    }
+
     @Override
     public boolean isAvailable(Context context) {
-        return GboardPatchesFeatureAvailability.hasFeature(
+        return GboardPatchesFeatureAvailability.hasAnyFeature(
                 context,
-                GboardPatchesFeatureAvailability.FEATURE_CLIPBOARD_ENHANCEMENTS);
+                GboardPatchesFeatureAvailability.FEATURE_CLIPBOARD_ENHANCEMENTS,
+                GboardPatchesFeatureAvailability.FEATURE_WEB_CLIPBOARD);
     }
 
     @Override
@@ -50,24 +57,48 @@ public final class GboardClipboardSettingsFeature
             GboardPatchesSettingsContract.Host host) {
         try {
             Context context = host.getContext();
-            GboardClipboardRuntime.registerApplicationContext(context.getApplicationContext());
-            SharedPreferences preferences = GboardClipboardSettings.preferences(context);
-            GboardClipboardSettings.ensureDefaults(preferences);
-
-            boolean clipboardEnabled = GboardClipboardSettings.readClipboardEnabled(preferences);
             List<GboardPatchesSettingsContract.Row> rows =
                     new ArrayList<GboardPatchesSettingsContract.Row>();
-            rows.add(new GboardPatchesSettingsContract.SwitchRow(
-                    ENTRY_TITLE,
-                    ENTRY_SUMMARY,
-                    true,
-                    clipboardEnabled,
-                    value -> preferences.edit()
-                            .putBoolean(GboardClipboardSettings.PREF_KEY_CLIPBOARD_ENABLED, value)
-                            .apply()));
-            metadataSection.appendRows(rows, host, preferences, clipboardEnabled);
-            layoutSection.appendRows(rows, host, preferences, clipboardEnabled);
-            retentionSection.appendRows(rows, host, preferences, clipboardEnabled);
+            boolean hasClipboardEnhancements = GboardPatchesFeatureAvailability.hasFeature(
+                    context,
+                    GboardPatchesFeatureAvailability.FEATURE_CLIPBOARD_ENHANCEMENTS);
+            boolean hasWebClipboard = webClipboardFeature.isAvailable(context);
+
+            if (hasClipboardEnhancements) {
+                GboardClipboardRuntime.registerApplicationContext(context.getApplicationContext());
+                SharedPreferences preferences = GboardClipboardSettings.preferences(context);
+                GboardClipboardSettings.ensureDefaults(preferences);
+
+                boolean clipboardEnabled = GboardClipboardSettings.readClipboardEnabled(
+                        preferences);
+                rows.add(new GboardPatchesSettingsContract.SwitchRow(
+                        ENTRY_TITLE,
+                        "Enable clipboard enhancements for retention, metadata labels, and layout overrides.",
+                        true,
+                        clipboardEnabled,
+                        value -> preferences.edit()
+                                .putBoolean(GboardClipboardSettings.PREF_KEY_CLIPBOARD_ENABLED,
+                                        value)
+                                .apply()));
+                metadataSection.appendRows(rows, host, preferences, clipboardEnabled);
+                layoutSection.appendRows(rows, host, preferences, clipboardEnabled);
+                retentionSection.appendRows(rows, host, preferences, clipboardEnabled);
+            }
+
+            if (hasWebClipboard) {
+                rows.add(new GboardPatchesSettingsContract.ActionRow(
+                        webClipboardFeature.getEntryTitle(),
+                        webClipboardFeature.getEntrySummary(),
+                        true,
+                        () -> host.openFeature(webClipboardFeature)));
+            }
+
+            if (rows.isEmpty()) {
+                rows.add(new GboardPatchesSettingsContract.InfoRow(
+                        ERROR_TITLE,
+                        "No clipboard features are currently patched into this APK.",
+                        false));
+            }
             return new GboardPatchesSettingsContract.Screen(
                     ENTRY_TITLE,
                     HEADER_BADGE,

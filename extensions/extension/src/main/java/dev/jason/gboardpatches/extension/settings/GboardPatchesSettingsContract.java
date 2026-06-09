@@ -34,6 +34,9 @@ public final class GboardPatchesSettingsContract {
         void showPositiveIntegerDialog(String title, String hint, int initialValue,
                 PositiveIntegerConsumer consumer);
 
+        void showTextInputDialog(String title, String hint, String initialValue,
+                TextValueConsumer consumer);
+
         void showImageDialog(PreviewSpec previewSpec);
     }
 
@@ -43,6 +46,10 @@ public final class GboardPatchesSettingsContract {
 
     public interface PositiveIntegerConsumer {
         void accept(int value);
+    }
+
+    public interface TextValueConsumer {
+        void accept(String value);
     }
 
     public interface ToggleAction {
