@@ -1,7 +1,7 @@
 {
-    "created_at":  "2026-06-13T01:26:10",
+    "created_at":  "2026-06-13T01:44:52",
     "description":  "### ✨ New Features\n\n* **Gboard:** add the `English Globe Key Ignore Delay` setting so you can override the post-typing language-switch delay on the English keyboard, keep the stock default at `500ms`, and adjust it anywhere between `0-1000ms`, including `0ms` to remove the wait entirely.\n* **Gboard:** refactor the `Patches` settings page to make feature grouping clearer and improve multilingual copy and page details for a more complete settings experience.\n\n### ✨ 新功能\n\n* **Gboard:** 新增 `English Globe Key Ignore Delay` 設定，讓你可以覆寫英文鍵盤在輸入字母後切換語言前的等待時間；保留 stock 預設值 `500ms`，並可在 `0-1000ms` 間調整，包含設成 `0ms` 來完全取消等待。\n* **Gboard:** 重構 `Patches` 設定頁，讓功能分組更清楚，並改善多語系文案與頁面細節，提供更完整的設定體驗。",
-    "download_url":  "https://github.com/jasonwu1994/Gboard-patches/releases/download/v1.9.0-dev.1/patches-1.9.0-dev.1.mpp",
+    "download_url":  "https://github.com/jasonwu1994/Gboard-patches/releases/download/v1.9.0/patches-1.9.0.mpp",
     "signature_download_url":  "",
-    "version":  "1.9.0-dev.1"
+    "version":  "1.9.0"
 }
