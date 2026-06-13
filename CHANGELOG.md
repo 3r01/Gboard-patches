@@ -1,4 +1,4 @@
-# [1.9.0](https://github.com/jasonwu1994/Gboard-patches/compare/v1.8.0...v1.9.0) (2026-06-13)
+## [1.9.0](https://github.com/jasonwu1994/Gboard-patches/compare/v1.8.0...v1.9.0) (2026-06-13)
 
 ### ✨ New Features
 
@@ -10,7 +10,7 @@
 * **Gboard:** 新增 `English Globe Key Ignore Delay` 設定，讓你可以覆寫英文鍵盤在輸入字母後切換語言前的等待時間；保留 stock 預設值 `500ms`，並可在 `0-1000ms` 間調整，包含設成 `0ms` 來完全取消等待。
 * **Gboard:** 重構 `Patches` 設定頁，讓功能分組更清楚，並改善多語系文案與頁面細節，提供更完整的設定體驗。
 
-# [1.9.0-dev.1](https://github.com/jasonwu1994/Gboard-patches/compare/v1.8.0...v1.9.0-dev.1) (2026-06-13)
+## [1.9.0-dev.1](https://github.com/jasonwu1994/Gboard-patches/compare/v1.8.0...v1.9.0-dev.1) (2026-06-13)
 
 ### ✨ New Features
 
@@ -22,7 +22,7 @@
 * **Gboard:** 新增 `English Globe Key Ignore Delay` 設定，讓你可以覆寫英文鍵盤在輸入字母後切換語言前的等待時間；保留 stock 預設值 `500ms`，並可在 `0-1000ms` 間調整，包含設成 `0ms` 來完全取消等待。
 * **Gboard:** 重構 `Patches` 設定頁，讓功能分組更清楚，並改善多語系文案與頁面細節，提供更完整的設定體驗。
 
-# [1.8.0](https://github.com/jasonwu1994/Gboard-patches/compare/v1.7.0...v1.8.0) (2026-06-09)
+## [1.8.0](https://github.com/jasonwu1994/Gboard-patches/compare/v1.7.0...v1.8.0) (2026-06-09)
 
 ### ✨ New Features
 
@@ -32,7 +32,7 @@
 
 * **Gboard:** 新增 `Web Clipboard` 功能，讓同一個區域網路中的桌面瀏覽器與已套用 patch 的 Gboard 之間同步剪貼簿內容，支援瀏覽器傳送文字到手機、手機剪貼簿同步到瀏覽器、4 碼配對碼驗證、快速設定開關，以及隨 patch 提供的內建 Web UI。
 
-# [1.8.0-dev.1](https://github.com/jasonwu1994/Gboard-patches/compare/v1.7.0...v1.8.0-dev.1) (2026-06-09)
+## [1.8.0-dev.1](https://github.com/jasonwu1994/Gboard-patches/compare/v1.7.0...v1.8.0-dev.1) (2026-06-09)
 
 ### ✨ New Features
 
@@ -42,7 +42,7 @@
 
 * **Gboard:** 新增 `Web Clipboard` 功能，讓同一個區域網路中的桌面瀏覽器與已套用 patch 的 Gboard 之間同步剪貼簿內容，支援瀏覽器傳送文字到手機、手機剪貼簿同步到瀏覽器、4 碼配對碼驗證、快速設定開關，以及隨 patch 提供的內建 Web UI。
 
-# [1.7.0](https://github.com/jasonwu1994/Gboard-patches/compare/v1.6.2...v1.7.0) (2026-05-21)
+## [1.7.0](https://github.com/jasonwu1994/Gboard-patches/compare/v1.6.2...v1.7.0) (2026-05-21)
 
 ### ✨ New Features
 
@@ -100,7 +100,7 @@
 
 * **Gboard:** 支援官方 Gboard `17.0.10.880768217-release-arm64-v8a`。
 
-# [1.6.0](https://github.com/jasonwu1994/Gboard-patches/compare/v1.5.0...v1.6.0) (2026-05-20)
+## [1.6.0](https://github.com/jasonwu1994/Gboard-patches/compare/v1.5.0...v1.6.0) (2026-05-20)
 
 ### ✨ New Features
 
@@ -122,7 +122,7 @@
 
 * **Gboard:** 支援官方 Gboard `17.0.10.880768217-release-arm64-v8a`。
 
-# [1.5.0](https://github.com/jasonwu1994/Gboard-patches/compare/v1.4.0...v1.5.0) (2026-05-19)
+## [1.5.0](https://github.com/jasonwu1994/Gboard-patches/compare/v1.4.0...v1.5.0) (2026-05-19)
 
 ### ✨ New Features
 
@@ -152,7 +152,7 @@
 
 * **Gboard:** 支援官方 Gboard `17.0.10.880768217-release-arm64-v8a`。
 
-# [1.5.0-dev.3](https://github.com/jasonwu1994/Gboard-patches/compare/v1.4.0...v1.5.0-dev.3) (2026-05-19)
+## [1.5.0-dev.3](https://github.com/jasonwu1994/Gboard-patches/compare/v1.4.0...v1.5.0-dev.3) (2026-05-19)
 
 ### ✨ New Features
 
@@ -174,7 +174,7 @@
 * **Gboard:** 新增 `Grammar Checker` 與 `Inline Suggestions`，可啟用 `修正和建議 > 文法檢查` 與 `修正和建議 > 智慧撰寫`。
 * **Gboard:** 新增 `Key Shape Selection`，可在 `主題詳情 > 按鍵形狀` 啟用圓角按鍵。
 
-# [1.4.0](https://github.com/jasonwu1994/Gboard-patches/compare/v1.3.1...v1.4.0) (2026-04-13)
+## [1.4.0](https://github.com/jasonwu1994/Gboard-patches/compare/v1.3.1...v1.4.0) (2026-04-13)
 
 ### ✨ New Features
 
@@ -216,7 +216,7 @@
 
 * **Gboard:** 支援官方 Gboard `17.0.10.880768217-release-arm64-v8a`。
 
-# [1.3.0](https://github.com/jasonwu1994/Gboard-patches/compare/v1.2.0...v1.3.0) (2026-04-10)
+## [1.3.0](https://github.com/jasonwu1994/Gboard-patches/compare/v1.2.0...v1.3.0) (2026-04-10)
 
 ### ✨ New Features
 
@@ -236,7 +236,7 @@
 
 * **Gboard:** 支援官方 Gboard `17.0.10.880768217-release-arm64-v8a`。
 
-# [1.2.0](https://github.com/jasonwu1994/Gboard-patches/compare/v1.1.0...v1.2.0) (2026-04-08)
+## [1.2.0](https://github.com/jasonwu1994/Gboard-patches/compare/v1.1.0...v1.2.0) (2026-04-08)
 
 ### ✨ New Features
 
@@ -256,7 +256,7 @@
 
 * **Gboard:** 支援官方 Gboard `17.0.10.880768217-release-arm64-v8a`。
 
-# [1.1.0](https://github.com/jasonwu1994/Gboard-patches/compare/v1.0.0...v1.1.0) (2026-04-07)
+## [1.1.0](https://github.com/jasonwu1994/Gboard-patches/compare/v1.0.0...v1.1.0) (2026-04-07)
 
 ### ✨ New Features
 
