@@ -1,64 +1,69 @@
-package dev.jason.gboardpatches.extension.clipboard;
+package dev.jason.gboardpatches.extension.symbolfooter;
 
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
+import android.content.pm.PackageManager;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import dev.jason.gboardpatches.extension.settings.GboardPatchesSettingsContract;
-import dev.jason.gboardpatches.extension.webclipboard.WebClipboardPreferences;
 
-public final class GboardWebClipboardSettingsFeatureTest {
+public final class GboardSymbolFooterOrderSettingsFeatureTest {
     @Test
-    public void webServerPortRemainsEditableWhenWebClipboardIsDisabled() {
-        InMemorySharedPreferences preferences = new InMemorySharedPreferences();
-        WebClipboardPreferences.ensureDefaults(preferences);
-        WebClipboardPreferences.setEnabled(preferences, false);
-        CapturingHost host = new CapturingHost(preferences);
+    public void screenUsesStableTraditionalChineseLsposedCopy() {
+        Locale originalLocale = Locale.getDefault();
+        Locale.setDefault(Locale.forLanguageTag("zh-Hant-TW"));
+        try {
+            InMemorySharedPreferences preferences = new InMemorySharedPreferences();
+            GboardSymbolFooterOrderSettings.ensureDefaults(preferences);
+            CapturingHost host = new CapturingHost(preferences);
 
-        GboardPatchesSettingsContract.Screen screen =
-                new GboardWebClipboardSettingsFeature().buildScreen(host);
+            GboardSymbolFooterOrderSettingsFeature feature =
+                    new GboardSymbolFooterOrderSettingsFeature(null);
 
-        GboardPatchesSettingsContract.SelectorRow portRow =
-                findSelectorRow(screen, "Web server port");
+            Assert.assertEquals("表情符號、貼圖與 GIF 分頁順序", feature.getEntryTitle());
+            Assert.assertEquals(
+                    "重新排序 Gboard「表情符號、貼圖與 GIF」面板底部的分頁。",
+                    feature.getEntrySummary());
 
-        Assert.assertTrue("port row should remain editable when feature is off",
-                portRow.isEnabled());
-    }
+            GboardPatchesSettingsContract.Screen screen = feature.buildScreen(host);
 
-    @Test
-    public void headerCarriesTileRecommendationAndEnableRowDoesNotRepeatIt() {
-        InMemorySharedPreferences preferences = new InMemorySharedPreferences();
-        WebClipboardPreferences.ensureDefaults(preferences);
-        CapturingHost host = new CapturingHost(preferences);
-
-        GboardPatchesSettingsContract.Screen screen =
-                new GboardWebClipboardSettingsFeature().buildScreen(host);
-
-        Assert.assertTrue(screen.getHeaderSummary().contains("Quick Settings Tile"));
-        Assert.assertTrue(screen.getHeaderSummary().contains("Recommended"));
-        Assert.assertEquals("",
-                ((GboardPatchesSettingsContract.ToggleRow) screen.getRows().get(0)).getSummary());
-    }
-
-    private static GboardPatchesSettingsContract.SelectorRow findSelectorRow(
-            GboardPatchesSettingsContract.Screen screen,
-            String titlePrefix) {
-        for (GboardPatchesSettingsContract.Row row : screen.getRows()) {
-            if (row instanceof GboardPatchesSettingsContract.SelectorRow selectorRow
-                    && row.getTitle().toString().startsWith(titlePrefix)) {
-                return selectorRow;
-            }
+            Assert.assertEquals(
+                    Arrays.asList("目前設定", "行為", "進階"),
+                    sectionTitles(screen.getSections()));
+            Assert.assertEquals("DetailRow",
+                    screen.getSections().get(0).getItems().get(0).getClass().getSimpleName());
+            Assert.assertEquals("CommandRow",
+                    screen.getSections().get(1).getItems().get(0).getClass().getSimpleName());
+            Assert.assertEquals("DangerRow",
+                    screen.getSections().get(2).getItems().get(0).getClass().getSimpleName());
+            Assert.assertEquals(
+                    "目前順序",
+                    screen.getSections().get(0).getItems().get(0).getTitle().toString());
+            Assert.assertTrue(
+                    screen.getSections().get(0).getItems().get(0).getSummary().contains("貼圖"));
+        } finally {
+            Locale.setDefault(originalLocale);
         }
-        throw new AssertionError("Missing selector row with title prefix: " + titlePrefix);
+    }
+
+    private static List<String> sectionTitles(List<GboardPatchesSettingsContract.Section> sections) {
+        List<String> titles = new ArrayList<String>();
+        for (GboardPatchesSettingsContract.Section section : sections) {
+            titles.add(section.getTitle());
+        }
+        return titles;
     }
 
     private static final class CapturingHost implements GboardPatchesSettingsContract.Host {
@@ -79,8 +84,13 @@ public final class GboardWebClipboardSettingsFeatureTest {
                 }
 
                 @Override
-                public Resources getResources() {
-                    return Resources.getSystem();
+                public PackageManager getPackageManager() {
+                    return null;
+                }
+
+                @Override
+                public String getPackageName() {
+                    return "dev.jason.gboardpatches.test";
                 }
 
                 @Override
@@ -125,11 +135,11 @@ public final class GboardWebClipboardSettingsFeatureTest {
     }
 
     private static final class InMemorySharedPreferences implements SharedPreferences {
-        private final Map<String, Object> values = new HashMap<>();
+        private final Map<String, Object> values = new HashMap<String, Object>();
 
         @Override
         public Map<String, ?> getAll() {
-            return Collections.unmodifiableMap(new HashMap<>(values));
+            return Collections.unmodifiableMap(new HashMap<String, Object>(values));
         }
 
         @Override
@@ -177,7 +187,7 @@ public final class GboardWebClipboardSettingsFeatureTest {
         @Override
         public Editor edit() {
             return new Editor() {
-                private final Map<String, Object> pending = new HashMap<>();
+                private final Map<String, Object> pending = new HashMap<String, Object>();
                 private boolean clearRequested;
 
                 @Override

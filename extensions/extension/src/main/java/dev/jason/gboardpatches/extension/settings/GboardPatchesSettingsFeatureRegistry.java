@@ -20,7 +20,7 @@ public final class GboardPatchesSettingsFeatureRegistry {
     public static List<GboardPatchesSettingsContract.Feature> features(Context context) {
         List<GboardPatchesSettingsContract.Feature> features =
                 new ArrayList<GboardPatchesSettingsContract.Feature>();
-        addIfAvailable(context, features, new GboardKeyboardSettingsGroupFeature());
+        addIfAvailable(context, features, new GboardKeyboardSettingsGroupFeature(context));
         addIfAvailable(context, features, new GboardClipboardSettingsFeature());
         addIfAvailable(context, features, new GboardSettingsHomepageSettingsFeature());
         return Collections.unmodifiableList(features);

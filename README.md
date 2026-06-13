@@ -50,6 +50,18 @@ Gboard Patches is a public Morphe source for a curated set of Gboard enhancement
 </details>
 
 <details>
+  <summary><code>Web Clipboard</code></summary>
+
+  Hosts a phone-powered Web Clipboard portal that lets desktop browsers sync with Gboard over the same LAN, with a pairing code gate and an optional Quick Settings Tile.
+
+  Preview:
+
+  <img alt="Web Clipboard pairing gate" src="docs/assets/features/web-clipboard/01-pairing-gate.png" width="720">
+
+  <img alt="Web Clipboard conversation view" src="docs/assets/features/web-clipboard/02-conversation-view.png" width="720">
+</details>
+
+<details>
   <summary><code>Clipboard Entity Extraction</code></summary>
 
   Enables Clipboard settings that show information extracted from recently copied text, such as addresses, phone numbers, and similar items.

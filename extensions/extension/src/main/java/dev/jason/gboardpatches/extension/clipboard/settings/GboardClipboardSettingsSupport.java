@@ -1,6 +1,10 @@
 package dev.jason.gboardpatches.extension.clipboard;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+
+import dev.jason.gboardpatches.extension.R;
+import dev.jason.gboardpatches.extension.settings.GboardSettingsText;
 
 final class GboardClipboardSettingsSupport {
     private GboardClipboardSettingsSupport() {
@@ -18,11 +22,28 @@ final class GboardClipboardSettingsSupport {
         return defaultValue;
     }
 
-    static String formatCustomMinutesLabel(int minutes) {
-        return "Custom (" + minutes + (minutes == 1 ? " minute" : " minutes") + ")";
+    static String formatCustomMinutesLabel(Context context, int minutes) {
+        String minutesLabel = GboardSettingsText.quantity(
+                context,
+                R.plurals.gboard_patches_minutes,
+                minutes,
+                "%d minute",
+                "%d minutes");
+        String normalizedMinutesLabel =
+                minutesLabel.replace(Integer.toString(minutes), "").trim();
+        return GboardSettingsText.get(
+                context,
+                R.string.gboard_patches_custom_minutes_value,
+                "Custom (%1$d %2$s)",
+                minutes,
+                normalizedMinutesLabel);
     }
 
-    static String formatCustomCountLabel(int count) {
-        return "Custom (" + count + ")";
+    static String formatCustomCountLabel(Context context, int count) {
+        return GboardSettingsText.get(
+                context,
+                R.string.gboard_patches_custom_count_value,
+                "Custom (%1$d)",
+                count);
     }
 }

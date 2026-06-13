@@ -1,7 +1,7 @@
 {
-    "created_at":  "2026-06-09T09:28:16",
-    "description":  "## Feature\n\nAdded **Web Clipboard**.\n\nOnce enabled, it allows clipboard content to be synced between desktop browsers on the same local network and a patched Gboard instance, with support for:\n\n- Sending text from the browser to the phone\n- Syncing the phone clipboard to the browser\n- 4-digit pairing code verification\n- Quick Settings toggle\n- Built-in Web UI bundled directly with the patch\n\n## 功能\n\n新增 **Web Clipboard** 功能。\n\n啟用後，可以讓同一個區域網路中的桌面瀏覽器與已套用 patch 的 Gboard 之間同步剪貼簿內容，支援：\n\n- 瀏覽器傳送文字到手機\n- 手機剪貼簿同步到瀏覽器\n- 4 碼配對碼驗證\n- 快速設定開關\n- 內建 Web UI，直接隨 patch 一起提供",
-    "download_url":  "https://github.com/jasonwu1994/Gboard-patches/releases/download/v1.8.0-dev.1/patches-1.8.0-dev.1.mpp",
+    "created_at":  "2026-06-13T01:26:10",
+    "description":  "## Features\n\n### English Globe Key Ignore Delay\n\n- Added a new \"English Globe Key Ignore Delay\" setting\n- Lets you override the delay during which the globe key cannot switch languages immediately after typing letters on the English keyboard\n- The stock default value is `500ms`\n- The configurable range is now `0-1000ms`\n\nIf you want to switch languages faster after typing on the English keyboard, you can now reduce the delay. If you want to remove the wait entirely, you can set it directly to `0ms`.\n\n## Improvements\n\n### Settings Page Refactor\n\n- Redesigned the overall structure of the Patches settings page to make feature grouping clearer\n- Improved multilingual copy and settings page details for a more complete overall experience\n\n## 功能\n\n### 新增：英文地球鍵忽略時間\n\n- 新增「英文地球鍵忽略時間」設定\n- 可覆寫英文鍵盤在輸入字母後，地球鍵暫時不能立刻切換語言的延遲時間\n- 原始預設值為 `500ms`\n- 現在可自訂範圍為 `0-1000ms`\n\n如果你希望英文輸入後可以更快切換語言，現在可以把延遲調低；如果想完全取消這段等待，也可以直接設成 `0ms`。\n\n## 改進\n\n### 設定頁重構\n\n- 重新設計 Patches 設定頁的整體結構，讓功能分組更清楚\n- 改善多語系文案與設定頁細節，讓整體使用體驗更完整\n",
+    "download_url":  "https://github.com/jasonwu1994/Gboard-patches/releases/download/v1.9.0-dev.1/patches-1.9.0-dev.1.mpp",
     "signature_download_url":  "",
-    "version":  "1.8.0-dev.1"
+    "version":  "1.9.0-dev.1"
 }

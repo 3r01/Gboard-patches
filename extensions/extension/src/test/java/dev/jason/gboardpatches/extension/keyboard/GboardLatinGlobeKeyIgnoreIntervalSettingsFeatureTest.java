@@ -1,64 +1,60 @@
-package dev.jason.gboardpatches.extension.clipboard;
+package dev.jason.gboardpatches.extension.keyboard;
 
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import dev.jason.gboardpatches.extension.R;
 import dev.jason.gboardpatches.extension.settings.GboardPatchesSettingsContract;
-import dev.jason.gboardpatches.extension.webclipboard.WebClipboardPreferences;
 
-public final class GboardWebClipboardSettingsFeatureTest {
+public final class GboardLatinGlobeKeyIgnoreIntervalSettingsFeatureTest {
     @Test
-    public void webServerPortRemainsEditableWhenWebClipboardIsDisabled() {
+    public void intervalPreviewUsesPatchedAssetVideos() throws Exception {
         InMemorySharedPreferences preferences = new InMemorySharedPreferences();
-        WebClipboardPreferences.ensureDefaults(preferences);
-        WebClipboardPreferences.setEnabled(preferences, false);
+        GboardLatinGlobeKeyIgnoreIntervalSettings.ensureDefaults(preferences);
         CapturingHost host = new CapturingHost(preferences);
 
         GboardPatchesSettingsContract.Screen screen =
-                new GboardWebClipboardSettingsFeature().buildScreen(host);
+                new GboardLatinGlobeKeyIgnoreIntervalSettingsFeature(null).buildScreen(host);
 
-        GboardPatchesSettingsContract.SelectorRow portRow =
-                findSelectorRow(screen, "Web server port");
-
-        Assert.assertTrue("port row should remain editable when feature is off",
-                portRow.isEnabled());
-    }
-
-    @Test
-    public void headerCarriesTileRecommendationAndEnableRowDoesNotRepeatIt() {
-        InMemorySharedPreferences preferences = new InMemorySharedPreferences();
-        WebClipboardPreferences.ensureDefaults(preferences);
-        CapturingHost host = new CapturingHost(preferences);
-
-        GboardPatchesSettingsContract.Screen screen =
-                new GboardWebClipboardSettingsFeature().buildScreen(host);
-
-        Assert.assertTrue(screen.getHeaderSummary().contains("Quick Settings Tile"));
-        Assert.assertTrue(screen.getHeaderSummary().contains("Recommended"));
-        Assert.assertEquals("",
-                ((GboardPatchesSettingsContract.ToggleRow) screen.getRows().get(0)).getSummary());
-    }
-
-    private static GboardPatchesSettingsContract.SelectorRow findSelectorRow(
-            GboardPatchesSettingsContract.Screen screen,
-            String titlePrefix) {
+        GboardPatchesSettingsContract.SelectorRow intervalRow = null;
         for (GboardPatchesSettingsContract.Row row : screen.getRows()) {
             if (row instanceof GboardPatchesSettingsContract.SelectorRow selectorRow
-                    && row.getTitle().toString().startsWith(titlePrefix)) {
-                return selectorRow;
+                    && "Ignore delay".contentEquals(selectorRow.getTitle())) {
+                intervalRow = selectorRow;
+                break;
             }
         }
-        throw new AssertionError("Missing selector row with title prefix: " + titlePrefix);
+        Assert.assertNotNull("Missing ignore delay row", intervalRow);
+
+        GboardPatchesSettingsContract.PreviewSpec previewSpec = intervalRow.getPreviewSpec();
+        Assert.assertNotNull("Missing interval preview", previewSpec);
+
+        List<GboardPatchesSettingsContract.PreviewMedia> mediaItems = previewSpec.getMediaItems();
+        Assert.assertEquals(2, mediaItems.size());
+        Assert.assertEquals(
+                "settings-previews/keyboard/gboard_latin_globe_key_ignore_interval_default.mp4",
+                assetPath(mediaItems.get(0)));
+        Assert.assertEquals(
+                "settings-previews/keyboard/gboard_latin_globe_key_ignore_interval_patched.mp4",
+                assetPath(mediaItems.get(1)));
+    }
+
+    private static String assetPath(GboardPatchesSettingsContract.PreviewMedia previewMedia)
+            throws Exception {
+        Method method = previewMedia.getClass().getMethod("getAssetPath");
+        Object value = method.invoke(previewMedia);
+        return value == null ? null : value.toString();
     }
 
     private static final class CapturingHost implements GboardPatchesSettingsContract.Host {
@@ -79,8 +75,8 @@ public final class GboardWebClipboardSettingsFeatureTest {
                 }
 
                 @Override
-                public Resources getResources() {
-                    return Resources.getSystem();
+                public String getPackageName() {
+                    return "dev.jason.gboardpatches.test";
                 }
 
                 @Override
@@ -125,11 +121,11 @@ public final class GboardWebClipboardSettingsFeatureTest {
     }
 
     private static final class InMemorySharedPreferences implements SharedPreferences {
-        private final Map<String, Object> values = new HashMap<>();
+        private final Map<String, Object> values = new HashMap<String, Object>();
 
         @Override
         public Map<String, ?> getAll() {
-            return Collections.unmodifiableMap(new HashMap<>(values));
+            return Collections.unmodifiableMap(new HashMap<String, Object>(values));
         }
 
         @Override
@@ -177,8 +173,7 @@ public final class GboardWebClipboardSettingsFeatureTest {
         @Override
         public Editor edit() {
             return new Editor() {
-                private final Map<String, Object> pending = new HashMap<>();
-                private boolean clearRequested;
+                private final Map<String, Object> pending = new HashMap<String, Object>();
 
                 @Override
                 public Editor putString(String key, String value) {
@@ -224,7 +219,7 @@ public final class GboardWebClipboardSettingsFeatureTest {
 
                 @Override
                 public Editor clear() {
-                    clearRequested = true;
+                    values.clear();
                     pending.clear();
                     return this;
                 }
@@ -237,9 +232,6 @@ public final class GboardWebClipboardSettingsFeatureTest {
 
                 @Override
                 public void apply() {
-                    if (clearRequested) {
-                        values.clear();
-                    }
                     for (Map.Entry<String, Object> entry : pending.entrySet()) {
                         if (entry.getValue() == null) {
                             values.remove(entry.getKey());

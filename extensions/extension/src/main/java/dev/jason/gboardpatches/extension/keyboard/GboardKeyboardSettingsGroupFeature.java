@@ -4,31 +4,37 @@ import android.content.Context;
 
 import java.util.Arrays;
 
+import dev.jason.gboardpatches.extension.R;
 import dev.jason.gboardpatches.extension.settings.GboardFeatureGroup;
 import dev.jason.gboardpatches.extension.settings.GboardPatchesSettingsContract;
+import dev.jason.gboardpatches.extension.settings.GboardSettingsText;
 import dev.jason.gboardpatches.extension.symbolfooter.GboardSymbolFooterOrderSettingsFeature;
 
 public final class GboardKeyboardSettingsGroupFeature
         implements GboardPatchesSettingsContract.Feature {
-    private static final String HEADER_BADGE = "Gboard";
-    private static final String ENTRY_TITLE = "Keyboard";
-    private static final String ENTRY_SUMMARY =
-            "Keyboard-related patch settings.";
-    private static final String HEADER_SUMMARY =
-            "Keyboard-level settings for the patches included in this build.";
-    private static final String EMPTY_TITLE = "No keyboard settings available";
-    private static final String EMPTY_SUMMARY =
-            "This build does not include any keyboard settings features.";
+    private final GboardFeatureGroup delegate;
 
-    private final GboardFeatureGroup delegate = new GboardFeatureGroup(
-            ENTRY_TITLE,
-            ENTRY_SUMMARY,
-            HEADER_BADGE,
-            HEADER_SUMMARY,
-            EMPTY_TITLE,
-            EMPTY_SUMMARY,
-            Arrays.<GboardPatchesSettingsContract.Feature>asList(
-                    new GboardSymbolFooterOrderSettingsFeature()));
+    public GboardKeyboardSettingsGroupFeature(Context context) {
+        delegate = new GboardFeatureGroup(
+                GboardSettingsText.get(context, R.string.gboard_patches_group_keyboard_title,
+                        "Keyboard"),
+                GboardSettingsText.get(context, R.string.gboard_patches_group_keyboard_summary,
+                        "Keyboard-related patch settings."),
+                GboardSettingsText.get(context, R.string.gboard_patches_header_badge,
+                        "Gboard"),
+                GboardSettingsText.get(context,
+                        R.string.gboard_patches_group_keyboard_header_summary,
+                        "Keyboard-level settings for the patches included in this build."),
+                GboardSettingsText.get(context,
+                        R.string.gboard_patches_group_keyboard_empty_title,
+                        "No keyboard settings available"),
+                GboardSettingsText.get(context,
+                        R.string.gboard_patches_group_keyboard_empty_summary,
+                        "This build does not include any keyboard settings features."),
+                Arrays.asList(
+                        new GboardLatinGlobeKeyIgnoreIntervalSettingsFeature(context),
+                        new GboardSymbolFooterOrderSettingsFeature(context)));
+    }
 
     @Override
     public String getEntryTitle() {

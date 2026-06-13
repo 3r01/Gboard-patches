@@ -8,62 +8,119 @@ import android.content.res.Resources;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import dev.jason.gboardpatches.extension.settings.GboardPatchesSettingsContract;
 import dev.jason.gboardpatches.extension.webclipboard.WebClipboardPreferences;
 
-public final class GboardWebClipboardSettingsFeatureTest {
+public final class GboardClipboardSettingsFeatureTest {
     @Test
-    public void webServerPortRemainsEditableWhenWebClipboardIsDisabled() {
+    public void clipboardRootScreenUsesLsposedSectionLayout() {
         InMemorySharedPreferences preferences = new InMemorySharedPreferences();
-        WebClipboardPreferences.ensureDefaults(preferences);
-        WebClipboardPreferences.setEnabled(preferences, false);
-        CapturingHost host = new CapturingHost(preferences);
-
-        GboardPatchesSettingsContract.Screen screen =
-                new GboardWebClipboardSettingsFeature().buildScreen(host);
-
-        GboardPatchesSettingsContract.SelectorRow portRow =
-                findSelectorRow(screen, "Web server port");
-
-        Assert.assertTrue("port row should remain editable when feature is off",
-                portRow.isEnabled());
-    }
-
-    @Test
-    public void headerCarriesTileRecommendationAndEnableRowDoesNotRepeatIt() {
-        InMemorySharedPreferences preferences = new InMemorySharedPreferences();
+        GboardClipboardSettings.ensureDefaults(preferences);
         WebClipboardPreferences.ensureDefaults(preferences);
         CapturingHost host = new CapturingHost(preferences);
 
         GboardPatchesSettingsContract.Screen screen =
-                new GboardWebClipboardSettingsFeature().buildScreen(host);
+                new GboardClipboardSettingsFeature().buildScreen(host);
 
-        Assert.assertTrue(screen.getHeaderSummary().contains("Quick Settings Tile"));
-        Assert.assertTrue(screen.getHeaderSummary().contains("Recommended"));
-        Assert.assertEquals("",
-                ((GboardPatchesSettingsContract.ToggleRow) screen.getRows().get(0)).getSummary());
+        List<GboardPatchesSettingsContract.Section> sections = screen.getSections();
+        Assert.assertEquals(
+                Arrays.asList("General", "Metadata", "Layout", "Retention", "Extensions"),
+                sectionTitles(sections));
+        Assert.assertEquals("ToggleRow", sections.get(0).getItems().get(0).getClass().getSimpleName());
+        Assert.assertEquals(
+                "SelectorRow",
+                findRow(screen, "Clipboard columns").getClass().getSimpleName());
+        Assert.assertEquals(
+                "NavigationRow",
+                sections.get(4).getItems().get(0).getClass().getSimpleName());
     }
 
-    private static GboardPatchesSettingsContract.SelectorRow findSelectorRow(
+    @Test
+    public void webClipboardSubpageUsesLsposedSectionsAndConnectedClientsNavigation() {
+        InMemorySharedPreferences preferences = new InMemorySharedPreferences();
+        WebClipboardPreferences.ensureDefaults(preferences);
+        CapturingHost host = new CapturingHost(preferences);
+
+        GboardPatchesSettingsContract.Screen screen =
+                new GboardClipboardSettingsFeature()
+                        .getWebClipboardFeature()
+                        .buildScreen(host);
+
+        List<GboardPatchesSettingsContract.Section> sections = screen.getSections();
+        Assert.assertEquals(
+                Arrays.asList("General", "Security", "Network", "Connected clients"),
+                sectionTitles(sections));
+        Assert.assertEquals("ToggleRow", sections.get(0).getItems().get(0).getClass().getSimpleName());
+        Assert.assertEquals("SelectorRow", findRow(screen, "Pairing code").getClass().getSimpleName());
+        Assert.assertEquals(
+                "NavigationRow",
+                sections.get(3).getItems().get(0).getClass().getSimpleName());
+    }
+
+    @Test
+    public void connectedClientsEmptyStateUsesStatusBlockInsteadOfInlineInfoRow() {
+        InMemorySharedPreferences preferences = new InMemorySharedPreferences();
+        WebClipboardPreferences.ensureDefaults(preferences);
+        CapturingHost host = new CapturingHost(preferences);
+
+        GboardPatchesSettingsContract.Screen webClipboardScreen =
+                new GboardClipboardSettingsFeature()
+                        .getWebClipboardFeature()
+                        .buildScreen(host);
+
+        invokeAction(findRow(webClipboardScreen, "Connected clients"));
+
+        Assert.assertNotNull(host.openedFeature);
+        GboardPatchesSettingsContract.Screen clientsScreen =
+                host.openedFeature.buildScreen(host);
+        Assert.assertEquals(1, clientsScreen.getStatusBlocks().size());
+        Assert.assertEquals("Connected clients: 0", clientsScreen.getStatusBlocks().get(0).getTitle());
+        Assert.assertEquals(0, clientsScreen.getSections().size());
+    }
+
+    private static List<String> sectionTitles(List<GboardPatchesSettingsContract.Section> sections) {
+        List<String> titles = new ArrayList<>();
+        for (GboardPatchesSettingsContract.Section section : sections) {
+            titles.add(section.getTitle());
+        }
+        return titles;
+    }
+
+    private static GboardPatchesSettingsContract.Row findRow(
             GboardPatchesSettingsContract.Screen screen,
             String titlePrefix) {
         for (GboardPatchesSettingsContract.Row row : screen.getRows()) {
-            if (row instanceof GboardPatchesSettingsContract.SelectorRow selectorRow
-                    && row.getTitle().toString().startsWith(titlePrefix)) {
-                return selectorRow;
+            if (row.getTitle().toString().startsWith(titlePrefix)) {
+                return row;
             }
         }
-        throw new AssertionError("Missing selector row with title prefix: " + titlePrefix);
+        throw new AssertionError("Missing row with title prefix: " + titlePrefix);
+    }
+
+    private static void invokeAction(GboardPatchesSettingsContract.Row row) {
+        if (row instanceof GboardPatchesSettingsContract.NavigationRow navigationRow) {
+            navigationRow.getAction().run();
+            return;
+        }
+        if (row instanceof GboardPatchesSettingsContract.ActionRow actionRow) {
+            actionRow.getAction().run();
+            return;
+        }
+        throw new AssertionError("Row is not actionable: " + row.getClass().getSimpleName());
     }
 
     private static final class CapturingHost implements GboardPatchesSettingsContract.Host {
         private final SharedPreferences preferences;
         private final Context context;
+        private GboardPatchesSettingsContract.Feature openedFeature;
 
         private CapturingHost(SharedPreferences preferences) {
             this.preferences = preferences;
@@ -84,6 +141,11 @@ public final class GboardWebClipboardSettingsFeatureTest {
                 }
 
                 @Override
+                public String getPackageName() {
+                    return "dev.jason.gboardpatches.test";
+                }
+
+                @Override
                 public ClassLoader getClassLoader() {
                     return CapturingHost.class.getClassLoader();
                 }
@@ -101,6 +163,7 @@ public final class GboardWebClipboardSettingsFeatureTest {
 
         @Override
         public void openFeature(GboardPatchesSettingsContract.Feature feature) {
+            openedFeature = feature;
         }
 
         @Override

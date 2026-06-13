@@ -29,6 +29,8 @@ import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardFeatur
 import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardGrammarCheckerFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardInlineSuggestionsFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardKeyShapeSelectionFeatureMarkerPatch
+import dev.jason.gboardpatches.patches.gboard.features.latinglobe.gboardLatinGlobeKeyIgnoreIntervalBytecodePatch
+import dev.jason.gboardpatches.patches.gboard.features.latinglobe.gboardLatinGlobeKeyIgnoreIntervalFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.packagerename.gboardPackageRenameResourcePatch
 import dev.jason.gboardpatches.patches.gboard.features.settingshomepage.gboardSettingsHomepageBytecodePatch
 import dev.jason.gboardpatches.patches.gboard.features.settingshomepage.gboardSettingsHomepageFeatureMarkerPatch
@@ -276,6 +278,21 @@ val gboardSettingsHomepagePatch = resourcePatch(
         gboardPatchesSettingsPatch,
         gboardSettingsHomepageFeatureMarkerPatch,
         gboardSettingsHomepageBytecodePatch
+    )
+}
+
+@Suppress("unused")
+val gboardLatinGlobeKeyIgnoreIntervalPatch = resourcePatch(
+    name = "Latin Globe Key Ignore Interval",
+    description = "新增英文鍵盤地球鍵忽略時間覆寫，可獨立控制輸入後切語言延遲\nAdd an independent English globe key ignore interval override for post-typing language-switch delay.",
+    default = true
+) {
+    compatibleWith(COMPATIBILITY_GBOARD)
+
+    dependsOn(
+        gboardPatchesSettingsPatch,
+        gboardLatinGlobeKeyIgnoreIntervalFeatureMarkerPatch,
+        gboardLatinGlobeKeyIgnoreIntervalBytecodePatch
     )
 }
 

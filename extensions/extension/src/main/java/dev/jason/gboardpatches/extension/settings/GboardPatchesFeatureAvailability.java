@@ -27,6 +27,8 @@ public final class GboardPatchesFeatureAvailability {
             "dev.jason.gboardpatches.feature.settings_homepage";
     public static final String FEATURE_SYMBOL_FOOTER_ORDER =
             "dev.jason.gboardpatches.feature.symbol_footer_order";
+    public static final String FEATURE_LATIN_GLOBE_KEY_IGNORE_INTERVAL =
+            "dev.jason.gboardpatches.feature.latin_globe_key_ignore_interval";
 
     private static final String TAG = "GboardPatches";
 

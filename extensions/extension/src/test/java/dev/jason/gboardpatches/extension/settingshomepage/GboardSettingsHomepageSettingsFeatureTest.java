@@ -1,4 +1,4 @@
-package dev.jason.gboardpatches.extension.clipboard;
+package dev.jason.gboardpatches.extension.settingshomepage;
 
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -8,57 +8,49 @@ import android.content.res.Resources;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import dev.jason.gboardpatches.extension.settings.GboardPatchesSettingsContract;
-import dev.jason.gboardpatches.extension.webclipboard.WebClipboardPreferences;
 
-public final class GboardWebClipboardSettingsFeatureTest {
+public final class GboardSettingsHomepageSettingsFeatureTest {
     @Test
-    public void webServerPortRemainsEditableWhenWebClipboardIsDisabled() {
+    public void forceNewModeUsesLsposedSectionsAndStatusBlocks() {
         InMemorySharedPreferences preferences = new InMemorySharedPreferences();
-        WebClipboardPreferences.ensureDefaults(preferences);
-        WebClipboardPreferences.setEnabled(preferences, false);
+        preferences.edit()
+                .putString(
+                        GboardSettingsHomepageSettings.PREF_KEY_MODE,
+                        GboardSettingsHomepageSettings.MODE_FORCE_NEW)
+                .apply();
         CapturingHost host = new CapturingHost(preferences);
 
         GboardPatchesSettingsContract.Screen screen =
-                new GboardWebClipboardSettingsFeature().buildScreen(host);
+                new GboardSettingsHomepageSettingsFeature().buildScreen(host);
 
-        GboardPatchesSettingsContract.SelectorRow portRow =
-                findSelectorRow(screen, "Web server port");
-
-        Assert.assertTrue("port row should remain editable when feature is off",
-                portRow.isEnabled());
+        Assert.assertEquals(
+                Arrays.asList("Style", "Current state"),
+                sectionTitles(screen.getSections()));
+        Assert.assertEquals("SelectorRow",
+                screen.getSections().get(0).getItems().get(0).getClass().getSimpleName());
+        Assert.assertEquals("DetailRow",
+                screen.getSections().get(1).getItems().get(0).getClass().getSimpleName());
+        Assert.assertEquals(1, screen.getStatusBlocks().size());
+        Assert.assertEquals(
+                "Compatibility safeguard",
+                screen.getStatusBlocks().get(0).getTitle());
     }
 
-    @Test
-    public void headerCarriesTileRecommendationAndEnableRowDoesNotRepeatIt() {
-        InMemorySharedPreferences preferences = new InMemorySharedPreferences();
-        WebClipboardPreferences.ensureDefaults(preferences);
-        CapturingHost host = new CapturingHost(preferences);
-
-        GboardPatchesSettingsContract.Screen screen =
-                new GboardWebClipboardSettingsFeature().buildScreen(host);
-
-        Assert.assertTrue(screen.getHeaderSummary().contains("Quick Settings Tile"));
-        Assert.assertTrue(screen.getHeaderSummary().contains("Recommended"));
-        Assert.assertEquals("",
-                ((GboardPatchesSettingsContract.ToggleRow) screen.getRows().get(0)).getSummary());
-    }
-
-    private static GboardPatchesSettingsContract.SelectorRow findSelectorRow(
-            GboardPatchesSettingsContract.Screen screen,
-            String titlePrefix) {
-        for (GboardPatchesSettingsContract.Row row : screen.getRows()) {
-            if (row instanceof GboardPatchesSettingsContract.SelectorRow selectorRow
-                    && row.getTitle().toString().startsWith(titlePrefix)) {
-                return selectorRow;
-            }
+    private static List<String> sectionTitles(List<GboardPatchesSettingsContract.Section> sections) {
+        List<String> titles = new ArrayList<>();
+        for (GboardPatchesSettingsContract.Section section : sections) {
+            titles.add(section.getTitle());
         }
-        throw new AssertionError("Missing selector row with title prefix: " + titlePrefix);
+        return titles;
     }
 
     private static final class CapturingHost implements GboardPatchesSettingsContract.Host {

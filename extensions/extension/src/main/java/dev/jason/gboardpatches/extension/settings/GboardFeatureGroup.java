@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import dev.jason.gboardpatches.extension.R;
+
 public final class GboardFeatureGroup implements GboardPatchesSettingsContract.Feature {
     private static final String TAG = "GboardPatches";
 
@@ -55,28 +57,41 @@ public final class GboardFeatureGroup implements GboardPatchesSettingsContract.F
             GboardPatchesSettingsContract.Host host) {
         List<GboardPatchesSettingsContract.Feature> visibleChildren =
                 availableChildren(host.getContext());
-        List<GboardPatchesSettingsContract.Row> rows =
-                new ArrayList<GboardPatchesSettingsContract.Row>();
         if (visibleChildren.isEmpty()) {
-            rows.add(new GboardPatchesSettingsContract.InfoRow(
+            List<GboardPatchesSettingsContract.StatusBlock> statusBlocks =
+                    new ArrayList<GboardPatchesSettingsContract.StatusBlock>();
+            statusBlocks.add(new GboardPatchesSettingsContract.StatusBlock(
                     emptyTitle,
-                    emptySummary,
-                    false));
+                    emptySummary));
+            return new GboardPatchesSettingsContract.Screen(
+                    entryTitle,
+                    headerBadge,
+                    entryTitle,
+                    headerSummary,
+                    statusBlocks,
+                    Collections.emptyList());
         } else {
+            List<GboardPatchesSettingsContract.Row> rows =
+                    new ArrayList<GboardPatchesSettingsContract.Row>();
             for (GboardPatchesSettingsContract.Feature child : visibleChildren) {
-                rows.add(new GboardPatchesSettingsContract.ActionRow(
+                rows.add(new GboardPatchesSettingsContract.NavigationRow(
                         child.getEntryTitle(),
                         child.getEntrySummary(),
                         true,
-                        new OpenChildFeatureAction(host, child)));
+                        () -> host.openFeature(child)));
             }
+            return new GboardPatchesSettingsContract.Screen(
+                    entryTitle,
+                    headerBadge,
+                    entryTitle,
+                    headerSummary,
+                    Collections.emptyList(),
+                    Collections.singletonList(new GboardPatchesSettingsContract.Section(
+                            GboardSettingsText.get(host.getContext(),
+                                    R.string.gboard_patches_section_features,
+                                    "Features"),
+                            rows)));
         }
-        return new GboardPatchesSettingsContract.Screen(
-                entryTitle,
-                headerBadge,
-                entryTitle,
-                headerSummary,
-                rows);
     }
 
     private List<GboardPatchesSettingsContract.Feature> availableChildren(Context context) {
@@ -96,24 +111,5 @@ public final class GboardFeatureGroup implements GboardPatchesSettingsContract.F
             }
         }
         return visible;
-    }
-
-    private static final class OpenChildFeatureAction implements Runnable {
-        private final GboardPatchesSettingsContract.Host host;
-        private final GboardPatchesSettingsContract.Feature child;
-
-        OpenChildFeatureAction(GboardPatchesSettingsContract.Host host,
-                GboardPatchesSettingsContract.Feature child) {
-            this.host = host;
-            this.child = child;
-        }
-
-        @Override
-        public void run() {
-            if (host == null || child == null) {
-                return;
-            }
-            host.openFeature(child);
-        }
     }
 }
