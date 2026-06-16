@@ -11,6 +11,7 @@ import org.robolectric.shadows.ShadowSystemClock;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.time.Duration;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -74,6 +75,62 @@ public final class GboardAddSymbolsRuntimeTest {
         Assert.assertFalse(pendingStockEmoticonTabSwitchActiveSession().get());
     }
 
+    @Test
+    public void resolvesChineseLabelsOnlyForZhLocalesAndEnglishOtherwise() throws Exception {
+        Assert.assertEquals(
+                "常用",
+                localeAwareCategoryLabel(
+                        GboardAddSymbolsDataset.KEY_COMMON,
+                        Locale.forLanguageTag("zh-Hant-TW")));
+        Assert.assertEquals(
+                "Common",
+                localeAwareCategoryLabel(
+                        GboardAddSymbolsDataset.KEY_COMMON,
+                        Locale.US));
+        Assert.assertEquals(
+                "Common",
+                localeAwareCategoryLabel(
+                        GboardAddSymbolsDataset.KEY_COMMON,
+                        Locale.JAPAN));
+        Assert.assertEquals(
+                "Common",
+                localeAwareCategoryLabel(
+                        GboardAddSymbolsDataset.KEY_COMMON,
+                        null));
+    }
+
+    @Test
+    public void resolvesMultipleCategoryLabelsConsistently() throws Exception {
+        Assert.assertEquals(
+                "Typography",
+                localeAwareCategoryLabel(
+                        GboardAddSymbolsDataset.KEY_TYPOGRAPHY,
+                        Locale.CANADA_FRENCH));
+        Assert.assertEquals(
+                "箭頭",
+                localeAwareCategoryLabel(
+                        GboardAddSymbolsDataset.KEY_ARROWS,
+                        Locale.forLanguageTag("zh-TW")));
+        Assert.assertEquals(
+                "Currency",
+                localeAwareCategoryLabel(
+                        GboardAddSymbolsDataset.KEY_CURRENCY,
+                        Locale.KOREA));
+        Assert.assertEquals(
+                "Recents",
+                localeAwareCategoryLabel("RECENTS", Locale.GERMANY));
+    }
+
+    @Test
+    public void datasetDoesNotExposeLegacyCategoryLabelsConstant() throws Exception {
+        try {
+            GboardAddSymbolsDataset.class.getDeclaredField("CATEGORY_LABELS");
+            Assert.fail("Legacy CATEGORY_LABELS constant should be removed.");
+        } catch (NoSuchFieldException expected) {
+            // Expected.
+        }
+    }
+
     @SuppressWarnings("unchecked")
     private static Map<Object, Boolean> activeCustomEmoticonKeyboards() throws Exception {
         return (Map<Object, Boolean>) staticField("ACTIVE_CUSTOM_EMOTICON_KEYBOARDS").get(null);
@@ -127,5 +184,15 @@ public final class GboardAddSymbolsRuntimeTest {
         Method method = GboardAddSymbolsRuntime.class.getDeclaredMethod(methodName);
         method.setAccessible(true);
         return method;
+    }
+
+    private static String localeAwareCategoryLabel(String categoryKey, Locale locale)
+            throws Exception {
+        Method method = GboardAddSymbolsRuntime.class.getDeclaredMethod(
+                "resolveCustomEmoticonCategoryLabel",
+                String.class,
+                Locale.class);
+        method.setAccessible(true);
+        return (String) method.invoke(null, categoryKey, locale);
     }
 }
