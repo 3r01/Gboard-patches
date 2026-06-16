@@ -31,20 +31,6 @@ public final class GboardAddSymbolsDataset {
             KEY_CURRENCY
     };
 
-    public static final String[] CATEGORY_LABELS = {
-            "熱門",
-            "常用",
-            "排版",
-            "人物",
-            "動物",
-            "星號",
-            "箭頭",
-            "圖形",
-            "數學",
-            "語言",
-            "貨幣"
-    };
-
     private static final String[] POPULAR_SYMBOLS = splitSymbols(
             "ღ • ⁂ € ™ ↑ → ↓ ⇝ √ ∞ ░ ▲ ▶ ◀ ● ☀ ☁ ☂ ☃ ☄ ★ ☆ ☉ ☐ ☑ ☚ ☛ ☜ ☝ ☞ ☟ ☠ ☢ ☣ ☪ ☮ ☯ ☸ ☹ ☺ ☻ ☼ ☽ ☾ ♔ ♕ ♖ ♗ ♘ ♚ ♛ ♜ ♝ ♞ ♟ ♡ ♨ ♩ ♪ ♫ ♬ ✈ ✉ ✎ ✓ ✔ ✘ ✚ ✞ ✟ ✠ ✡ ✦ ✧ ✩ ✪ ✮ ✯ ✹ ✿ ❀ ❁ ❂ ❄ ❅ ❆ ❝ ❞ ❣ ❤ ❥ ❦ ➤"
     );

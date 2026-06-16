@@ -1,3 +1,25 @@
+## [1.9.1](https://github.com/jasonwu1994/Gboard-patches/compare/v1.9.0...v1.9.1) (2026-06-16)
+
+
+### ✨ New Features
+
+* **Gboard:** add English category labels to `Custom Symbols`, so category headers now show Chinese for Chinese locales and English everywhere else.
+
+### ✨ 新功能
+
+* **Gboard:** 為 `Custom Symbols` 新增英文分類標籤，讓分類 header 現在在中文語系顯示中文，其餘語系顯示英文。
+
+## [1.9.1-dev.1](https://github.com/jasonwu1994/Gboard-patches/compare/v1.9.0...v1.9.1-dev.1) (2026-06-16)
+
+
+### ✨ New Features
+
+* **Gboard:** add English category labels to `Custom Symbols`, so category headers now show Chinese for Chinese locales and English everywhere else.
+
+### ✨ 新功能
+
+* **Gboard:** 為 `Custom Symbols` 新增英文分類標籤，讓分類 header 現在在中文語系顯示中文，其餘語系顯示英文。
+
 ## [1.9.0](https://github.com/jasonwu1994/Gboard-patches/compare/v1.8.0...v1.9.0) (2026-06-13)
 
 ### ✨ New Features

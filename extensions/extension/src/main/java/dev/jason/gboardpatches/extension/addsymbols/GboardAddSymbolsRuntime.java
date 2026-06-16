@@ -1,6 +1,7 @@
 package dev.jason.gboardpatches.extension.addsymbols;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -37,7 +39,34 @@ public final class GboardAddSymbolsRuntime {
 
     private static final String CUSTOM_CATEGORY_RECENTS = "RECENTS";
     private static final String[] CUSTOM_EMOTICON_CATEGORY_KEYS = buildCustomCategoryKeys();
-    private static final String[] CUSTOM_EMOTICON_CATEGORY_LABELS = buildCustomCategoryLabels();
+    private static final String[] CUSTOM_EMOTICON_CATEGORY_LABELS_ZH = {
+            "最近",
+            "熱門",
+            "常用",
+            "排版",
+            "人物",
+            "動物",
+            "星號",
+            "箭頭",
+            "圖形",
+            "數學",
+            "語言",
+            "貨幣"
+    };
+    private static final String[] CUSTOM_EMOTICON_CATEGORY_LABELS_EN = {
+            "Recents",
+            "Popular",
+            "Common",
+            "Typography",
+            "People",
+            "Animals",
+            "Stars",
+            "Arrows",
+            "Shapes",
+            "Mathematics",
+            "Language",
+            "Currency"
+    };
 
     private static final String EMOTICON_EXTENSION_INTERFACE_CLASS =
             "com.google.android.apps.inputmethod.libs.expression.extension.IEmoticonExtension";
@@ -53,7 +82,7 @@ public final class GboardAddSymbolsRuntime {
     private static final String STOCK_EMOTICON_KEYBOARD_DATA = "emoticon";
     private static final String JASONDEV_SYMBOL_KEYBOARD_DATA = "jasondev_symbol";
 
-    private static final String CUSTOM_SYMBOL_RECENTS_PREF = "hexcrack_gboard_symbol_recents";
+    private static final String CUSTOM_SYMBOL_RECENTS_PREF = "gboardpatches_gboard_symbol_recents";
     private static final String CUSTOM_SYMBOL_RECENTS_KEY = "jasondev_symbol_recents";
     private static final String CUSTOM_SYMBOL_LAST_CATEGORY_KEY = "jasondev_symbol_last_category";
     private static final String CUSTOM_SYMBOL_RECENTS_DELIMITER = "\u0001";
@@ -1176,7 +1205,7 @@ public final class GboardAddSymbolsRuntime {
         }
         int selectedIndex = clampCustomEmoticonCategoryIndex(
                 resolveCustomEmoticonSelectedIndex(handles, receiver));
-        Object model = buildCustomEmoticonHeaderModel(handles, selectedIndex);
+        Object model = buildCustomEmoticonHeaderModel(handles, receiver, selectedIndex);
         handles.headerControllerSetModelMethod.invoke(headerController, model);
         syncCustomEmoticonHeaderSelection(handles, receiver, selectedIndex);
         logInfo("applyCustomEmoticonHeader: selectedIndex=" + selectedIndex
@@ -1299,13 +1328,15 @@ public final class GboardAddSymbolsRuntime {
         return 1;
     }
 
-    private static Object buildCustomEmoticonHeaderModel(Handles handles, int selectedIndex)
-            throws Throwable {
+    private static Object buildCustomEmoticonHeaderModel(
+            Handles handles,
+            Object receiver,
+            int selectedIndex) throws Throwable {
         Object modelBuilder = handles.headerModelBuilderFactoryMethod.invoke(null);
-        Object startItem = buildCustomEmoticonHeaderItem(handles, selectedIndex);
+        Object startItem = buildCustomEmoticonHeaderItem(handles, receiver, selectedIndex);
         handles.headerModelBuilderStartItemField.set(modelBuilder, startItem);
         for (int index = 0; index < CUSTOM_EMOTICON_CATEGORY_KEYS.length; index++) {
-            Object headerItem = buildCustomEmoticonHeaderItem(handles, index);
+            Object headerItem = buildCustomEmoticonHeaderItem(handles, receiver, index);
             handles.headerModelBuilderAddMiddleItemMethod.invoke(modelBuilder, headerItem);
         }
         Object selectedPosition = handles.headerSelectedPositionConstructor.newInstance(
@@ -1314,11 +1345,13 @@ public final class GboardAddSymbolsRuntime {
         return handles.headerModelBuilderBuildMethod.invoke(modelBuilder);
     }
 
-    private static Object buildCustomEmoticonHeaderItem(Handles handles, int categoryIndex)
-            throws Throwable {
+    private static Object buildCustomEmoticonHeaderItem(
+            Handles handles,
+            Object receiver,
+            int categoryIndex) throws Throwable {
         Object itemBuilder = handles.headerItemBuilderFactoryMethod.invoke(null);
         String canonicalKey = CUSTOM_EMOTICON_CATEGORY_KEYS[categoryIndex];
-        applyCustomEmoticonHeaderItemContent(handles, itemBuilder, categoryIndex);
+        applyCustomEmoticonHeaderItemContent(handles, receiver, itemBuilder, categoryIndex);
         Object callbackInfo = handles.headerCallbackInfoConstructor.newInstance(
                 Integer.valueOf(SWITCH_KEYBOARD_KEYCODE), canonicalKey);
         handles.headerItemBuilderCallbackField.set(itemBuilder, callbackInfo);
@@ -1376,6 +1409,73 @@ public final class GboardAddSymbolsRuntime {
         return context instanceof Context ? (Context) context : null;
     }
 
+    private static Locale resolveCustomEmoticonLocale(Handles handles, Object receiver) {
+        try {
+            Context context = extractCustomEmoticonContext(handles, receiver);
+            if (context == null || context.getResources() == null) {
+                return Locale.ENGLISH;
+            }
+            Configuration configuration = context.getResources().getConfiguration();
+            if (configuration == null) {
+                return Locale.ENGLISH;
+            }
+            if (!configuration.getLocales().isEmpty()) {
+                Locale locale = configuration.getLocales().get(0);
+                if (locale != null) {
+                    return locale;
+                }
+            }
+            Locale locale = configuration.locale;
+            return locale != null ? locale : Locale.ENGLISH;
+        } catch (Throwable ignored) {
+            return Locale.ENGLISH;
+        }
+    }
+
+    private static String resolveCustomEmoticonCategoryLabel(String categoryKey, Locale locale) {
+        try {
+            String[] labels = shouldUseChineseCategoryLabels(locale)
+                    ? CUSTOM_EMOTICON_CATEGORY_LABELS_ZH
+                    : CUSTOM_EMOTICON_CATEGORY_LABELS_EN;
+            if (CUSTOM_CATEGORY_RECENTS.equals(categoryKey)) {
+                return labels[0];
+            }
+            int datasetIndex = GboardAddSymbolsDataset.indexOf(categoryKey);
+            if (datasetIndex < 0) {
+                return categoryKey != null ? categoryKey : "";
+            }
+            return labels[datasetIndex + 1];
+        } catch (Throwable ignored) {
+            return resolveEnglishCustomEmoticonCategoryLabel(categoryKey);
+        }
+    }
+
+    private static String resolveEnglishCustomEmoticonCategoryLabel(String categoryKey) {
+        if (CUSTOM_CATEGORY_RECENTS.equals(categoryKey)) {
+            return CUSTOM_EMOTICON_CATEGORY_LABELS_EN[0];
+        }
+        int datasetIndex = GboardAddSymbolsDataset.indexOf(categoryKey);
+        if (datasetIndex < 0) {
+            return categoryKey != null ? categoryKey : "";
+        }
+        return CUSTOM_EMOTICON_CATEGORY_LABELS_EN[datasetIndex + 1];
+    }
+
+    private static boolean shouldUseChineseCategoryLabels(Locale locale) {
+        if (locale == null) {
+            return false;
+        }
+        String languageTag = locale.toLanguageTag();
+        if (languageTag == null || languageTag.isBlank()) {
+            languageTag = locale.getLanguage();
+        }
+        if (languageTag == null || languageTag.isBlank()) {
+            return false;
+        }
+        String normalized = languageTag.replace('_', '-').trim().toLowerCase(Locale.ROOT);
+        return normalized.startsWith("zh") || normalized.startsWith("cmn");
+    }
+
     private static void storeCustomRecentSymbol(Context context, String symbol) {
         if (context == null || symbol == null || symbol.isBlank()) {
             return;
@@ -1428,6 +1528,7 @@ public final class GboardAddSymbolsRuntime {
 
     private static void applyCustomEmoticonHeaderItemContent(
             Handles handles,
+            Object receiver,
             Object itemBuilder,
             int categoryIndex) throws Throwable {
         if (categoryIndex == 0) {
@@ -1446,7 +1547,16 @@ public final class GboardAddSymbolsRuntime {
         }
 
         Object textBuilder = handles.headerTextBuilderFactoryMethod.invoke(null);
-        String displayLabel = CUSTOM_EMOTICON_CATEGORY_LABELS[categoryIndex];
+        String displayLabel;
+        try {
+            Locale locale = resolveCustomEmoticonLocale(handles, receiver);
+            displayLabel = resolveCustomEmoticonCategoryLabel(
+                    CUSTOM_EMOTICON_CATEGORY_KEYS[categoryIndex],
+                    locale);
+        } catch (Throwable ignored) {
+            displayLabel = resolveEnglishCustomEmoticonCategoryLabel(
+                    CUSTOM_EMOTICON_CATEGORY_KEYS[categoryIndex]);
+        }
         handles.headerTextBuilderSetTextMethod.invoke(textBuilder, displayLabel);
         handles.headerTextBuilderSetContentDescriptionMethod.invoke(textBuilder, displayLabel);
         Object textPayload = handles.headerTextBuilderBuildMethod.invoke(textBuilder);
@@ -1786,14 +1896,6 @@ public final class GboardAddSymbolsRuntime {
         System.arraycopy(GboardAddSymbolsDataset.CATEGORY_KEYS, 0,
                 keys, 1, GboardAddSymbolsDataset.CATEGORY_KEYS.length);
         return keys;
-    }
-
-    private static String[] buildCustomCategoryLabels() {
-        String[] labels = new String[GboardAddSymbolsDataset.CATEGORY_LABELS.length + 1];
-        labels[0] = "最近";
-        System.arraycopy(GboardAddSymbolsDataset.CATEGORY_LABELS, 0,
-                labels, 1, GboardAddSymbolsDataset.CATEGORY_LABELS.length);
-        return labels;
     }
 
     private static String describeExpressionCorpusList(Handles handles, Object corpusList) {
