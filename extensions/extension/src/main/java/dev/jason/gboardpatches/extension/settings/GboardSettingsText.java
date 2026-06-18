@@ -279,6 +279,22 @@ public final class GboardSettingsText {
         templates.put(R.string.gboard_patches_latin_globe_preview_message, "");
         templates.put(R.string.gboard_patches_latin_globe_preview_default, "原廠預設（500 ms）");
         templates.put(R.string.gboard_patches_latin_globe_preview_patched, "Patch 範例（0 ms）");
+        templates.put(R.string.gboard_patches_ai_writing_tools_title, "AI 撰寫工具");
+        templates.put(R.string.gboard_patches_ai_writing_tools_summary,
+                "控制是否強制顯示官方 AI 撰寫工具開關。");
+        templates.put(R.string.gboard_patches_ai_writing_tools_header_summary, "");
+        templates.put(R.string.gboard_patches_ai_writing_tools_error_title,
+                "AI 撰寫工具無法使用");
+        templates.put(R.string.gboard_patches_ai_writing_tools_error_summary,
+                "AI 撰寫工具設定畫面載入失敗。請重新開啟 Gboard 設定再試一次。");
+        templates.put(R.string.gboard_patches_ai_writing_tools_enabled_title, "啟用 AI 撰寫工具");
+        templates.put(R.string.gboard_patches_ai_writing_tools_enabled_summary,
+                "強制顯示「修正和建議」->「撰寫工具」中的官方 4 個開關；手機沒有 AI Core 時，需要開啟「使用 Google 伺服器」才會生效。");
+        templates.put(R.string.gboard_patches_ai_writing_tools_all_keyboards_title,
+                "支援所有鍵盤");
+        templates.put(R.string.gboard_patches_ai_writing_tools_all_keyboards_summary,
+                "開啟後，會強制把撰寫工具在所有鍵盤生效。需要強制停止並重新啟動 Gboard 才會生效。");
+        templates.put(R.string.gboard_patches_ai_writing_tools_section_behavior, "行為");
         templates.put(R.string.gboard_patches_symbol_footer_title, "表情符號、貼圖與 GIF 分頁順序");
         templates.put(R.string.gboard_patches_symbol_footer_summary,
                 "重新排序 Gboard「表情符號、貼圖與 GIF」面板底部的分頁。");

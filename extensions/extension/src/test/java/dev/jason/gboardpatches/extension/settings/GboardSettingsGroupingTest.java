@@ -88,8 +88,10 @@ public final class GboardSettingsGroupingTest {
 
         Assert.assertTrue(registrySource.contains("new GboardKeyboardSettingsGroupFeature("));
         Assert.assertFalse(registrySource.contains("new GboardSymbolFooterOrderSettingsFeature("));
+        Assert.assertFalse(registrySource.contains("new GboardAiWritingToolsSettingsFeature("));
         Assert.assertTrue(keyboardGroupSource.contains(
                 "new GboardLatinGlobeKeyIgnoreIntervalSettingsFeature("));
+        Assert.assertTrue(keyboardGroupSource.contains("new GboardAiWritingToolsSettingsFeature("));
         Assert.assertTrue(keyboardGroupSource.contains("new GboardSymbolFooterOrderSettingsFeature("));
     }
 
@@ -106,8 +108,12 @@ public final class GboardSettingsGroupingTest {
                 "FEATURE_LATIN_GLOBE_KEY_IGNORE_INTERVAL"));
         Assert.assertTrue(availabilitySource.contains(
                 "dev.jason.gboardpatches.feature.latin_globe_key_ignore_interval"));
+        Assert.assertTrue(availabilitySource.contains("FEATURE_AI_WRITING_TOOLS"));
+        Assert.assertTrue(availabilitySource.contains(
+                "dev.jason.gboardpatches.feature.ai_writing_tools"));
         Assert.assertTrue(patchSource.contains(
                 "gboardLatinGlobeKeyIgnoreIntervalFeatureMarkerPatch"));
+        Assert.assertTrue(patchSource.contains("gboardAiWritingToolsFeatureMarkerPatch"));
     }
 
     @Test

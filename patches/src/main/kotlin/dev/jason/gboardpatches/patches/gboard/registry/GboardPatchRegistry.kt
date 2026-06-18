@@ -37,6 +37,12 @@ import dev.jason.gboardpatches.patches.gboard.features.settingshomepage.gboardSe
 import dev.jason.gboardpatches.patches.gboard.features.signaturebypass.gboardSignatureBypassBytecodePatch
 import dev.jason.gboardpatches.patches.gboard.features.symbolfooter.gboardSymbolFooterOrderBytecodePatch
 import dev.jason.gboardpatches.patches.gboard.features.symbolfooter.gboardSymbolFooterOrderFeatureMarkerPatch
+import dev.jason.gboardpatches.patches.gboard.features.writingtools.gboardAiWritingToolsDependencyPatch
+import dev.jason.gboardpatches.patches.gboard.features.writingtools.gboardAiWritingToolsFeatureMarkerPatch
+import dev.jason.gboardpatches.patches.gboard.features.writingtools.gboardAiWritingToolsFlagValuePatch
+import dev.jason.gboardpatches.patches.gboard.features.writingtools.gboardAiWritingToolsOfficialPreferencesPatch
+import dev.jason.gboardpatches.patches.gboard.features.writingtools.gboardAiWritingToolsSettingsVisibilityPatch
+import dev.jason.gboardpatches.patches.gboard.features.writingtools.gboardAiWritingToolsSignalPatch
 import dev.jason.gboardpatches.patches.gboard.shared.gboardPatchesExtensionCarrierPatch
 import dev.jason.gboardpatches.patches.gboard.shared.gboardPatchesSettingsPatch
 import dev.jason.gboardpatches.patches.gboard.features.undoredoaccesspoint.gboardUndoRedoAccessPointBytecodePatch
@@ -263,6 +269,25 @@ val gboardKeyShapeSelectionFlagPatch = resourcePatch(
         gboardPatchesExtensionCarrierPatch,
         gboardFeatureFlagsBytecodePatch,
         gboardKeyShapeSelectionFeatureMarkerPatch
+    )
+}
+
+@Suppress("unused")
+val gboardAiWritingToolsPatch = resourcePatch(
+    name = "AI Writing Tools",
+    description = "啟用 AI 撰寫工具，支援所有語言\nEnable AI writing tools with support for all languages.",
+    default = true
+) {
+    compatibleWith(COMPATIBILITY_GBOARD)
+
+    dependsOn(
+        gboardPatchesSettingsPatch,
+        gboardAiWritingToolsFeatureMarkerPatch,
+        gboardAiWritingToolsSettingsVisibilityPatch,
+        gboardAiWritingToolsFlagValuePatch,
+        gboardAiWritingToolsSignalPatch,
+        gboardAiWritingToolsOfficialPreferencesPatch,
+        gboardAiWritingToolsDependencyPatch
     )
 }
 

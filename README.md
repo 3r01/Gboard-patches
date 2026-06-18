@@ -20,6 +20,12 @@ Gboard Patches is a public Morphe source for a curated set of Gboard enhancement
 ### Global Users
 
 <details>
+  <summary><code>AI Writing Tools</code></summary>
+
+  Enables the <code>Text correction &gt; Writing tools</code> setting with support for all languages.
+</details>
+
+<details>
   <summary><code>Package Rename</code></summary>
 
   Renames the patched package so it can be installed alongside the official Gboard app.

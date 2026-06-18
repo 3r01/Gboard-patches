@@ -107,5 +107,41 @@ public final class GboardSettingsTextTest {
                         R.string.gboard_patches_symbol_tab_sticker,
                         "zh-Hant",
                         "Sticker"));
+        Assert.assertEquals(
+                "AI 撰寫工具",
+                GboardSettingsText.resolveStableTextForTesting(
+                        R.string.gboard_patches_ai_writing_tools_title,
+                        "zh-Hant",
+                        "AI Writing Tools"));
+        Assert.assertEquals(
+                "控制是否強制顯示官方 AI 撰寫工具開關。",
+                GboardSettingsText.resolveStableTextForTesting(
+                        R.string.gboard_patches_ai_writing_tools_summary,
+                        "zh-Hant",
+                        "Controls whether to force-show the stock AI Writing Tools switches."));
+        Assert.assertEquals(
+                "支援所有鍵盤",
+                GboardSettingsText.resolveStableTextForTesting(
+                        R.string.gboard_patches_ai_writing_tools_all_keyboards_title,
+                        "zh-Hant",
+                        "Support All Keyboards"));
+        Assert.assertEquals(
+                "啟用 AI 撰寫工具",
+                GboardSettingsText.resolveStableTextForTesting(
+                        R.string.gboard_patches_ai_writing_tools_enabled_title,
+                        "zh-Hant",
+                        "Enable AI Writing Tools"));
+        Assert.assertEquals(
+                "強制顯示「修正和建議」->「撰寫工具」中的官方 4 個開關；手機沒有 AI Core 時，需要開啟「使用 Google 伺服器」才會生效。",
+                GboardSettingsText.resolveStableTextForTesting(
+                        R.string.gboard_patches_ai_writing_tools_enabled_summary,
+                        "zh-Hant",
+                        "Force-shows the stock four switches in \"Corrections & suggestions\" -> \"Writing tools\". If your phone does not have AI Core, turn on \"Use Google servers\" for it to work."));
+        Assert.assertEquals(
+                "開啟後，會強制把撰寫工具在所有鍵盤生效。需要強制停止並重新啟動 Gboard 才會生效。",
+                GboardSettingsText.resolveStableTextForTesting(
+                        R.string.gboard_patches_ai_writing_tools_all_keyboards_summary,
+                        "zh-Hant",
+                        "When enabled, force writing tools to work on every keyboard. Force-stop and restart Gboard for the change to take effect."));
     }
 }
