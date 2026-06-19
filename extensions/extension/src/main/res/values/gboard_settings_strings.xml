@@ -58,6 +58,16 @@
     <string name="gboard_patches_latin_globe_preview_message"></string>
     <string name="gboard_patches_latin_globe_preview_default">Stock default (500 ms)</string>
     <string name="gboard_patches_latin_globe_preview_patched">Patched example (0 ms)</string>
+    <string name="gboard_patches_ai_writing_tools_title">AI Writing Tools</string>
+    <string name="gboard_patches_ai_writing_tools_summary">Controls whether to force-show the stock AI Writing Tools switches.</string>
+    <string name="gboard_patches_ai_writing_tools_header_summary"></string>
+    <string name="gboard_patches_ai_writing_tools_error_title">AI Writing Tools unavailable</string>
+    <string name="gboard_patches_ai_writing_tools_error_summary">The AI Writing Tools settings screen failed to load. Reopen Gboard settings and try again.</string>
+    <string name="gboard_patches_ai_writing_tools_enabled_title">Enable AI Writing Tools</string>
+    <string name="gboard_patches_ai_writing_tools_enabled_summary">Force-shows the stock four switches in "Corrections &amp; suggestions" -&gt; "Writing tools". If your phone does not have AI Core, turn on "Use Google servers" for it to work.</string>
+    <string name="gboard_patches_ai_writing_tools_all_keyboards_title">Support All Keyboards</string>
+    <string name="gboard_patches_ai_writing_tools_all_keyboards_summary">When enabled, force writing tools to work on every keyboard. Force-stop and restart Gboard for the change to take effect.</string>
+    <string name="gboard_patches_ai_writing_tools_section_behavior">Behavior</string>
 
     <string name="gboard_patches_clipboard_title">Clipboard</string>
     <string name="gboard_patches_clipboard_summary">Adjusts clipboard retention, item limits, preview lines, metadata labels, order index, columns, and the phone-hosted Web Clipboard.</string>

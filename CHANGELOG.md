@@ -1,5 +1,24 @@
-## [1.9.1](https://github.com/jasonwu1994/Gboard-patches/compare/v1.9.0...v1.9.1) (2026-06-16)
+## [1.10.0](https://github.com/jasonwu1994/Gboard-patches/compare/v1.9.1...v1.10.0) (2026-06-19)
 
+### ✨ New Features
+
+* **Gboard:** add AI Writing Tools
+
+### ✨ 新功能
+
+* **Gboard:** 新增 AI 撰寫工具
+
+## [1.10.0-dev.2](https://github.com/jasonwu1994/Gboard-patches/compare/v1.9.1-dev.1...v1.10.0-dev.2) (2026-06-18)
+
+### ✨ New Features
+
+* **Gboard:** add AI Writing Tools
+
+### ✨ 新功能
+
+* **Gboard:** 新增 AI 撰寫工具
+
+## [1.9.1](https://github.com/jasonwu1994/Gboard-patches/compare/v1.9.0...v1.9.1) (2026-06-16)
 
 ### ✨ New Features
 
@@ -10,7 +29,6 @@
 * **Gboard:** 為 `Custom Symbols` 新增英文分類標籤，讓分類 header 現在在中文語系顯示中文，其餘語系顯示英文。
 
 ## [1.9.1-dev.1](https://github.com/jasonwu1994/Gboard-patches/compare/v1.9.0...v1.9.1-dev.1) (2026-06-16)
-
 
 ### ✨ New Features
 

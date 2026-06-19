@@ -9,6 +9,7 @@ import dev.jason.gboardpatches.extension.settings.GboardFeatureGroup;
 import dev.jason.gboardpatches.extension.settings.GboardPatchesSettingsContract;
 import dev.jason.gboardpatches.extension.settings.GboardSettingsText;
 import dev.jason.gboardpatches.extension.symbolfooter.GboardSymbolFooterOrderSettingsFeature;
+import dev.jason.gboardpatches.extension.writingtools.GboardAiWritingToolsSettingsFeature;
 
 public final class GboardKeyboardSettingsGroupFeature
         implements GboardPatchesSettingsContract.Feature {
@@ -33,6 +34,7 @@ public final class GboardKeyboardSettingsGroupFeature
                         "This build does not include any keyboard settings features."),
                 Arrays.asList(
                         new GboardLatinGlobeKeyIgnoreIntervalSettingsFeature(context),
+                        new GboardAiWritingToolsSettingsFeature(context),
                         new GboardSymbolFooterOrderSettingsFeature(context)));
     }
 
