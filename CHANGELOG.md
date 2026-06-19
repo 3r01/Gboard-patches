@@ -1,3 +1,23 @@
+## [1.11.0-dev.1](https://github.com/jasonwu1994/Gboard-patches/compare/v1.10.0...v1.11.0-dev.1) (2026-06-19)
+
+### ✨ New Features
+
+* **Gboard:** replace `English QWERTY Slide Symbols` with `English QWERTY Up-Flick Uppercase`, remove the patch's down-flick symbol input on the English keyboard, keep the up-flick uppercase/lowercase toggle, and add a matching settings entry under `Patches > Keyboard`.
+
+### ✨ 新功能
+
+* **Gboard:** 將原本的 `English QWERTY Slide Symbols` 調整為 `English QWERTY Up-Flick Uppercase`，取消英文鍵盤的下滑符號輸入，保留上滑切換大小寫，並在 `Patches > Keyboard` 新增對應設定入口。
+
+## [1.10.0](https://github.com/jasonwu1994/Gboard-patches/compare/v1.9.1...v1.10.0) (2026-06-19)
+
+### ✨ New Features
+
+* **Gboard:** add AI Writing Tools
+
+### ✨ 新功能
+
+* **Gboard:** 新增 AI 撰寫工具
+
 ## [1.10.0-dev.2](https://github.com/jasonwu1994/Gboard-patches/compare/v1.9.1-dev.1...v1.10.0-dev.2) (2026-06-18)
 
 ### ✨ New Features
@@ -19,7 +39,6 @@
 * **Gboard:** 為 `Custom Symbols` 新增英文分類標籤，讓分類 header 現在在中文語系顯示中文，其餘語系顯示英文。
 
 ## [1.9.1-dev.1](https://github.com/jasonwu1994/Gboard-patches/compare/v1.9.0...v1.9.1-dev.1) (2026-06-16)
-
 
 ### ✨ New Features
 

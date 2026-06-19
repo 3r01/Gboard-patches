@@ -279,6 +279,19 @@ public final class GboardSettingsText {
         templates.put(R.string.gboard_patches_latin_globe_preview_message, "");
         templates.put(R.string.gboard_patches_latin_globe_preview_default, "原廠預設（500 ms）");
         templates.put(R.string.gboard_patches_latin_globe_preview_patched, "Patch 範例（0 ms）");
+        templates.put(R.string.gboard_patches_english_uppercase_toggle_title, "英文鍵盤上滑大小寫");
+        templates.put(R.string.gboard_patches_english_uppercase_toggle_summary,
+                "控制英文鍵盤字母鍵上滑切換大小寫。");
+        templates.put(R.string.gboard_patches_english_uppercase_toggle_error_title,
+                "英文鍵盤上滑大小寫無法使用");
+        templates.put(R.string.gboard_patches_english_uppercase_toggle_error_summary,
+                "英文鍵盤上滑大小寫設定畫面載入失敗。請重新開啟 Gboard 設定再試一次。");
+        templates.put(R.string.gboard_patches_english_uppercase_toggle_enabled_title,
+                "啟用英文鍵盤上滑大小寫");
+        templates.put(R.string.gboard_patches_english_uppercase_toggle_enabled_summary,
+                "小寫字母上滑會輸出大寫，大寫字母上滑會輸出小寫。");
+        templates.put(R.string.gboard_patches_english_uppercase_toggle_section_behavior,
+                "行為");
         templates.put(R.string.gboard_patches_ai_writing_tools_title, "AI 撰寫工具");
         templates.put(R.string.gboard_patches_ai_writing_tools_summary,
                 "控制是否強制顯示官方 AI 撰寫工具開關。");

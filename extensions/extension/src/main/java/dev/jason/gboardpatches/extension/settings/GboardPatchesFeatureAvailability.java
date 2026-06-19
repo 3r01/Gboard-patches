@@ -29,6 +29,8 @@ public final class GboardPatchesFeatureAvailability {
             "dev.jason.gboardpatches.feature.symbol_footer_order";
     public static final String FEATURE_LATIN_GLOBE_KEY_IGNORE_INTERVAL =
             "dev.jason.gboardpatches.feature.latin_globe_key_ignore_interval";
+    public static final String FEATURE_ENGLISH_UPPERCASE_TOGGLE =
+            "dev.jason.gboardpatches.feature.english_uppercase_toggle";
     public static final String FEATURE_AI_WRITING_TOOLS =
             "dev.jason.gboardpatches.feature.ai_writing_tools";
 
