@@ -58,6 +58,13 @@
     <string name="gboard_patches_latin_globe_preview_message"></string>
     <string name="gboard_patches_latin_globe_preview_default">Stock default (500 ms)</string>
     <string name="gboard_patches_latin_globe_preview_patched">Patched example (0 ms)</string>
+    <string name="gboard_patches_english_uppercase_toggle_title">English Up-Flick Uppercase</string>
+    <string name="gboard_patches_english_uppercase_toggle_summary">Controls English keyboard letter-key up-flick uppercase behavior.</string>
+    <string name="gboard_patches_english_uppercase_toggle_error_title">English up-flick uppercase unavailable</string>
+    <string name="gboard_patches_english_uppercase_toggle_error_summary">The English up-flick uppercase settings screen failed to load. Reopen Gboard settings and try again.</string>
+    <string name="gboard_patches_english_uppercase_toggle_enabled_title">Enable English Up-Flick Uppercase</string>
+    <string name="gboard_patches_english_uppercase_toggle_enabled_summary">Flicking up on lowercase letters outputs uppercase, and flicking up on uppercase letters outputs lowercase.</string>
+    <string name="gboard_patches_english_uppercase_toggle_section_behavior">Behavior</string>
     <string name="gboard_patches_ai_writing_tools_title">AI Writing Tools</string>
     <string name="gboard_patches_ai_writing_tools_summary">Controls whether to force-show the stock AI Writing Tools switches.</string>
     <string name="gboard_patches_ai_writing_tools_header_summary"></string>

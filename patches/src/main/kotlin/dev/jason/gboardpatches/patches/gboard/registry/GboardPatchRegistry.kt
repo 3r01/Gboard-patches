@@ -21,6 +21,7 @@ import dev.jason.gboardpatches.patches.gboard.features.webclipboard.gboardWebCli
 import dev.jason.gboardpatches.patches.gboard.features.webclipboard.gboardWebClipboardCapturePatch
 import dev.jason.gboardpatches.patches.gboard.features.webclipboard.gboardWebClipboardFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.webclipboard.gboardWebClipboardManifestPatch
+import dev.jason.gboardpatches.patches.gboard.features.englishqwerty.gboardEnglishUppercaseToggleFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.englishqwerty.gboardEnglishQwertySlideResourcePatch
 import dev.jason.gboardpatches.patches.gboard.features.englishqwerty.gboardEnglishQwertySoftKeyPatch
 import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardClipboardEntityExtractionFeatureMarkerPatch
@@ -68,15 +69,17 @@ val gboardZhuyinSlideInputPatch = resourcePatch(
 }
 
 @Suppress("unused")
-val gboardEnglishQwertySlideSymbolsPatch = resourcePatch(
-    name = "English QWERTY Slide Symbols",
-    description = "英文 QWERTY 鍵盤支持上下滑符號輸入\nEnable slide-up and slide-down symbol input on the English QWERTY keyboard.",
+val gboardEnglishQwertySlideUppercaseTogglePatch = resourcePatch(
+    name = "English QWERTY Up-Flick Uppercase",
+    description = "英文 QWERTY 鍵盤上滑大小寫\nFlick up on the English QWERTY keyboard to toggle uppercase and lowercase.",
     default = true
 ) {
     compatibleWith(COMPATIBILITY_GBOARD)
 
     dependsOn(
         gboardAboutPageResourcePatch,
+        gboardPatchesSettingsPatch,
+        gboardEnglishUppercaseToggleFeatureMarkerPatch,
         gboardEnglishQwertySlideResourcePatch,
         gboardEnglishQwertySoftKeyPatch
     )

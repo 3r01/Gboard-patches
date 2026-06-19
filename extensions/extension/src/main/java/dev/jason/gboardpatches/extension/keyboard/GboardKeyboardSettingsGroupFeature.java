@@ -34,6 +34,7 @@ public final class GboardKeyboardSettingsGroupFeature
                         "This build does not include any keyboard settings features."),
                 Arrays.asList(
                         new GboardLatinGlobeKeyIgnoreIntervalSettingsFeature(context),
+                        new GboardEnglishUppercaseToggleSettingsFeature(context),
                         new GboardAiWritingToolsSettingsFeature(context),
                         new GboardSymbolFooterOrderSettingsFeature(context)));
     }

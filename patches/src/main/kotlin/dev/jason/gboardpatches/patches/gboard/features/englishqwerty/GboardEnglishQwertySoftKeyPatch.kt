@@ -6,18 +6,18 @@ import app.morphe.patcher.patch.bytecodePatch
 import com.android.tools.smali.dexlib2.AccessFlags
 import dev.jason.gboardpatches.patches.gboard.shared.addHelperMethodIfMissing
 import dev.jason.gboardpatches.patches.gboard.shared.findMutableMethodOrThrow
-import dev.jason.gboardpatches.patches.gboard.shared.indexOfFirstConst4LiteralFollowedByIfEqz
-import dev.jason.gboardpatches.patches.gboard.shared.indexOfFirstMethodCall
 
 private const val SOFT_KEY_VIEW_CLASS =
     "Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;"
+private const val ENGLISH_UPPERCASE_RUNTIME_CLASS =
+    "Ldev/jason/gboardpatches/extension/keyboard/GboardEnglishUppercaseToggleRuntime;"
 
 internal val gboardEnglishQwertySoftKeyPatch = bytecodePatch(
-    description = "修正英文 QWERTY 的 SoftKeyView metadata 與提示呈現。"
+    description = "將英文 QWERTY 的 SoftKeyView metadata 收斂成上滑大小寫切換。"
 ) {
     execute {
         addHelperMethods()
-        injectMethodDelegates()
+        injectMethodDelegate()
     }
 }
 
@@ -31,15 +31,6 @@ private fun addHelperMethods() = with(context) {
         accessFlags = AccessFlags.PRIVATE.value or AccessFlags.STATIC.value,
         registerCount = 3,
         body = TOGGLE_ASCII_CASE_BODY
-    )
-    addHelperMethodIfMissing(
-        classType = SOFT_KEY_VIEW_CLASS,
-        name = "jasondevResolveActionText",
-        parameterTypes = listOf("Loaa;", "Lnxi;"),
-        returnType = "Ljava/lang/String;",
-        accessFlags = AccessFlags.PRIVATE.value or AccessFlags.STATIC.value,
-        registerCount = 4,
-        body = RESOLVE_ACTION_TEXT_BODY
     )
     addHelperMethodIfMissing(
         classType = SOFT_KEY_VIEW_CLASS,
@@ -61,53 +52,35 @@ private fun addHelperMethods() = with(context) {
     )
     addHelperMethodIfMissing(
         classType = SOFT_KEY_VIEW_CLASS,
-        name = "jasondevResolveEnglishSlideDown",
-        parameterTypes = listOf("Ljava/lang/String;"),
-        returnType = "Ljava/lang/String;",
-        accessFlags = AccessFlags.PRIVATE.value or AccessFlags.STATIC.value,
-        registerCount = 3,
-        body = RESOLVE_ENGLISH_SLIDE_DOWN_BODY
-    )
-    addHelperMethodIfMissing(
-        classType = SOFT_KEY_VIEW_CLASS,
-        name = "jasondevSyncSyntheticEnglishHint",
-        parameterTypes = listOf("Loaa;"),
-        returnType = "V",
-        accessFlags = AccessFlags.PRIVATE.value or AccessFlags.FINAL.value,
-        registerCount = 12,
-        body = SYNC_SYNTHETIC_ENGLISH_HINT_BODY
-    )
-    addHelperMethodIfMissing(
-        classType = SOFT_KEY_VIEW_CLASS,
-        name = "jasondevSyncEnglishHintView",
-        parameterTypes = listOf("Loaa;"),
-        returnType = "V",
-        accessFlags = AccessFlags.PRIVATE.value or AccessFlags.FINAL.value,
-        registerCount = 9,
-        body = SYNC_ENGLISH_HINT_VIEW_BODY
-    )
-    addHelperMethodIfMissing(
-        classType = SOFT_KEY_VIEW_CLASS,
-        name = "jasondevSyncPatchedPresentation",
-        parameterTypes = listOf("Loaa;"),
-        returnType = "V",
-        accessFlags = AccessFlags.PRIVATE.value or AccessFlags.FINAL.value,
-        registerCount = 2,
-        body = SYNC_PATCHED_PRESENTATION_BODY
-    )
-    addHelperMethodIfMissing(
-        classType = SOFT_KEY_VIEW_CLASS,
         name = "jasondevPatchIncomingMetadata",
         parameterTypes = listOf("Loaa;"),
         returnType = "Loaa;",
         accessFlags = AccessFlags.PRIVATE.value or AccessFlags.FINAL.value,
-        registerCount = 14,
+        registerCount = 16,
         body = PATCH_INCOMING_METADATA_BODY
+    )
+    addHelperMethodIfMissing(
+        classType = SOFT_KEY_VIEW_CLASS,
+        name = "jasondevIsEnglishUppercaseToggleEnabled",
+        parameterTypes = emptyList(),
+        returnType = "Z",
+        accessFlags = AccessFlags.PRIVATE.value or AccessFlags.STATIC.value,
+        registerCount = 1,
+        body = IS_ENGLISH_UPPERCASE_TOGGLE_ENABLED_BODY
+    )
+    addHelperMethodIfMissing(
+        classType = SOFT_KEY_VIEW_CLASS,
+        name = "jasondevStripSlideUpAction",
+        parameterTypes = listOf("Loaa;"),
+        returnType = "Loaa;",
+        accessFlags = AccessFlags.PRIVATE.value or AccessFlags.STATIC.value,
+        registerCount = 8,
+        body = STRIP_SLIDE_UP_ACTION_BODY
     )
 }
 
 context(context: BytecodePatchContext)
-private fun injectMethodDelegates() = with(context) {
+private fun injectMethodDelegate() = with(context) {
     val mutableMethod = findMutableMethodOrThrow(
         classType = SOFT_KEY_VIEW_CLASS,
         name = "p",
@@ -116,28 +89,12 @@ private fun injectMethodDelegates() = with(context) {
     )
 
     mutableMethod.addInstructions(0, PATCH_INCOMING_METADATA_DELEGATE)
-
-    var syncIndex = mutableMethod.indexOfFirstConst4LiteralFollowedByIfEqz(1)
-    if (syncIndex < 0) {
-        syncIndex = mutableMethod.indexOfFirstMethodCall(
-            definingClass = "Loaa;",
-            name = "f",
-            returnType = "Z",
-            parameterTypes = listOf("Lnxi;")
-        )
-    }
-    check(syncIndex >= 0) { "Unable to find SoftKeyView.p sync anchor" }
-    mutableMethod.addInstructions(syncIndex, SYNC_PATCHED_PRESENTATION_DELEGATE)
 }
 
 private val PATCH_INCOMING_METADATA_DELEGATE = """
     invoke-direct {p0, p1}, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->jasondevPatchIncomingMetadata(Loaa;)Loaa;
 
     move-result-object p1
-""".trimIndent()
-
-private val SYNC_PATCHED_PRESENTATION_DELEGATE = """
-    invoke-direct {p0, p1}, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->jasondevSyncPatchedPresentation(Loaa;)V
 """.trimIndent()
 
 private val TOGGLE_ASCII_CASE_BODY = """
@@ -192,41 +149,6 @@ private val TOGGLE_ASCII_CASE_BODY = """
     int-to-char v0, v0
 
     invoke-static {v0}, Ljava/lang/String;->valueOf(C)Ljava/lang/String;
-
-    move-result-object p0
-
-    return-object p0
-
-    :cond_2
-    const/4 p0, 0x0
-
-    return-object p0
-""".trimIndent()
-
-private val RESOLVE_ACTION_TEXT_BODY = """
-    if-eqz p0, :cond_2
-
-    if-eqz p1, :cond_2
-
-    invoke-virtual {p0, p1}, Loaa;->a(Lnxi;)Lnxl;
-
-    move-result-object p0
-
-    if-eqz p0, :cond_2
-
-    invoke-virtual {p0}, Lnxl;->b()Lnyf;
-
-    move-result-object p0
-
-    if-eqz p0, :cond_2
-
-    iget-object p0, p0, Lnyf;->e:Ljava/lang/Object;
-
-    instance-of p1, p0, Ljava/lang/CharSequence;
-
-    if-eqz p1, :cond_2
-
-    invoke-virtual {p0}, Ljava/lang/Object;->toString()Ljava/lang/String;
 
     move-result-object p0
 
@@ -368,503 +290,82 @@ private val IS_ENGLISH_QWERTY_KEY_ID_BODY = """
     .end sparse-switch
 """.trimIndent()
 
-private val RESOLVE_ENGLISH_SLIDE_DOWN_BODY = """
-    if-eqz p0, :cond_0
-
-    invoke-virtual {p0}, Ljava/lang/String;->length()I
+private val IS_ENGLISH_UPPERCASE_TOGGLE_ENABLED_BODY = """
+    invoke-static {}, $ENGLISH_UPPERCASE_RUNTIME_CLASS->isEnabled()Z
 
     move-result v0
 
-    const/4 v1, 0x1
-
-    if-eq v0, v1, :cond_1
-
-    :cond_0
-    const/4 p0, 0x0
-
-    return-object p0
-
-    :cond_1
-    const/4 v0, 0x0
-
-    invoke-virtual {p0, v0}, Ljava/lang/String;->charAt(I)C
-
-    move-result v0
-
-    const/16 v1, 0x41
-
-    if-lt v0, v1, :cond_2
-
-    const/16 v1, 0x5a
-
-    if-gt v0, v1, :cond_2
-
-    add-int/lit8 v0, v0, 0x20
-
-    int-to-char v0, v0
-
-    :cond_2
-    packed-switch v0, :pswitch_data_0
-
-    const/4 p0, 0x0
-
-    return-object p0
-
-    :pswitch_a
-    const-string p0, "@"
-
-    return-object p0
-
-    :pswitch_b
-    const-string p0, "!"
-
-    return-object p0
-
-    :pswitch_c
-    const-string p0, "\u0022"
-
-    return-object p0
-
-    :pswitch_d
-    const-string p0, "+"
-
-    return-object p0
-
-    :pswitch_e
-    const-string p0, "3"
-
-    return-object p0
-
-    :pswitch_f
-    const-string p0, "-"
-
-    return-object p0
-
-    :pswitch_g
-    const-string p0, "="
-
-    return-object p0
-
-    :pswitch_h
-    const-string p0, "/"
-
-    return-object p0
-
-    :pswitch_i
-    const-string p0, "8"
-
-    return-object p0
-
-    :pswitch_j
-    const-string p0, "#"
-
-    return-object p0
-
-    :pswitch_k
-    const-string p0, "("
-
-    return-object p0
-
-    :pswitch_l
-    const-string p0, ")"
-
-    return-object p0
-
-    :pswitch_m
-    const-string p0, "\u2026"
-
-    return-object p0
-
-    :pswitch_n
-    const-string p0, "~"
-
-    return-object p0
-
-    :pswitch_o
-    const-string p0, "9"
-
-    return-object p0
-
-    :pswitch_p
-    const-string p0, "0"
-
-    return-object p0
-
-    :pswitch_q
-    const-string p0, "1"
-
-    return-object p0
-
-    :pswitch_r
-    const-string p0, "4"
-
-    return-object p0
-
-    :pswitch_s
-    const-string p0, "*"
-
-    return-object p0
-
-    :pswitch_t
-    const-string p0, "5"
-
-    return-object p0
-
-    :pswitch_u
-    const-string p0, "7"
-
-    return-object p0
-
-    :pswitch_v
-    const-string p0, "?"
-
-    return-object p0
-
-    :pswitch_w
-    const-string p0, "2"
-
-    return-object p0
-
-    :pswitch_x
-    const-string p0, ":"
-
-    return-object p0
-
-    :pswitch_y
-    const-string p0, "6"
-
-    return-object p0
-
-    :pswitch_z
-    const-string p0, "\u0027"
-
-    return-object p0
-
-    :pswitch_data_0
-    .packed-switch 0x61
-        :pswitch_a
-        :pswitch_b
-        :pswitch_c
-        :pswitch_d
-        :pswitch_e
-        :pswitch_f
-        :pswitch_g
-        :pswitch_h
-        :pswitch_i
-        :pswitch_j
-        :pswitch_k
-        :pswitch_l
-        :pswitch_m
-        :pswitch_n
-        :pswitch_o
-        :pswitch_p
-        :pswitch_q
-        :pswitch_r
-        :pswitch_s
-        :pswitch_t
-        :pswitch_u
-        :pswitch_v
-        :pswitch_w
-        :pswitch_x
-        :pswitch_y
-        :pswitch_z
-    .end packed-switch
+    return v0
 """.trimIndent()
 
-private val SYNC_SYNTHETIC_ENGLISH_HINT_BODY = """
-    iget-object v0, p0, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->m:Landroid/view/ViewGroup;
+private val STRIP_SLIDE_UP_ACTION_BODY = """
+    if-eqz p0, :cond_return_original
 
-    instance-of v1, v0, Landroid/widget/FrameLayout;
+    new-instance v0, Lnzv;
 
-    if-eqz v1, :cond_0
+    invoke-direct {v0}, Lnzv;-><init>()V
 
-    check-cast v0, Landroid/widget/FrameLayout;
+    invoke-virtual {v0, p0}, Lnzv;->j(Loaa;)V
 
-    goto :goto_0
+    iget-object v1, v0, Lnzv;->b:Ljava/util/EnumMap;
 
-    :cond_0
-    move-object v0, p0
+    sget-object v2, Lnxi;->c:Lnxi;
 
-    :goto_0
-    const-string v1, "jasondev:english-qwerty-hint"
+    invoke-virtual {v1, v2}, Ljava/util/EnumMap;->remove(Ljava/lang/Object;)Ljava/lang/Object;
 
-    invoke-virtual {v0, v1}, Landroid/view/View;->findViewWithTag(Ljava/lang/Object;)Landroid/view/View;
-
-    move-result-object v2
-
-    iget v3, p1, Loaa;->c:I
-
-    invoke-static {v3}, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->jasondevIsEnglishQwertyKeyId(I)Z
-
-    move-result v3
-
-    if-eqz v3, :cond_remove
-
-    invoke-static {p1}, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->jasondevResolvePrimaryLabel(Loaa;)Ljava/lang/String;
-
-    move-result-object v3
-
-    if-eqz v3, :cond_remove
-
-    invoke-static {v3}, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->jasondevToggleAsciiCase(Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v4
-
-    if-eqz v4, :cond_remove
-
-    sget-object v4, Lnxi;->d:Lnxi;
-
-    invoke-static {p1, v4}, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->jasondevResolveActionText(Loaa;Lnxi;)Ljava/lang/String;
-
-    move-result-object p1
-
-    if-eqz p1, :cond_remove
-
-    instance-of v4, v2, Landroid/widget/TextView;
-
-    if-eqz v4, :cond_create
-
-    move-object v4, v2
-
-    check-cast v4, Landroid/widget/TextView;
-
-    goto :goto_1
-
-    :cond_create
-    new-instance v4, Landroid/widget/TextView;
-
-    invoke-virtual {p0}, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->getContext()Landroid/content/Context;
-
-    move-result-object v5
-
-    invoke-direct {v4, v5}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
-
-    invoke-virtual {v4, v1}, Landroid/view/View;->setTag(Ljava/lang/Object;)V
-
-    const/4 v1, 0x0
-
-    invoke-virtual {v4, v1}, Landroid/view/View;->setClickable(Z)V
-
-    invoke-virtual {v4, v1}, Landroid/view/View;->setFocusable(Z)V
-
-    invoke-virtual {v4, v1}, Landroid/widget/TextView;->setIncludeFontPadding(Z)V
-
-    const v5, 0x3f147ae1
-
-    invoke-virtual {v4, v5}, Landroid/view/View;->setAlpha(F)V
-
-    const/4 v5, 0x2
-
-    const/high16 v6, 0x41380000
-
-    invoke-virtual {v4, v5, v6}, Landroid/widget/TextView;->setTextSize(IF)V
-
-    const/4 v5, 0x1
-
-    invoke-virtual {v4, v5}, Landroid/widget/TextView;->setSingleLine(Z)V
-
-    const/4 v6, 0x6
-
-    invoke-virtual {v4, v6}, Landroid/widget/TextView;->setTextAlignment(I)V
-
-    const v6, 0x800035
-
-    invoke-virtual {v4, v6}, Landroid/widget/TextView;->setGravity(I)V
-
-    new-instance v7, Landroid/widget/FrameLayout${'$'}LayoutParams;
-
-    const/4 v8, -0x2
-
-    invoke-direct {v7, v8, v8, v6}, Landroid/widget/FrameLayout${'$'}LayoutParams;-><init>(III)V
-
-    invoke-virtual {v4, v7}, Landroid/widget/TextView;->setLayoutParams(Landroid/view/ViewGroup${'$'}LayoutParams;)V
-
-    invoke-virtual {v0, v4}, Landroid/view/ViewGroup;->addView(Landroid/view/View;)V
-
-    goto :goto_1
-
-    :cond_remove
-    if-eqz v2, :cond_3
-
-    invoke-virtual {v0, v2}, Landroid/view/ViewGroup;->removeView(Landroid/view/View;)V
-
-    goto :cond_3
-
-    :goto_1
-    const v0, 0x7f0b0607
-
-    invoke-virtual {p0, v0}, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->findViewById(I)Landroid/view/View;
+    invoke-virtual {v0}, Lnzv;->d()Ljava/lang/Object;
 
     move-result-object v0
 
-    instance-of v1, v0, Landroid/widget/TextView;
+    check-cast v0, Loaa;
 
-    if-eqz v1, :cond_1
+    if-eqz v0, :cond_return_original
 
-    check-cast v0, Landroid/widget/TextView;
+    return-object v0
 
-    invoke-virtual {v0}, Landroid/widget/TextView;->getTextColors()Landroid/content/res/ColorStateList;
-
-    move-result-object v0
-
-    invoke-virtual {v4, v0}, Landroid/widget/TextView;->setTextColor(Landroid/content/res/ColorStateList;)V
-
-    :cond_1
-    invoke-virtual {v4, p1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
-
-    const/4 p1, 0x0
-
-    invoke-virtual {v4, p1}, Landroid/view/View;->setVisibility(I)V
-
-    const/4 v0, 0x1
-
-    invoke-virtual {v4, v0}, Landroid/view/View;->setImportantForAccessibility(I)V
-
-    const v0, 0x7f0b060f
-
-    invoke-virtual {p0, v0}, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->findViewById(I)Landroid/view/View;
-
-    move-result-object p0
-
-    if-eqz p0, :cond_3
-
-    if-ne p0, v4, :cond_2
-
-    goto :cond_3
-
-    :cond_2
-    const/4 p1, 0x4
-
-    invoke-virtual {p0, p1}, Landroid/view/View;->setVisibility(I)V
-
-    :cond_3
-    return-void
-""".trimIndent()
-
-private val SYNC_ENGLISH_HINT_VIEW_BODY = """
-    iget v0, p1, Loaa;->c:I
-
-    invoke-static {v0}, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->jasondevIsEnglishQwertyKeyId(I)Z
-
-    move-result v0
-
-    if-eqz v0, :cond_2
-
-    invoke-static {p1}, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->jasondevResolvePrimaryLabel(Loaa;)Ljava/lang/String;
-
-    move-result-object v0
-
-    if-eqz v0, :cond_2
-
-    invoke-static {v0}, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->jasondevToggleAsciiCase(Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v1
-
-    if-eqz v1, :cond_2
-
-    sget-object v1, Lnxi;->d:Lnxi;
-
-    invoke-static {p1, v1}, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->jasondevResolveActionText(Loaa;Lnxi;)Ljava/lang/String;
-
-    move-result-object p1
-
-    if-eqz p1, :cond_2
-
-    const v1, 0x7f0b060f
-
-    invoke-virtual {p0, v1, p1}, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->o(ILjava/lang/CharSequence;)V
-
-    invoke-virtual {p0, v1}, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->findViewById(I)Landroid/view/View;
-
-    move-result-object v1
-
-    if-eqz v1, :cond_2
-
-    const/4 v2, 0x0
-
-    invoke-virtual {v1, v2}, Landroid/view/View;->setVisibility(I)V
-
-    instance-of v3, v1, Landroid/widget/TextView;
-
-    if-eqz v3, :cond_2
-
-    move-object v3, v1
-
-    check-cast v3, Landroid/widget/TextView;
-
-    const/4 v4, 0x1
-
-    invoke-virtual {v3, v4}, Landroid/widget/TextView;->setSingleLine(Z)V
-
-    const/4 v5, 0x6
-
-    invoke-virtual {v3, v5}, Landroid/widget/TextView;->setTextAlignment(I)V
-
-    const v5, 0x800005
-
-    invoke-virtual {v3, v5}, Landroid/widget/TextView;->setGravity(I)V
-
-    const v5, 0x7f0b0607
-
-    invoke-virtual {p0, v5}, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->findViewById(I)Landroid/view/View;
-
-    move-result-object p0
-
-    instance-of v5, p0, Landroid/widget/TextView;
-
-    if-eqz v5, :cond_0
-
-    check-cast p0, Landroid/widget/TextView;
-
-    invoke-virtual {p0}, Landroid/widget/TextView;->getTextColors()Landroid/content/res/ColorStateList;
-
-    move-result-object p0
-
-    invoke-virtual {v3, p0}, Landroid/widget/TextView;->setTextColor(Landroid/content/res/ColorStateList;)V
-
-    :cond_0
-    invoke-virtual {v1, v4}, Landroid/view/View;->setImportantForAccessibility(I)V
-
-    :cond_2
-    return-void
-""".trimIndent()
-
-private val SYNC_PATCHED_PRESENTATION_BODY = """
-    invoke-direct {p0, p1}, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->jasondevSyncEnglishHintView(Loaa;)V
-
-    invoke-direct {p0, p1}, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->jasondevSyncSyntheticEnglishHint(Loaa;)V
-
-    return-void
+    :cond_return_original
+    return-object p0
 """.trimIndent()
 
 private val PATCH_INCOMING_METADATA_BODY = """
     if-eqz p1, :cond_return_original
 
+    :try_start_0
     iget v0, p1, Loaa;->c:I
 
     invoke-static {v0}, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->jasondevIsEnglishQwertyKeyId(I)Z
 
     move-result v0
 
-    if-eqz v0, :cond_return_original
+    if-eqz v0, :cond_return_original_safe
+
+    invoke-static {}, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->jasondevIsEnglishUppercaseToggleEnabled()Z
+
+    move-result v3
+
+    if-nez v3, :cond_toggle_enabled
+
+    invoke-static {p1}, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->jasondevStripSlideUpAction(Loaa;)Loaa;
+
+    move-result-object v0
+
+    if-eqz v0, :cond_return_original_safe
+
+    return-object v0
+
+    :cond_toggle_enabled
 
     invoke-static {p1}, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->jasondevResolvePrimaryLabel(Loaa;)Ljava/lang/String;
 
     move-result-object v1
 
-    if-eqz v1, :cond_return_original
+    if-eqz v1, :cond_return_original_safe
 
     invoke-static {v1}, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->jasondevToggleAsciiCase(Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v2
 
-    if-eqz v2, :cond_return_original
-
-    invoke-static {v1}, Lcom/google/android/libraries/inputmethod/widgets/SoftKeyView;->jasondevResolveEnglishSlideDown(Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v3
-
-    if-eqz v3, :cond_return_original
+    if-eqz v2, :cond_return_original_safe
 
     new-instance v4, Lnzv;
 
@@ -900,57 +401,9 @@ private val PATCH_INCOMING_METADATA_BODY = """
 
     move-result-object v5
 
-    if-eqz v5, :cond_return_original
+    if-eqz v5, :cond_return_original_safe
 
     invoke-virtual {v4, v5}, Lnzv;->q(Lnxl;)V
-
-    new-instance v5, Lnxj;
-
-    invoke-direct {v5}, Lnxj;-><init>()V
-
-    sget-object v9, Lnxi;->d:Lnxi;
-
-    iput-object v9, v5, Lnxj;->a:Lnxi;
-
-    const/4 v9, 0x1
-
-    new-array v10, v9, [Ljava/lang/String;
-
-    aput-object v3, v10, v6
-
-    iput-object v10, v5, Lnxj;->c:[Ljava/lang/String;
-
-    invoke-virtual {v5, v7, v8, v3}, Lnxj;->p(ILnye;Ljava/lang/Object;)V
-
-    invoke-virtual {v5}, Lnxj;->c()Lnxl;
-
-    move-result-object v5
-
-    if-eqz v5, :cond_return_original
-
-    invoke-virtual {v4, v5}, Lnzv;->q(Lnxl;)V
-
-    const/4 v5, 0x2
-
-    new-array v7, v5, [I
-
-    new-array v8, v5, [Ljava/lang/CharSequence;
-
-    const v5, 0x7f0b0607
-
-    aput v5, v7, v6
-
-    aput-object v1, v8, v6
-
-    const/4 v1, 0x1
-
-    const v5, 0x7f0b060f
-
-    aput v5, v7, v1
-
-    aput-object v3, v8, v1
-
-    invoke-virtual {v4, v7, v8}, Lnzv;->t([I[Ljava/lang/CharSequence;)V
 
     invoke-virtual {v4}, Lnzv;->d()Ljava/lang/Object;
 
@@ -958,10 +411,18 @@ private val PATCH_INCOMING_METADATA_BODY = """
 
     check-cast v0, Loaa;
 
-    if-eqz v0, :cond_return_original
+    if-eqz v0, :cond_return_original_safe
 
     return-object v0
 
+    :cond_return_original_safe
+    return-object p1
+    :try_end_0
+    .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_0} :catch_0
+
     :cond_return_original
+    return-object p1
+
+    :catch_0
     return-object p1
 """.trimIndent()

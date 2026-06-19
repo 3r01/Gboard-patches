@@ -38,9 +38,9 @@ Gboard Patches is a public Morphe source for a curated set of Gboard enhancement
 </details>
 
 <details>
-  <summary><code>English QWERTY Slide Symbols</code></summary>
+  <summary><code>English QWERTY Up-Flick Uppercase</code></summary>
 
-  On the English QWERTY keyboard, swipe down to enter symbols and swipe up to quickly enter letters in uppercase or lowercase without switching layers.
+  On the English QWERTY keyboard, flick up to toggle letters between uppercase and lowercase without switching layers.
 </details>
 
 <details>
