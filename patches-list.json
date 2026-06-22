@@ -1,5 +1,5 @@
 {
-  "version": "1.11.0",
+  "version": "1.12.0",
   "patches": [
     {
       "name": "AI Writing Tools",
@@ -88,6 +88,18 @@
     {
       "name": "Emojis, stickers & GIFs Tab Order",
       "description": "自訂 Gboard「Emojis, stickers & GIFs」底部 tabs 的排序，支援拖曳調整\nCustomize the bottom tab order in Gboard's Emojis, stickers & GIFs panel with drag-and-drop reordering.",
+      "use": true,
+      "dependencies": [],
+      "compatiblePackages": {
+        "com.google.android.inputmethod.latin": [
+          "17.0.10.880768217-release-arm64-v8a"
+        ]
+      },
+      "options": []
+    },
+    {
+      "name": "Enable Inline Autofill Suggestions",
+      "description": "啟用內嵌自動填入建議 / Enable Inline Autofill Suggestions",
       "use": true,
       "dependencies": [],
       "compatiblePackages": {

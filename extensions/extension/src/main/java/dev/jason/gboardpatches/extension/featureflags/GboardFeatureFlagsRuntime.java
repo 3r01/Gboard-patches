@@ -15,6 +15,8 @@ public final class GboardFeatureFlagsRuntime {
             "enable_clipboard_entity_extraction";
     public static final String FLAG_CLIPBOARD_ITEM_EDIT =
             "enable_clipboard_text_editor";
+    public static final String FLAG_DEVICE_INTELLIGENCE =
+            "enable_device_intelligence";
     public static final String FLAG_GRAMMAR_CHECKER =
             "enable_grammar_checker";
     public static final String FLAG_INLINE_SUGGESTIONS =
@@ -65,6 +67,9 @@ public final class GboardFeatureFlagsRuntime {
         featureKeys.put(
                 FLAG_CLIPBOARD_ITEM_EDIT,
                 GboardPatchesFeatureAvailability.FEATURE_CLIPBOARD_ITEM_EDIT);
+        featureKeys.put(
+                FLAG_DEVICE_INTELLIGENCE,
+                GboardPatchesFeatureAvailability.FEATURE_DEVICE_INTELLIGENCE);
         featureKeys.put(
                 FLAG_GRAMMAR_CHECKER,
                 GboardPatchesFeatureAvailability.FEATURE_GRAMMAR_CHECKER);

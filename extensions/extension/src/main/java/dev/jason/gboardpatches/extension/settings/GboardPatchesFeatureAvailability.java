@@ -15,6 +15,8 @@ public final class GboardPatchesFeatureAvailability {
             "dev.jason.gboardpatches.feature.clipboard_entity_extraction";
     public static final String FEATURE_CLIPBOARD_ITEM_EDIT =
             "dev.jason.gboardpatches.feature.clipboard_item_edit";
+    public static final String FEATURE_DEVICE_INTELLIGENCE =
+            "dev.jason.gboardpatches.feature.device_intelligence";
     public static final String FEATURE_GRAMMAR_CHECKER =
             "dev.jason.gboardpatches.feature.grammar_checker";
     public static final String FEATURE_INLINE_SUGGESTIONS =

@@ -1,3 +1,23 @@
+## [1.12.0](https://github.com/jasonwu1994/Gboard-patches/compare/v1.11.0...v1.12.0) (2026-06-22)
+
+### ✨ New Features
+
+* **Gboard:** add `Enable Inline Autofill Suggestions` to restore inline autofill suggestions from password managers and other supported autofill providers.
+
+### ✨ 新功能
+
+* **Gboard:** 新增 `Enable Inline Autofill Suggestions`，恢復密碼管理員與其他支援的自動填入提供者所提供的內嵌自動填入建議。
+
+## [1.12.0-dev.1](https://github.com/jasonwu1994/Gboard-patches/compare/v1.11.0...v1.12.0-dev.1) (2026-06-22)
+
+### ✨ New Features
+
+* **Gboard:** add `Enable Inline Autofill Suggestions` to restore inline autofill suggestions from password managers and other supported autofill providers.
+
+### ✨ 新功能
+
+* **Gboard:** 新增 `Enable Inline Autofill Suggestions`，恢復密碼管理員與其他支援的自動填入提供者所提供的內嵌自動填入建議。
+
 ## [1.11.0](https://github.com/jasonwu1994/Gboard-patches/compare/v1.10.0...v1.11.0) (2026-06-19)
 
 ### ✨ New Features

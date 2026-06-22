@@ -26,6 +26,7 @@ import dev.jason.gboardpatches.patches.gboard.features.englishqwerty.gboardEngli
 import dev.jason.gboardpatches.patches.gboard.features.englishqwerty.gboardEnglishQwertySoftKeyPatch
 import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardClipboardEntityExtractionFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardClipboardItemEditFeatureMarkerPatch
+import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardDeviceIntelligenceFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardFeatureFlagsBytecodePatch
 import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardGrammarCheckerFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardInlineSuggestionsFeatureMarkerPatch
@@ -227,6 +228,21 @@ val gboardClipboardItemEditFlagPatch = resourcePatch(
         gboardPatchesExtensionCarrierPatch,
         gboardFeatureFlagsBytecodePatch,
         gboardClipboardItemEditFeatureMarkerPatch
+    )
+}
+
+@Suppress("unused")
+val gboardDeviceIntelligencePatch = resourcePatch(
+    name = "Enable Inline Autofill Suggestions",
+    description = "啟用內嵌自動填入建議 / Enable Inline Autofill Suggestions",
+    default = true
+) {
+    compatibleWith(COMPATIBILITY_GBOARD)
+
+    dependsOn(
+        gboardPatchesExtensionCarrierPatch,
+        gboardFeatureFlagsBytecodePatch,
+        gboardDeviceIntelligenceFeatureMarkerPatch
     )
 }
 
