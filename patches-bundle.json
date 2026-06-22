@@ -1,7 +1,7 @@
 {
-    "created_at":  "2026-06-19T21:42:37",
-    "description":  "### ✨ New Features\n\n* **Gboard:** replace `English QWERTY Slide Symbols` with `English QWERTY Up-Flick Uppercase`, remove the patch's down-flick symbol input on the English keyboard, keep the up-flick uppercase/lowercase toggle, and add a matching settings entry under `Patches > Keyboard`.\n\n### ✨ 新功能\n\n* **Gboard:** 將原本的 `English QWERTY Slide Symbols` 調整為 `English QWERTY Up-Flick Uppercase`，取消英文鍵盤的下滑符號輸入，保留上滑切換大小寫，並在 `Patches > Keyboard` 新增對應設定入口。",
-    "download_url":  "https://github.com/jasonwu1994/Gboard-patches/releases/download/v1.11.0-dev.1/patches-1.11.0-dev.1.mpp",
+    "created_at":  "2026-06-22T04:13:23",
+    "description":  "### ✨ New Features\n\n* **Gboard:** add `Enable Inline Autofill Suggestions` to restore inline autofill suggestions from password managers and other supported autofill providers.\n\n### ✨ 新功能\n\n* **Gboard:** 新增 `Enable Inline Autofill Suggestions`，恢復密碼管理員與其他支援的自動填入提供者所提供的內嵌自動填入建議。",
+    "download_url":  "https://github.com/jasonwu1994/Gboard-patches/releases/download/v1.12.0-dev.1/patches-1.12.0-dev.1.mpp",
     "signature_download_url":  "",
-    "version":  "1.11.0-dev.1"
+    "version":  "1.12.0-dev.1"
 }
