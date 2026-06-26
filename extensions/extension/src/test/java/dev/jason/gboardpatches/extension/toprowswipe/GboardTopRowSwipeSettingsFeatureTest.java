@@ -1,52 +1,125 @@
-package dev.jason.gboardpatches.extension.settingshomepage;
+package dev.jason.gboardpatches.extension.toprowswipe;
 
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.lang.reflect.Method;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import dev.jason.gboardpatches.extension.settings.GboardPatchesSettingsContract;
 
-public final class GboardSettingsHomepageSettingsFeatureTest {
+public final class GboardTopRowSwipeSettingsFeatureTest {
     @Test
-    public void forceNewModeUsesLsposedSectionsAndStatusBlocks() {
+    public void screenUsesStableTraditionalChineseLsposedCopy() {
+        Locale originalLocale = Locale.getDefault();
+        Locale.setDefault(Locale.forLanguageTag("zh-Hant-TW"));
+        try {
+            InMemorySharedPreferences preferences = new InMemorySharedPreferences();
+            GboardTopRowSwipeSettings.ensureDefaults(preferences);
+            CapturingHost host = new CapturingHost(preferences);
+
+            GboardTopRowSwipeSettingsFeature feature =
+                    new GboardTopRowSwipeSettingsFeature(null);
+
+            Assert.assertEquals("自訂第一排按鍵", feature.getEntryTitle());
+            Assert.assertEquals(
+                    "左右滑動第一排，打開可自訂文字與 JavaScript slot 的列。",
+                    feature.getEntrySummary());
+
+            GboardPatchesSettingsContract.Screen screen = feature.buildScreen(host);
+
+            Assert.assertEquals(
+                    Arrays.asList("行為", "支援的版面", "JavaScript", "Slot", "匯入匯出", "進階",
+                            "JavaScript 說明"),
+                    sectionTitles(screen.getSections()));
+            Assert.assertEquals(
+                    "啟用",
+                    screen.getSections().get(0).getItems().get(0).getTitle().toString());
+            Assert.assertEquals(
+                    "注音",
+                    screen.getSections().get(1).getItems().get(0).getTitle().toString());
+            Assert.assertEquals(
+                    "全域 JavaScript",
+                    screen.getSections().get(2).getItems().get(0).getTitle().toString());
+        } finally {
+            Locale.setDefault(originalLocale);
+        }
+    }
+
+    @Test
+    public void dialogStringsUseStableTraditionalChineseCopy() {
+        Locale originalLocale = Locale.getDefault();
+        Locale.setDefault(Locale.forLanguageTag("zh-Hant-TW"));
+        try {
+            GboardTopRowSwipeStrings strings = GboardTopRowSwipeStrings.from(null);
+
+            Assert.assertEquals("行為", strings.sectionBehavior);
+            Assert.assertEquals("使用 JavaScript", strings.editorUseJavaScriptLabel);
+            Assert.assertEquals("Timeout（ms）", strings.editorTimeoutLabel);
+            Assert.assertEquals("已解鎖", strings.editorUnlockedState);
+            Assert.assertEquals("重設", strings.resetButton);
+        } finally {
+            Locale.setDefault(originalLocale);
+        }
+    }
+
+    @Test
+    public void enabledRowUsesSinglePreviewVideoAsset() throws Exception {
         InMemorySharedPreferences preferences = new InMemorySharedPreferences();
-        preferences.edit()
-                .putString(
-                        GboardSettingsHomepageSettings.PREF_KEY_MODE,
-                        GboardSettingsHomepageSettings.MODE_FORCE_NEW)
-                .apply();
+        GboardTopRowSwipeSettings.ensureDefaults(preferences);
         CapturingHost host = new CapturingHost(preferences);
 
         GboardPatchesSettingsContract.Screen screen =
-                new GboardSettingsHomepageSettingsFeature().buildScreen(host);
+                new GboardTopRowSwipeSettingsFeature(null).buildScreen(host);
 
+        GboardPatchesSettingsContract.ToggleRow enabledRow = null;
+        for (GboardPatchesSettingsContract.Row row : screen.getRows()) {
+            if (row instanceof GboardPatchesSettingsContract.ToggleRow toggleRow
+                    && "Enabled".contentEquals(toggleRow.getTitle())) {
+                enabledRow = toggleRow;
+                break;
+            }
+        }
+        Assert.assertNotNull("Missing enabled row", enabledRow);
+        Assert.assertNotNull("Missing enabled preview", enabledRow.getPreviewSpec());
+        Assert.assertEquals("Custom Top Row", enabledRow.getPreviewSpec().getTitle());
+        Assert.assertEquals(1, enabledRow.getPreviewSpec().getMediaItems().size());
         Assert.assertEquals(
-                Arrays.asList("Style", "Current state"),
-                sectionTitles(screen.getSections()));
-        Assert.assertEquals("SelectorRow",
-                screen.getSections().get(0).getItems().get(0).getClass().getSimpleName());
-        Assert.assertEquals("DetailRow",
-                screen.getSections().get(1).getItems().get(0).getClass().getSimpleName());
-        Assert.assertEquals(1, screen.getStatusBlocks().size());
-        Assert.assertEquals(
-                "Compatibility safeguard",
-                screen.getStatusBlocks().get(0).getTitle());
+                "settings-previews/keyboard/gboard_top_row_swipe_enabled_preview.mp4",
+                assetPath(enabledRow.getPreviewSpec().getMediaItems().get(0)));
+        Assert.assertEquals("",
+                enabledRow.getPreviewSpec().getMediaItems().get(0).getCaption());
+    }
+
+    @Test
+    public void enabledPreviewVideoAssetExists() {
+        Assert.assertTrue(Files.exists(java.nio.file.Path.of(
+                "..", "..", "patches", "src", "main", "resources",
+                "settings-previews", "keyboard",
+                "gboard_top_row_swipe_enabled_preview.mp4")));
+    }
+
+    private static String assetPath(GboardPatchesSettingsContract.PreviewMedia previewMedia)
+            throws Exception {
+        Method method = previewMedia.getClass().getMethod("getAssetPath");
+        Object value = method.invoke(previewMedia);
+        return value == null ? null : value.toString();
     }
 
     private static List<String> sectionTitles(List<GboardPatchesSettingsContract.Section> sections) {
-        List<String> titles = new ArrayList<>();
+        List<String> titles = new ArrayList<String>();
         for (GboardPatchesSettingsContract.Section section : sections) {
             titles.add(section.getTitle());
         }
@@ -71,8 +144,8 @@ public final class GboardSettingsHomepageSettingsFeatureTest {
                 }
 
                 @Override
-                public Resources getResources() {
-                    return Resources.getSystem();
+                public String getPackageName() {
+                    return "dev.jason.gboardpatches.test";
                 }
 
                 @Override
@@ -127,11 +200,11 @@ public final class GboardSettingsHomepageSettingsFeatureTest {
     }
 
     private static final class InMemorySharedPreferences implements SharedPreferences {
-        private final Map<String, Object> values = new HashMap<>();
+        private final Map<String, Object> values = new HashMap<String, Object>();
 
         @Override
         public Map<String, ?> getAll() {
-            return Collections.unmodifiableMap(new HashMap<>(values));
+            return Collections.unmodifiableMap(new HashMap<String, Object>(values));
         }
 
         @Override
@@ -179,7 +252,7 @@ public final class GboardSettingsHomepageSettingsFeatureTest {
         @Override
         public Editor edit() {
             return new Editor() {
-                private final Map<String, Object> pending = new HashMap<>();
+                private final Map<String, Object> pending = new HashMap<String, Object>();
                 private boolean clearRequested;
 
                 @Override
