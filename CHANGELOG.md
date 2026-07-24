@@ -1,3 +1,25 @@
+## [2.0.0-dev.4](https://github.com/jasonwu1994/Gboard-patches/compare/v2.0.0-dev.3...v2.0.0-dev.4) (2026-07-24)
+
+### ✨ New Features
+
+* **Gboard:** update the supported Gboard version to `17.7.7.932364120-release-arm64-v8a`.
+* **Gboard:** remove the `Chinese Online Voice Input`, `Clipboard Entity Extraction`, `Clipboard Item Edit`, and `Enable Undo/Redo` feature patches because these features are built into the new Gboard version.
+
+### ✨ 新功能
+
+* **Gboard:** 更新支援的 Gboard 版本至 `17.7.7.932364120-release-arm64-v8a`。
+* **Gboard:** 移除 `Chinese Online Voice Input`、`Clipboard Entity Extraction`、`Clipboard Item Edit` 與 `Enable Undo/Redo` 功能 Patch，因為新版 Gboard 已內建這些功能。
+
+## [1.14.0](https://github.com/jasonwu1994/Gboard-patches/compare/v1.13.0...v1.14.0) (2026-06-30)
+
+### ✨ New Features
+
+* **Gboard:** add `Zhuyin Bottom Row Key Sizes` so you can adjust the seven bottom-row slot sizes on the Zhuyin keyboard, including `?123`, `，`, the globe key, space, `ㄦ`, backspace, and the IME action key.
+
+### ✨ 新功能
+
+* **Gboard:** 新增 `Zhuyin Bottom Row Key Sizes`，可調整注音鍵盤底排 7 個欄位的按鍵大小，包含 `?123`、`，`、地球鍵、空白鍵、`ㄦ`、刪除鍵，以及搜尋 / 送出 / Enter 鍵。
+
 ## [1.14.0-dev.1](https://github.com/jasonwu1994/Gboard-patches/compare/v1.13.0...v1.14.0-dev.1) (2026-06-30)
 
 ### ✨ New Features
