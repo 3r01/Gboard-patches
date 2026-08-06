@@ -1,3 +1,25 @@
+## [2.6.0-dev.1](https://github.com/jasonwu1994/Gboard-patches/compare/v2.5.0...v2.6.0-dev.1) (2026-08-06)
+
+### ✨ New Features
+
+* **Gboard:** add a `Show sensitive clipboard contents` option to reveal the original text of clipboard items marked as sensitive.
+
+### ✨ 新功能
+
+* **Gboard:** 新增「顯示敏感剪貼簿內容」選項，可顯示被標記為敏感的剪貼簿項目原文。
+
+## [2.5.0](https://github.com/jasonwu1994/Gboard-patches/compare/v2.4.0...v2.5.0) (2026-08-03)
+
+### ✨ New Features
+
+* **Gboard:** add the `Clipboard Custom Character Limit` patch, allowing you to customize the maximum character count for each text clipboard item.
+* **Gboard:** add an option to render only the first `1,000` characters on each clipboard card.
+
+### ✨ 新功能
+
+* **Gboard:** 新增 `Clipboard Custom Character Limit` Patch，可自訂每個文字剪貼簿項目的最大字元數。
+* **Gboard:** 新增選項，可讓每張剪貼簿卡片僅渲染前 `1,000` 個字元。
+
 ## [2.5.0-dev.1](https://github.com/jasonwu1994/Gboard-patches/compare/v2.4.0...v2.5.0-dev.1) (2026-08-02)
 
 ### ✨ New Features
