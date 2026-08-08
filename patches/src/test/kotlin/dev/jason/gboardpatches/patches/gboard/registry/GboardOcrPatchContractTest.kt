@@ -43,7 +43,15 @@ class GboardOcrPatchContractTest {
         ))
         assertTrue(settingsText.contains("<translation locale=\"zh-Hant\">控制文字辨識的後端引擎。</translation>"))
         assertTrue(settingsText.contains("<translation locale=\"zh-Hant\">文字辨識後端引擎</translation>"))
-        assertTrue(!settingsText.contains("gboard_patches_ocr_header_summary"))
+        assertTrue(settingsText.contains("gboard_patches_ocr_header_summary"))
+        assertTrue(settingsText.contains(
+            "<translation locale=\"en\">Official models must be downloaded through Google " +
+                "Play services.</translation>",
+        ))
+        assertTrue(settingsText.contains(
+            "<translation locale=\"zh-Hant\">需要透過 Google Play services " +
+                "下載官方模型</translation>",
+        ))
         assertTrue(!settingsText.contains("gboard_patches_ocr_engine_summary"))
         assertTrue(
             readme.indexOf("<summary><code>Long-Press Editing Shortcuts</code></summary>") <

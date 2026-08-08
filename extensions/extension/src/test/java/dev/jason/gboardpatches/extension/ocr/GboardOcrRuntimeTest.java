@@ -78,6 +78,21 @@ public final class GboardOcrRuntimeTest {
         Assert.assertTrue(payload.enableOptionalModule);
     }
 
+    @Test
+    public void moduleInstallRequestsCoverEveryBackend() {
+        Assert.assertArrayEquals(new String[]{"vision.ocr"},
+                GboardOcrRuntime.selectedOptionalModuleNames(GboardOcrEngine.LATIN));
+        Assert.assertArrayEquals(
+                new String[]{"vision.ocr", "mlkit.ocr.common", "mlkit.ocr.chinese"},
+                GboardOcrRuntime.selectedOptionalModuleNames(GboardOcrEngine.CHINESE));
+        Assert.assertArrayEquals(new String[]{"vision.ocr", "mlkit.ocr.japanese"},
+                GboardOcrRuntime.selectedOptionalModuleNames(GboardOcrEngine.JAPANESE));
+        Assert.assertArrayEquals(new String[]{"vision.ocr", "mlkit.ocr.korean"},
+                GboardOcrRuntime.selectedOptionalModuleNames(GboardOcrEngine.KOREAN));
+        Assert.assertArrayEquals(new String[]{"vision.ocr", "mlkit.ocr.devanagari"},
+                GboardOcrRuntime.selectedOptionalModuleNames(GboardOcrEngine.DEVANAGARI));
+    }
+
     private static final class FakeRequest {
         private final String a;
 

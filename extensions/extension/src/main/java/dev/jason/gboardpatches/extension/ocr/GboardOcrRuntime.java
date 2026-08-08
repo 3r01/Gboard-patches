@@ -257,43 +257,47 @@ public final class GboardOcrRuntime {
         if (override != null) {
             return override.booleanValue();
         }
+        Context context = resolveMlKitContext();
+        return context != null
+                && moduleVersion(context, selectedEngine().getThickModuleId()) > 0;
+    }
+
+    private static Context resolveMlKitContext() throws Throwable {
         ClassLoader classLoader = GboardOcrRuntime.class.getClassLoader();
         if (classLoader == null) {
-            return false;
+            return null;
         }
-
         Method singletonMethod = mlKitContextSingletonMethod;
         Method contextMethod = mlKitContextAccessorMethod;
-        Method lookupMethod = moduleAvailabilityLookupMethod;
         if (!isResolvedForClassLoader(singletonMethod, classLoader)
-                || !isResolvedForClassLoader(contextMethod, classLoader)
-                || !isResolvedForClassLoader(lookupMethod, classLoader)) {
+                || !isResolvedForClassLoader(contextMethod, classLoader)) {
             Class<?> mlKitContextClass = Class.forName("xwu", false, classLoader);
             singletonMethod = mlKitContextClass.getDeclaredMethod("b");
             singletonMethod.setAccessible(true);
             contextMethod = mlKitContextClass.getDeclaredMethod("a");
             contextMethod.setAccessible(true);
+            mlKitContextSingletonMethod = singletonMethod;
+            mlKitContextAccessorMethod = contextMethod;
+        }
+        Object contextValue = contextMethod.invoke(singletonMethod.invoke(null));
+        return contextValue instanceof Context ? (Context) contextValue : null;
+    }
 
+    private static int moduleVersion(Context context, String moduleId) throws Throwable {
+        ClassLoader classLoader = GboardOcrRuntime.class.getClassLoader();
+        if (classLoader == null || context == null || moduleId == null) {
+            return 0;
+        }
+        Method lookupMethod = moduleAvailabilityLookupMethod;
+        if (!isResolvedForClassLoader(lookupMethod, classLoader)) {
             Class<?> moduleAvailabilityClass = Class.forName("kmi", false, classLoader);
             lookupMethod = moduleAvailabilityClass.getDeclaredMethod(
                     "a", Context.class, String.class);
             lookupMethod.setAccessible(true);
-
-            mlKitContextSingletonMethod = singletonMethod;
-            mlKitContextAccessorMethod = contextMethod;
             moduleAvailabilityLookupMethod = lookupMethod;
         }
-
-        Object mlKitContext = singletonMethod.invoke(null);
-        Object contextValue = contextMethod.invoke(mlKitContext);
-        if (!(contextValue instanceof Context context)) {
-            return false;
-        }
-        Object availability = lookupMethod.invoke(
-                null,
-                context,
-                selectedEngine().getThickModuleId());
-        return availability instanceof Number number && number.intValue() > 0;
+        Object availability = lookupMethod.invoke(null, context, moduleId);
+        return availability instanceof Number ? ((Number) availability).intValue() : 0;
     }
 
     private static Object createPayloadAwareThinRecognizer(ClassLoader classLoader,

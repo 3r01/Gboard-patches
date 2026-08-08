@@ -1746,6 +1746,10 @@
         <translation locale="en">Control the backend engine used for text recognition.</translation>
         <translation locale="zh-Hant">控制文字辨識的後端引擎。</translation>
     </string>
+    <string name="gboard_patches_ocr_header_summary">
+        <translation locale="en">Official models must be downloaded through Google Play services.</translation>
+        <translation locale="zh-Hant">需要透過 Google Play services 下載官方模型</translation>
+    </string>
     <string name="gboard_patches_ocr_error_title">
         <translation locale="en">OCR settings unavailable</translation>
         <translation locale="zh-Hant">OCR 設定無法使用</translation>
@@ -1758,13 +1762,33 @@
         <translation locale="en">Recognition backend</translation>
         <translation locale="zh-Hant">文字辨識後端引擎</translation>
     </string>
-    <string name="gboard_patches_ocr_engine_dialog_title">
-        <translation locale="en">Recognition backend</translation>
-        <translation locale="zh-Hant">文字辨識後端引擎</translation>
+    <string name="gboard_patches_ocr_status_installed">
+        <translation locale="en">Installed</translation>
+        <translation locale="zh-Hant">已安裝</translation>
     </string>
-    <string name="gboard_patches_ocr_section_behavior">
-        <translation locale="en">Behavior</translation>
-        <translation locale="zh-Hant">行為</translation>
+    <string name="gboard_patches_ocr_status_not_installed">
+        <translation locale="en">Not installed. Tap to download.</translation>
+        <translation locale="zh-Hant">未安裝，點擊以下載。</translation>
+    </string>
+    <string name="gboard_patches_ocr_status_checking">
+        <translation locale="en">Checking installation status…</translation>
+        <translation locale="zh-Hant">正在檢查安裝狀態…</translation>
+    </string>
+    <string name="gboard_patches_ocr_status_check_failed">
+        <translation locale="en">Unable to verify. Tap to download.</translation>
+        <translation locale="zh-Hant">無法確認，點擊以下載。</translation>
+    </string>
+    <string name="gboard_patches_ocr_status_downloading">
+        <translation locale="en">Downloading…</translation>
+        <translation locale="zh-Hant">下載中…</translation>
+    </string>
+    <string name="gboard_patches_ocr_status_download_failed">
+        <translation locale="en">Download failed. Tap to retry.</translation>
+        <translation locale="zh-Hant">下載失敗，點擊以重試。</translation>
+    </string>
+    <string name="gboard_patches_ocr_status_current">
+        <translation locale="en">Current</translation>
+        <translation locale="zh-Hant">目前使用</translation>
     </string>
     <string name="gboard_patches_ocr_engine_latin_label">
         <translation locale="en">Latin</translation>

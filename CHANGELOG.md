@@ -1,3 +1,13 @@
+## [2.7.0-dev.2](https://github.com/jasonwu1994/Gboard-patches/compare/v2.7.0-dev.1...v2.7.0-dev.2) (2026-08-08)
+
+### ✨ New Features
+
+* **Gboard:** add OCR model downloads through Google Play services for the official recognition models.
+
+### ✨ 新功能
+
+* **Gboard:** OCR 功能新增模型下載，透過 Google Play services 下載官方辨識模型。
+
 ## [2.7.0-dev.1](https://github.com/jasonwu1994/Gboard-patches/compare/v2.6.0...v2.7.0-dev.1) (2026-08-07)
 
 ### ✨ New Features
