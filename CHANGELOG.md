@@ -1,3 +1,13 @@
+## [2.7.0-dev.3](https://github.com/jasonwu1994/Gboard-patches/compare/v2.7.0-dev.2...v2.7.0-dev.3) (2026-08-08)
+
+### 🐛 Bug Fixes
+
+* **Gboard:** harden Web Clipboard loopback authentication.
+
+### 🐛 修復
+
+* **Gboard:** 強化 Web Clipboard 的 loopback 驗證機制。
+
 ## [2.7.0-dev.2](https://github.com/jasonwu1994/Gboard-patches/compare/v2.7.0-dev.1...v2.7.0-dev.2) (2026-08-08)
 
 ### ✨ New Features
