@@ -1,3 +1,41 @@
+## [2.9.0-dev.2](https://github.com/jasonwu1994/Gboard-patches/compare/v2.8.0...v2.9.0-dev.2) (2026-08-13)
+
+### ✨ New Features
+
+* **Gboard:** add the `Change emoji size` patch, which enables Gboard's emoji size setting.
+* **Gboard:** add the `Enable cursor trackpad mode` patch, which enables long-press-spacebar trackpad and cursor lock modes.
+* **Gboard:** add the `Access Points menu style` patch, which lets you switch between the new and legacy Access Points menu styles.
+* **Gboard:** add the `Enable split keyboard` patch, with Access Point controls and an optional Auto split setting.
+* **Gboard:** add the `Enable accessibility layout` patch, which exposes Gboard's accessibility layout setting.
+
+### ✨ 新功能
+
+* **Gboard:** 新增 `Change emoji size` Patch，啟用 Gboard 的表情符號大小設定。
+* **Gboard:** 新增 `Enable cursor trackpad mode` Patch，啟用長按空白鍵觸控板與游標鎖定模式。
+* **Gboard:** 新增 `Access Points menu style` Patch，可切換新版與舊版 Access Points 選單樣式。
+* **Gboard:** 新增 `Enable split keyboard` Patch，提供 Access Point 控制與可選的自動分離設定。
+* **Gboard:** 新增 `Enable accessibility layout` Patch，顯示 Gboard 的無障礙鍵盤配置設定。
+
+## [2.8.0](https://github.com/jasonwu1994/Gboard-patches/compare/v2.7.0...v2.8.0) (2026-08-12)
+
+### ✨ New Features
+
+* **Gboard:** add the `Incognito Mode Toggle` patch, which adds an Incognito toggle to the Access Point toolbar and lets you configure clipboard and voice typing availability while Incognito mode is active.
+* **Gboard:** refactor the `Patches` settings page with clearer feature categories and improved navigation and scroll-position handling.
+
+### 🐛 Bug Fixes
+
+* **Gboard:** disable the custom top row by default to reduce confusion after users repeatedly mistook the feature for a bug and reported it on Reddit.
+
+### ✨ 新功能
+
+* **Gboard:** 新增 `Incognito Mode Toggle` Patch，在 Access Point 工具列加入無痕模式切換按鈕，並可設定無痕模式啟用時是否允許使用剪貼簿與語音輸入。
+* **Gboard:** 重構 `Patches` 設定頁，重新整理功能分類，並改善頁面導覽與捲動位置保留體驗。
+
+### 🐛 修復
+
+* **Gboard:** 因多位使用者誤將自訂頂部列視為 Bug 並在 Reddit 回報，現將此功能改為預設停用，以減少使用上的困惑。
+
 ## [2.8.0-dev.2](https://github.com/jasonwu1994/Gboard-patches/compare/v2.7.0...v2.8.0-dev.2) (2026-08-11)
 
 ### ✨ New Features
