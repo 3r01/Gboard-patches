@@ -188,6 +188,22 @@
         <translation locale="en">Open Developer options and the Flag Editor.</translation>
         <translation locale="zh-Hant">開啟 開發人員選項 與 Flag 編輯器。</translation>
     </string>
+    <string name="gboard_patches_developer_options_package_warning_title">
+        <translation locale="en">Unsupported Gboard package</translation>
+        <translation locale="zh-Hant">不支援的 Gboard 套件名稱</translation>
+    </string>
+    <string name="gboard_patches_developer_options_package_warning_message">
+        <translation locale="en">The current Gboard package is %1$s. Gboard Patches supports only the official package com.google.android.inputmethod.latin and dev.jason.com.google.android.inputmethod.latin. Mixing Gboard builds from multiple sources may cause instability.</translation>
+        <translation locale="zh-Hant">目前的 Gboard 套件名稱是 %1$s。Gboard Patches 只支援官方套件名稱 com.google.android.inputmethod.latin 與 dev.jason.com.google.android.inputmethod.latin，混用多個來源的 Gboard 可能導致不穩定。</translation>
+    </string>
+    <string name="gboard_patches_developer_options_try_anyway">
+        <translation locale="en">Try anyway</translation>
+        <translation locale="zh-Hant">嘗試看看</translation>
+    </string>
+    <string name="gboard_patches_developer_options_launch_failed">
+        <translation locale="en">Unable to open Developer options for %1$s.</translation>
+        <translation locale="zh-Hant">無法開啟 %1$s 的開發人員選項。</translation>
+    </string>
     <string name="gboard_patches_top_row_title">
         <translation locale="en">Custom Top Row</translation>
         <translation locale="zh-Hant">自訂第一排按鍵</translation>
@@ -869,8 +885,8 @@
         <translation locale="zh-Hant">啟用 AI 撰寫工具</translation>
     </string>
     <string name="gboard_patches_ai_writing_tools_enabled_summary">
-        <translation locale="en">Force-show the two switches under Corrections &amp; suggestions -&gt; Writing tools.</translation>
-        <translation locale="zh-Hant">強制顯示 修正和建議 -&gt; 撰寫工具 中的2個開關。</translation>
+        <translation locale="en">Force-show Corrections &amp; suggestions &gt; Writing tools &gt; Show writing tools icon in suggestion strip while typing. Force-stop and restart Gboard for changes to take effect.</translation>
+        <translation locale="zh-Hant">強制顯示 修正和建議 &gt; 撰寫工具 中的 輸入時在建議列顯示撰寫工具圖示。強制停止並重新啟動Gboard生效</translation>
     </string>
     <string name="gboard_patches_ai_writing_tools_all_keyboards_title">
         <translation locale="en">Support All Keyboards</translation>
@@ -885,8 +901,8 @@
         <translation locale="zh-Hant">後端類型</translation>
     </string>
     <string name="gboard_patches_ai_writing_tools_backend_type_summary">
-        <translation locale="en">Force-stop and restart Gboard after changing the backend. If you select AICORE, you must be eligible to download the model.</translation>
-        <translation locale="zh-Hant">變更後端後，需要強制停止並重新啟動 Gboard 才會生效。如果選擇 AICORE，需要有資格才能下載模型。</translation>
+        <translation locale="en">If you select AI CORE or ASTREA, your account or device must be eligible to enable it.</translation>
+        <translation locale="zh-Hant">如果選擇AI CORE或是ASTREA，你的帳號或裝置必須要有權限才能啟用</translation>
     </string>
     <string name="gboard_patches_ai_writing_tools_backend_type_dialog_title">
         <translation locale="en">Backend type</translation>
@@ -1659,8 +1675,8 @@
         <translation locale="zh-Hant">啟用進階語音輸入</translation>
     </string>
     <string name="gboard_patches_advanced_voice_enabled_summary">
-        <translation locale="en">When Advanced Voice Typing is active, a colorful microphone icon appears. Force-stop and restart Gboard for changes to take effect.</translation>
-        <translation locale="zh-Hant">使用進階語音輸入功能時，畫面上會顯示彩色麥克風圖示，需要強制停止並重新啟動才會生效。</translation>
+        <translation locale="en">Voice typing &gt; Dictation type. Force-stop and restart Gboard for changes to take effect.</translation>
+        <translation locale="zh-Hant">語音輸入 &gt; 語音輸入類型。需強制停止並重新啟動Gboard才會生效</translation>
     </string>
     <string name="gboard_patches_advanced_voice_backend_title">
         <translation locale="en">Voice typing backend</translation>
@@ -1691,8 +1707,8 @@
         <translation locale="zh-Hant">中文輸入自動添加標點符號</translation>
     </string>
     <string name="gboard_patches_advanced_voice_zh_tw_punctuation_summary">
-        <translation locale="en">Requires Voice typing -&gt; Advanced features to be enabled. Force-stop and restart Gboard for changes to take effect.</translation>
-        <translation locale="zh-Hant">必須啟用 語音輸入 -&gt; 進階功能；需要強制停止並重新啟動 Gboard 才會生效。</translation>
+        <translation locale="en">Force-stop and restart Gboard for changes to take effect.</translation>
+        <translation locale="zh-Hant">需要強制停止並重新啟動Gboard才會生效。</translation>
     </string>
     <string name="gboard_patches_advanced_voice_section_behavior">
         <translation locale="en">Behavior</translation>

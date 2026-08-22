@@ -1,3 +1,23 @@
+## [3.0.0-dev.1](https://github.com/jasonwu1994/Gboard-patches/compare/v2.11.0...v3.0.0-dev.1) (2026-08-22)
+
+### ✨ New Features
+
+* **Gboard:** update the supported Gboard version to `18.0.3.954559732-release-arm64-v8a`.
+
+### ✨ 新功能
+
+* **Gboard:** 更新支援的 Gboard 版本至 `18.0.3.954559732-release-arm64-v8a`。
+
+## [2.11.0](https://github.com/jasonwu1994/Gboard-patches/compare/v2.10.0...v2.11.0) (2026-08-15)
+
+### ✨ New Features
+
+* **Gboard:** nothing was added.
+
+### ✨ 新功能
+
+* **Gboard:** 什麼都沒有添加。
+
 ## [2.11.0-dev.1](https://github.com/jasonwu1994/Gboard-patches/compare/v2.10.0...v2.11.0-dev.1) (2026-08-14)
 
 ### ✨ New Features
