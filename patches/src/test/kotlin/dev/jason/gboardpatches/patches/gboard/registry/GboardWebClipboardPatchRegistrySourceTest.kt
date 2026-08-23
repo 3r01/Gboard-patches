@@ -53,9 +53,9 @@ class GboardWebClipboardPatchRegistrySourceTest {
     }
 
     @Test
-    fun generatedInventoryHasThirtyOneRowsAndExactlyOneWebClipboard() {
+    fun generatedInventoryHasThirtyFourRowsAndExactlyOneWebClipboard() {
         val patches = generatedPublishedPatches()
-        assertEquals(31, patches.size)
+        assertEquals(34, patches.size)
 
         val rows = patches.filter { it.get("name").asString == "Web Clipboard" }
         assertEquals(1, rows.size)

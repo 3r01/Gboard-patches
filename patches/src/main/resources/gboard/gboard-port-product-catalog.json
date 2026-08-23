@@ -1,7 +1,7 @@
 {
   "$schema": "gboard-port-product-catalog.schema.json",
   "format": "gboard-port-product-catalog.v1",
-  "catalog_version": "1.7.0",
+  "catalog_version": "1.8.0",
   "composition": {
     "selected_only_call_chain": true,
     "runtime_feature_mask": false
@@ -155,6 +155,22 @@
       ],
       "contributions": [
         { "contribution_id": "clipboard_enhancements.bytecode", "anchor_family_id": "dedicated_bytecode", "phase": "dedicated", "order": 600, "required_bindings": [], "runtime_calls": ["CLIPBOARD_RUNTIME_AFTER_ADAPTER_TRIM", "CLIPBOARD_RUNTIME_AFTER_ITEM_BIND", "CLIPBOARD_RUNTIME_BEFORE_ITEM_BIND", "CLIPBOARD_RUNTIME_HANDLE_CUSTOM_PRUNE", "CLIPBOARD_RUNTIME_MAYBE_BUILD_LOADER_RESULT", "CLIPBOARD_RUNTIME_RESOLVE_COLUMN_COUNT_OVERRIDE"] }
+      ]
+    },
+    {
+      "feature_id": "close_proactive_suggestions",
+      "public_patch_name": "Close Proactive Suggestions",
+      "feature_marker": "dev.jason.gboardpatches.feature.close_proactive_suggestions",
+      "target_family_ids": ["closeproactivesuggestions", "flag.reader"],
+      "migration_scope": "version-sensitive",
+      "consumer_files": [
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/features/closeproactivesuggestions/GboardCloseProactiveSuggestionsFeatureMarkerPatch.kt",
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/features/closeproactivesuggestions/GboardCloseProactiveSuggestionsFlagValuePatch.kt",
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/registry/GboardPatchRegistry.kt",
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/shared/GboardFlagFamilyComposer.kt"
+      ],
+      "contributions": [
+        { "contribution_id": "close_proactive_suggestions.flag", "anchor_family_id": "flag_bool_getter", "phase": "after_stock_result", "order": 1000, "required_bindings": ["flag_bool_getter", "flag_name_field"], "runtime_calls": ["CLOSE_PROACTIVE_SUGGESTIONS_RUNTIME_APPLY_FLAG_VALUE"] }
       ]
     },
     {
@@ -315,6 +331,25 @@
       ]
     },
     {
+      "feature_id": "flow_mode_animation",
+      "public_patch_name": "Hyperspeed Typing Animation",
+      "feature_marker": "dev.jason.gboardpatches.feature.flow_mode_animation",
+      "target_family_ids": ["flag.reader", "flowmode"],
+      "migration_scope": "version-sensitive",
+      "consumer_files": [
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/features/flowmode/GboardFlowModeFeatureMarkerPatch.kt",
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/features/flowmode/GboardFlowModeFlagValuePatch.kt",
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/features/flowmode/GboardFlowModeKeyEventPatch.kt",
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/registry/GboardContributionWiring.kt",
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/registry/GboardPatchRegistry.kt",
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/shared/GboardFlagFamilyComposer.kt"
+      ],
+      "contributions": [
+        { "contribution_id": "flow_mode_animation.flag", "anchor_family_id": "flag_bool_getter", "phase": "after_stock_result", "order": 1100, "required_bindings": ["flag_bool_getter", "flag_name_field"], "runtime_calls": ["FLOW_MODE_RUNTIME_APPLY_FLAG_VALUE"] },
+        { "contribution_id": "flow_mode_animation.key_event", "anchor_family_id": "dedicated_bytecode", "phase": "dedicated", "order": 1700, "required_bindings": [], "runtime_calls": ["FLOW_MODE_RUNTIME_MAP_KEY_CODE"] }
+      ]
+    },
+    {
       "feature_id": "g_logo_on_spacebar",
       "public_patch_name": "G Logo on Spacebar",
       "feature_marker": "dev.jason.gboardpatches.feature.spacebar_logo",
@@ -448,6 +483,22 @@
       ],
       "contributions": [
         { "contribution_id": "package_rename.resources", "anchor_family_id": "resource_only", "phase": "resource", "order": 200, "required_bindings": [], "runtime_calls": [] }
+      ]
+    },
+    {
+      "feature_id": "quick_insert",
+      "public_patch_name": "Quick Insert",
+      "feature_marker": "dev.jason.gboardpatches.feature.quick_insert",
+      "target_family_ids": ["flag.reader", "quickinsert"],
+      "migration_scope": "version-sensitive",
+      "consumer_files": [
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/features/quickinsert/GboardQuickInsertFeatureMarkerPatch.kt",
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/features/quickinsert/GboardQuickInsertFlagValuePatch.kt",
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/registry/GboardPatchRegistry.kt",
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/shared/GboardFlagFamilyComposer.kt"
+      ],
+      "contributions": [
+        { "contribution_id": "quick_insert.flag", "anchor_family_id": "flag_bool_getter", "phase": "after_stock_result", "order": 1200, "required_bindings": ["flag_bool_getter", "flag_name_field"], "runtime_calls": ["QUICK_INSERT_RUNTIME_APPLY_FLAG_VALUE"] }
       ]
     },
     {

@@ -114,7 +114,7 @@ public final class GboardAiWritingToolsRuntimeTest {
     }
 
     @Test
-    public void renamedServerPackageUsesConfiguredModelVersions() {
+    public void renamedServerPackageUsesTheMorpheModelConfigs() {
         GboardAiWritingToolsSettings.Snapshot settings = serverSettings(false);
 
         String proofread = "202406101250_prod_sd_config";

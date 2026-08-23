@@ -9,6 +9,7 @@ import dev.jason.gboardpatches.patches.gboard.features.addsymbols.gboardZhuyinCu
 import dev.jason.gboardpatches.patches.gboard.features.advancedvoice.gboardAdvancedVoiceFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.bluetoothmicrophone.gboardBluetoothMicrophoneFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.clipboardcontentlimit.gboardClipboardContentLimitFlagValuePatch
+import dev.jason.gboardpatches.patches.gboard.features.closeproactivesuggestions.gboardCloseProactiveSuggestionsFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.cursortrackpad.gboardCursorTrackpadFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.emojisize.gboardEmojiSizeFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.englishqwerty.gboardEnglishQwertySoftKeyPatch
@@ -16,7 +17,9 @@ import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardDevice
 import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardGrammarCheckerFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardInlineSuggestionsFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardKeyShapeSelectionFlagValuePatch
+import dev.jason.gboardpatches.patches.gboard.features.flowmode.gboardFlowModeFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.ocr.gboardOcrFlagValuePatch
+import dev.jason.gboardpatches.patches.gboard.features.quickinsert.gboardQuickInsertFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.longpressquickactions.gboardLongPressQuickActionsSoftKeyPatch
 import dev.jason.gboardpatches.patches.gboard.features.spacebarlogo.gboardSpacebarLogoSoftKeyPatch
 import dev.jason.gboardpatches.patches.gboard.features.toprowswipe.gboardTopRowSwipeSoftKeyPatch
@@ -47,7 +50,7 @@ class GboardPortProductCatalogContractTest {
     @Test
     fun catalogIsDeterministicAndDeclaresSelectedOnlyZeroSelectionComposition() {
         assertEquals("gboard-port-product-catalog.v1", catalog["format"].asString)
-        assertEquals("1.7.0", catalog["catalog_version"].asString)
+        assertEquals("1.8.0", catalog["catalog_version"].asString)
         val composition = catalog.getAsJsonObject("composition")
         assertEquals(
             setOf("selected_only_call_chain", "runtime_feature_mask"),
@@ -61,9 +64,9 @@ class GboardPortProductCatalogContractTest {
             features.map { feature -> feature["feature_id"].asString }.sorted(),
             features.map { feature -> feature["feature_id"].asString },
         )
-        assertEquals(31, features.size)
-        assertEquals(31, features.map { it["feature_id"].asString }.distinct().size)
-        assertEquals(31, features.map { it["public_patch_name"].asString }.distinct().size)
+        assertEquals(34, features.size)
+        assertEquals(34, features.map { it["feature_id"].asString }.distinct().size)
+        assertEquals(34, features.map { it["public_patch_name"].asString }.distinct().size)
 
         val expectedDigest = Files.readString(
             repositoryRoot().resolve(DIGEST_PATH),
@@ -193,7 +196,7 @@ class GboardPortProductCatalogContractTest {
     }
 
     @Test
-    fun flagFamilyDeclaresThirteenSelectedOnlyComposerCallsInCanonicalOrder() {
+    fun flagFamilyDeclaresSixteenSelectedOnlyComposerCallsInCanonicalOrder() {
         val flagContributions = features().flatMap { feature ->
             feature.getAsJsonArray("contributions")
                 .map { contribution -> contribution.asJsonObject }
@@ -203,15 +206,18 @@ class GboardPortProductCatalogContractTest {
                 .map { contribution -> feature["feature_id"].asString to contribution }
         }.sortedBy { (_, contribution) -> contribution["order"].asInt }
 
-        assertEquals(13, flagContributions.size)
+        assertEquals(16, flagContributions.size)
         assertEquals(
-            listOf(10, 20, 30, 40, 100, 200, 300, 400, 500, 600, 700, 800, 900),
+            listOf(
+                10, 20, 30, 40, 100, 200, 300, 400,
+                500, 600, 700, 800, 900, 1000, 1100, 1200,
+            ),
             flagContributions.map { (_, contribution) -> contribution["order"].asInt },
         )
         val runtimeCalls = flagContributions.map { (_, contribution) ->
             contribution.getAsJsonArray("runtime_calls").first().asString
         }
-        assertEquals(13, runtimeCalls.distinct().size)
+        assertEquals(16, runtimeCalls.distinct().size)
         assertFalse("FEATURE_FLAGS_RUNTIME_APPLY_OVERRIDDEN_FLAG_VALUE" in runtimeCalls)
         flagContributions.forEach { (_, contribution) ->
             assertEquals(
@@ -650,6 +656,7 @@ class GboardPortProductCatalogContractTest {
             "change_emoji_size" to "version-sensitive",
             "clipboard_custom_character_limit" to "version-sensitive",
             "clipboard_enhancements" to "version-sensitive",
+            "close_proactive_suggestions" to "version-sensitive",
             "custom_symbols" to "version-sensitive",
             "developer_options" to "version-sensitive",
             "emojis_stickers_gifs_tab_order" to "version-sensitive",
@@ -659,6 +666,7 @@ class GboardPortProductCatalogContractTest {
             "enable_ocr_scan_text" to "version-sensitive",
             "enable_split_keyboard" to "version-sensitive",
             "english_qwerty_up_flick_uppercase" to "version-sensitive",
+            "flow_mode_animation" to "version-sensitive",
             "g_logo_on_spacebar" to "version-sensitive",
             "grammar_checker" to "version-sensitive",
             "incognito_mode_toggle" to "version-sensitive",
@@ -667,6 +675,7 @@ class GboardPortProductCatalogContractTest {
             "latin_globe_key_ignore_interval" to "version-sensitive",
             "long_press_editing_shortcuts" to "version-sensitive",
             "package_rename" to "generic",
+            "quick_insert" to "version-sensitive",
             "settings_homepage_override" to "version-sensitive",
             "swipeable_custom_top_row" to "version-sensitive",
             "use_bluetooth_microphone" to "version-sensitive",
@@ -717,6 +726,16 @@ class GboardPortProductCatalogContractTest {
                 FEATURE_ROOT + "clipboardcontentlimit/GboardClipboardContentLimitFeatureMarkerPatch.kt",
             ),
             FlagFeatureContract(
+                "close_proactive_suggestions",
+                GboardFlagFamilyFeature.CLOSE_PROACTIVE_SUGGESTIONS,
+                gboardCloseProactiveSuggestionsFlagValuePatch,
+                "gboardCloseProactiveSuggestionsFlagValuePatch",
+                FEATURE_ROOT + "closeproactivesuggestions/" +
+                    "GboardCloseProactiveSuggestionsFlagValuePatch.kt",
+                FEATURE_ROOT + "closeproactivesuggestions/" +
+                    "GboardCloseProactiveSuggestionsFeatureMarkerPatch.kt",
+            ),
+            FlagFeatureContract(
                 "enable_accessibility_layout",
                 GboardFlagFamilyFeature.ENABLE_ACCESSIBILITY_LAYOUT,
                 gboardAccessibilityLayoutFlagValuePatch,
@@ -757,6 +776,14 @@ class GboardPortProductCatalogContractTest {
                 FEATURE_ROOT + "featureflags/GboardGrammarCheckerFeatureMarkerPatch.kt",
             ),
             FlagFeatureContract(
+                "flow_mode_animation",
+                GboardFlagFamilyFeature.FLOW_MODE_ANIMATION,
+                gboardFlowModeFlagValuePatch,
+                "gboardFlowModeFlagValuePatch",
+                FEATURE_ROOT + "flowmode/GboardFlowModeFlagValuePatch.kt",
+                FEATURE_ROOT + "flowmode/GboardFlowModeFeatureMarkerPatch.kt",
+            ),
+            FlagFeatureContract(
                 "inline_suggestions",
                 GboardFlagFamilyFeature.INLINE_SUGGESTIONS,
                 gboardInlineSuggestionsFlagValuePatch,
@@ -771,6 +798,14 @@ class GboardPortProductCatalogContractTest {
                 "gboardKeyShapeSelectionFlagValuePatch",
                 FEATURE_ROOT + "featureflags/GboardFeatureFlagsBytecodePatch.kt",
                 FEATURE_ROOT + "featureflags/GboardKeyShapeSelectionFeatureMarkerPatch.kt",
+            ),
+            FlagFeatureContract(
+                "quick_insert",
+                GboardFlagFamilyFeature.QUICK_INSERT,
+                gboardQuickInsertFlagValuePatch,
+                "gboardQuickInsertFlagValuePatch",
+                FEATURE_ROOT + "quickinsert/GboardQuickInsertFlagValuePatch.kt",
+                FEATURE_ROOT + "quickinsert/GboardQuickInsertFeatureMarkerPatch.kt",
             ),
             FlagFeatureContract(
                 "use_bluetooth_microphone",
