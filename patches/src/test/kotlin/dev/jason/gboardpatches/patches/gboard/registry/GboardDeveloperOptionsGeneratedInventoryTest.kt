@@ -1,7 +1,5 @@
 package dev.jason.gboardpatches.patches.gboard.registry
 
-import com.google.gson.JsonParser
-import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import org.junit.Assert.assertEquals
@@ -11,14 +9,8 @@ import org.junit.Test
 
 class GboardDeveloperOptionsGeneratedInventoryTest {
     @Test
-    fun generatedInventoryContainsTwentyFourPublishedPatchesAndNoRetiredRows() {
-        val repositoryRoot = findRepositoryRoot()
-        val inventory = JsonParser.parseString(
-            String(
-                Files.readAllBytes(repositoryRoot.resolve("patches-list.json")),
-                StandardCharsets.UTF_8,
-            ),
-        ).asJsonObject
+    fun generatedInventoryContainsThirtyOnePublishedPatchesAndNoRetiredRows() {
+        val inventory = generatedPublishedInventory()
         val patches = inventory.getAsJsonArray("patches")
         val names = patches.map { it.asJsonObject.get("name").asString }
 
@@ -37,7 +29,7 @@ class GboardDeveloperOptionsGeneratedInventoryTest {
         return generateSequence(workingDirectory) { it.parent }
             .firstOrNull { candidate ->
                 Files.isRegularFile(candidate.resolve("README.md")) &&
-                    Files.isRegularFile(candidate.resolve("patches-list.json"))
+                    Files.isRegularFile(candidate.resolve("settings.gradle.kts"))
             }
             ?: error("Could not locate repository root from $workingDirectory")
     }
