@@ -22,6 +22,8 @@ import dev.jason.gboardpatches.patches.gboard.features.clipboard.gboardClipboard
 import dev.jason.gboardpatches.patches.gboard.features.clipboard.gboardClipboardPrunePatch
 import dev.jason.gboardpatches.patches.gboard.features.clipboardcontentlimit.gboardClipboardContentLimitFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.clipboardcontentlimit.gboardClipboardContentLimitFlagValuePatch
+import dev.jason.gboardpatches.patches.gboard.features.closeproactivesuggestions.gboardCloseProactiveSuggestionsFeatureMarkerPatch
+import dev.jason.gboardpatches.patches.gboard.features.closeproactivesuggestions.gboardCloseProactiveSuggestionsFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.developeroptions.gboardDeveloperOptionsFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.cursortrackpad.gboardCursorTrackpadFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.cursortrackpad.gboardCursorTrackpadFlagValuePatch
@@ -40,6 +42,7 @@ import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardInline
 import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardInlineSuggestionsFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardKeyShapeSelectionFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardKeyShapeSelectionFlagValuePatch
+import dev.jason.gboardpatches.patches.gboard.features.flowmode.gboardFlowModeFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.latinglobe.gboardLatinGlobeKeyIgnoreIntervalBytecodePatch
 import dev.jason.gboardpatches.patches.gboard.features.latinglobe.gboardLatinGlobeKeyIgnoreIntervalFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.longpressquickactions.gboardLongPressQuickActionsFeatureMarkerPatch
@@ -48,6 +51,8 @@ import dev.jason.gboardpatches.patches.gboard.features.manualincognito.gboardMan
 import dev.jason.gboardpatches.patches.gboard.features.manualincognito.gboardManualIncognitoLifecyclePatch
 import dev.jason.gboardpatches.patches.gboard.features.manualincognito.gboardManualIncognitoPolicyPatch
 import dev.jason.gboardpatches.patches.gboard.features.ocr.gboardOcrFeatureMarkerPatch
+import dev.jason.gboardpatches.patches.gboard.features.quickinsert.gboardQuickInsertFeatureMarkerPatch
+import dev.jason.gboardpatches.patches.gboard.features.quickinsert.gboardQuickInsertFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.packagerename.gboardPackageRenameResourcePatch
 import dev.jason.gboardpatches.patches.gboard.features.settingshomepage.gboardSettingsHomepageBytecodePatch
 import dev.jason.gboardpatches.patches.gboard.features.settingshomepage.gboardSettingsHomepageFeatureMarkerPatch
@@ -288,6 +293,56 @@ val gboardAccessibilityLayoutPatch = gboardPublicResourcePatch(
         gboardPatchesSettingsPatch,
         gboardAccessibilityLayoutFeatureMarkerPatch,
         gboardAccessibilityLayoutFlagValuePatch,
+    )
+}
+
+@Suppress("unused")
+val gboardCloseProactiveSuggestionsPatch = gboardPublicResourcePatch(
+    featureId = "close_proactive_suggestions",
+    name = "Close Proactive Suggestions",
+    description = "在主動建議列顯示關閉按鈕\n" +
+        "Show a dismiss button in the proactive suggestions bar.",
+    default = true,
+) {
+    compatibleWith(COMPATIBILITY_GBOARD)
+
+    dependsOn(
+        gboardPatchesSettingsPatch,
+        gboardCloseProactiveSuggestionsFeatureMarkerPatch,
+        gboardCloseProactiveSuggestionsFlagValuePatch,
+    )
+}
+
+@Suppress("unused")
+val gboardFlowModeAnimationPatch = gboardPublicResourcePatch(
+    featureId = "flow_mode_animation",
+    name = "Hyperspeed Typing Animation",
+    description = "持續快速輸入時顯示動畫，並支援所有鍵盤\n" +
+        "Show the animation during sustained fast typing with support for all keyboards.",
+    default = true,
+) {
+    compatibleWith(COMPATIBILITY_GBOARD)
+
+    dependsOn(
+        gboardPatchesSettingsPatch,
+        gboardFlowModeFeatureMarkerPatch,
+    )
+}
+
+@Suppress("unused")
+val gboardQuickInsertPatch = gboardPublicResourcePatch(
+    featureId = "quick_insert",
+    name = "Quick Insert",
+    description = "啟用快速插入面板與工具列入口\n" +
+        "Enable the Quick Insert panel and toolbar access point.",
+    default = true,
+) {
+    compatibleWith(COMPATIBILITY_GBOARD)
+
+    dependsOn(
+        gboardPatchesSettingsPatch,
+        gboardQuickInsertFeatureMarkerPatch,
+        gboardQuickInsertFlagValuePatch,
     )
 }
 
@@ -612,6 +667,9 @@ object GboardPublishedPatchCatalog {
         gboardAccessPointsMenuStylePatch,
         gboardSplitKeyboardPatch,
         gboardAccessibilityLayoutPatch,
+        gboardCloseProactiveSuggestionsPatch,
+        gboardFlowModeAnimationPatch,
+        gboardQuickInsertPatch,
         gboardZhuyinQuickTraditionalSimplifiedTogglePatch,
         gboardCustomSymbolsPatch,
         gboardCustomTopRowSwipePatch,

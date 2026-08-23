@@ -93,6 +93,21 @@ internal enum class GboardFlagFamilyFeature(
         RuntimeCallId.BLUETOOTH_MICROPHONE_RUNTIME_APPLY_OVERRIDDEN_FLAG_VALUE,
         GboardFlagFamilyArgumentShape.RECEIVER_AND_RESULT,
     ),
+    CLOSE_PROACTIVE_SUGGESTIONS(
+        1000,
+        RuntimeCallId.CLOSE_PROACTIVE_SUGGESTIONS_RUNTIME_APPLY_FLAG_VALUE,
+        GboardFlagFamilyArgumentShape.FLAG_NAME_AND_RESULT,
+    ),
+    FLOW_MODE_ANIMATION(
+        1100,
+        RuntimeCallId.FLOW_MODE_RUNTIME_APPLY_FLAG_VALUE,
+        GboardFlagFamilyArgumentShape.FLAG_NAME_AND_RESULT,
+    ),
+    QUICK_INSERT(
+        1200,
+        RuntimeCallId.QUICK_INSERT_RUNTIME_APPLY_FLAG_VALUE,
+        GboardFlagFamilyArgumentShape.FLAG_NAME_AND_RESULT,
+    ),
     ;
 
     val spec: GboardFlagFamilyFeatureSpec
@@ -532,6 +547,11 @@ private fun emitFlagFamilyRuntimeCall(call: RuntimeCallId, registers: String): S
             RuntimeCallId.CLIPBOARD_CONTENT_LIMIT_RUNTIME_APPLY_OVERRIDDEN_FLAG_VALUE,
             registers,
         )
+    RuntimeCallId.CLOSE_PROACTIVE_SUGGESTIONS_RUNTIME_APPLY_FLAG_VALUE ->
+        RuntimeCallEmitter.invoke(
+            RuntimeCallId.CLOSE_PROACTIVE_SUGGESTIONS_RUNTIME_APPLY_FLAG_VALUE,
+            registers,
+        )
     RuntimeCallId.CURSOR_TRACKPAD_RUNTIME_APPLY_OVERRIDDEN_FLAG_VALUE ->
         RuntimeCallEmitter.invoke(
             RuntimeCallId.CURSOR_TRACKPAD_RUNTIME_APPLY_OVERRIDDEN_FLAG_VALUE,
@@ -549,6 +569,10 @@ private fun emitFlagFamilyRuntimeCall(call: RuntimeCallId, registers: String): S
         RuntimeCallId.FEATURE_FLAGS_RUNTIME_APPLY_OVERRIDDEN_FLAG_VALUE,
         registers,
     )
+    RuntimeCallId.FLOW_MODE_RUNTIME_APPLY_FLAG_VALUE -> RuntimeCallEmitter.invoke(
+        RuntimeCallId.FLOW_MODE_RUNTIME_APPLY_FLAG_VALUE,
+        registers,
+    )
     RuntimeCallId.GRAMMAR_CHECKER_RUNTIME_APPLY_FLAG_VALUE -> RuntimeCallEmitter.invoke(
         RuntimeCallId.GRAMMAR_CHECKER_RUNTIME_APPLY_FLAG_VALUE,
         registers,
@@ -563,6 +587,10 @@ private fun emitFlagFamilyRuntimeCall(call: RuntimeCallId, registers: String): S
     )
     RuntimeCallId.OCR_RUNTIME_APPLY_FLAG_VALUE -> RuntimeCallEmitter.invoke(
         RuntimeCallId.OCR_RUNTIME_APPLY_FLAG_VALUE,
+        registers,
+    )
+    RuntimeCallId.QUICK_INSERT_RUNTIME_APPLY_FLAG_VALUE -> RuntimeCallEmitter.invoke(
+        RuntimeCallId.QUICK_INSERT_RUNTIME_APPLY_FLAG_VALUE,
         registers,
     )
     else -> error("Runtime call $call does not belong to the flag family")
@@ -586,12 +614,15 @@ private val ALL_FLAG_FAMILY_RUNTIME_CALLS: Set<RuntimeCallId> = setOf(
     RuntimeCallId.AI_WRITING_TOOLS_RUNTIME_APPLY_OVERRIDDEN_FLAG_VALUE,
     RuntimeCallId.BLUETOOTH_MICROPHONE_RUNTIME_APPLY_OVERRIDDEN_FLAG_VALUE,
     RuntimeCallId.CLIPBOARD_CONTENT_LIMIT_RUNTIME_APPLY_OVERRIDDEN_FLAG_VALUE,
+    RuntimeCallId.CLOSE_PROACTIVE_SUGGESTIONS_RUNTIME_APPLY_FLAG_VALUE,
     RuntimeCallId.CURSOR_TRACKPAD_RUNTIME_APPLY_OVERRIDDEN_FLAG_VALUE,
     RuntimeCallId.DEVICE_INTELLIGENCE_RUNTIME_APPLY_FLAG_VALUE,
     RuntimeCallId.EMOJI_SIZE_RUNTIME_APPLY_OVERRIDDEN_FLAG_VALUE,
     RuntimeCallId.FEATURE_FLAGS_RUNTIME_APPLY_OVERRIDDEN_FLAG_VALUE,
+    RuntimeCallId.FLOW_MODE_RUNTIME_APPLY_FLAG_VALUE,
     RuntimeCallId.GRAMMAR_CHECKER_RUNTIME_APPLY_FLAG_VALUE,
     RuntimeCallId.INLINE_SUGGESTIONS_RUNTIME_APPLY_FLAG_VALUE,
     RuntimeCallId.KEY_SHAPE_SELECTION_RUNTIME_APPLY_FLAG_VALUE,
     RuntimeCallId.OCR_RUNTIME_APPLY_FLAG_VALUE,
+    RuntimeCallId.QUICK_INSERT_RUNTIME_APPLY_FLAG_VALUE,
 )

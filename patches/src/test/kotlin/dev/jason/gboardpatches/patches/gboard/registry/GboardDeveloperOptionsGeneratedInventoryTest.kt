@@ -9,12 +9,12 @@ import org.junit.Test
 
 class GboardDeveloperOptionsGeneratedInventoryTest {
     @Test
-    fun generatedInventoryContainsThirtyOnePublishedPatchesAndNoRetiredRows() {
+    fun generatedInventoryContainsThirtyFourPublishedPatchesAndNoRetiredRows() {
         val inventory = generatedPublishedInventory()
         val patches = inventory.getAsJsonArray("patches")
         val names = patches.map { it.asJsonObject.get("name").asString }
 
-        assertEquals(31, patches.size())
+        assertEquals(34, patches.size())
         RETIRED_PATCH_NAMES.forEach { retiredName ->
             assertFalse("Retired patch must stay absent: $retiredName", names.contains(retiredName))
         }

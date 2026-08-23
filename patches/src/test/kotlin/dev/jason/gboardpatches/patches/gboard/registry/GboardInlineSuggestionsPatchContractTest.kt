@@ -180,7 +180,7 @@ class GboardInlineSuggestionsPatchContractTest {
         }
         val compatiblePackages = inlinePatch.getAsJsonObject("compatiblePackages")
 
-        assertEquals(31, patches.size)
+        assertEquals(34, patches.size)
         assertTrue(inlinePatch.get("use").asBoolean)
         assertEquals(setOf(GBOARD_PACKAGE), compatiblePackages.keySet())
         assertEquals(
