@@ -1,3 +1,27 @@
+## [3.3.0-dev.1](https://github.com/jasonwu1994/Gboard-patches/compare/v3.2.0...v3.3.0-dev.1) (2026-08-24)
+
+### ✨ New Features
+
+* **Gboard:** add a restart button to the top-right corner of the `Patches` page.<br>
+  🤡 Previously, applying changes required long-pressing the app icon → opening App info → tapping Force stop → returning to the Home screen → opening Gboard → selecting Gboard as the keyboard.<br>
+  😎 Now, one tap quickly restarts Gboard, applies your changes, and automatically returns you to the `Patches` page—greatly improving the experience.
+
+### ✨ 新功能
+
+* **Gboard:** 在 `Patches` 頁面右上角新增重新啟動按鈕。<br>
+  🤡 過去要讓修改生效，必須長按 App 圖示 → 進入系統 App 資訊 → 點選強制停止 → 回到桌面開啟 Gboard → 選擇 Gboard 為鍵盤，才能看到修改效果。<br>
+  😎 現在只需點一下，就能快速重新啟動 Gboard、讓修改生效，並在重啟後自動回到 `Patches` 頁面，大幅提升使用體驗。
+
+## [3.2.0](https://github.com/jasonwu1994/Gboard-patches/compare/v3.1.0...v3.2.0) (2026-08-24)
+
+### ✨ New Features
+
+* **Gboard:** add the `Package Rename` patch, which lets you customize the app name. It defaults to `GboardWu` 😂 so you can distinguish it from the official `Gboard` when switching keyboards, and you can change it to any name you prefer.
+
+### ✨ 新功能
+
+* **Gboard:** 新增 `Package Rename` Patch，可自訂 App 名稱；預設為 `GboardWu` 😂，方便在切換鍵盤時與官方 `Gboard` 名稱區分，也可自行改成任何想要的名稱。
+
 ## [3.2.0-dev.1](https://github.com/jasonwu1994/Gboard-patches/compare/v3.1.0...v3.2.0-dev.1) (2026-08-23)
 
 ### ✨ New Features
