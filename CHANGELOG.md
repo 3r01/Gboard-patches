@@ -1,3 +1,23 @@
+## [3.4.0](https://github.com/jasonwu1994/Gboard-patches/compare/v3.3.0...v3.4.0) (2026-08-25)
+
+### ✨ New Features
+
+* **Gboard:** add the `Rounded Keyboard Panel` patch, which lets you choose which corners of the keyboard panel are rounded and configure the top and bottom corner radii independently.
+
+### ✨ 新功能
+
+* **Gboard:** 新增 `Rounded Keyboard Panel` Patch，可自訂鍵盤面板哪些角落呈現圓角，並可分別設定上方與下方半徑。
+
+## [3.4.0-dev.1](https://github.com/jasonwu1994/Gboard-patches/compare/v3.3.0...v3.4.0-dev.1) (2026-08-25)
+
+### ✨ New Features
+
+* **Gboard:** add the `Rounded Keyboard Panel` patch, which lets you choose which corners of the keyboard panel are rounded and configure the top and bottom corner radii independently.
+
+### ✨ 新功能
+
+* **Gboard:** 新增 `Rounded Keyboard Panel` Patch，可自訂鍵盤面板哪些角落呈現圓角，並可分別設定上方與下方半徑。
+
 ## [3.3.0](https://github.com/jasonwu1994/Gboard-patches/compare/v3.2.0...v3.3.0) (2026-08-25)
 
 ### ✨ New Features
