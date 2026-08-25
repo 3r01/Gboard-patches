@@ -120,6 +120,14 @@
         <translation locale="en">Navigate up</translation>
         <translation locale="zh-Hant">返回上一層</translation>
     </string>
+    <string name="gboard_patches_restart_action">
+        <translation locale="en">Restart Gboard</translation>
+        <translation locale="zh-Hant">重新啟動 Gboard</translation>
+    </string>
+    <string name="gboard_patches_restart_failed">
+        <translation locale="en">Gboard could not be restarted. Reopen Gboard settings and try again.</translation>
+        <translation locale="zh-Hant">無法重新啟動 Gboard。請重新開啟 Gboard 設定後再試一次。</translation>
+    </string>
     <string name="gboard_patches_language_title">
         <translation locale="en">Language</translation>
         <translation locale="zh-Hant">語言</translation>

@@ -3,6 +3,7 @@ package dev.jason.gboardpatches.extension.keyboard;
 import android.content.Context;
 
 import java.util.Arrays;
+import java.util.List;
 
 import dev.jason.gboardpatches.extension.R;
 import dev.jason.gboardpatches.extension.accessibilitylayout.GboardAccessibilityLayoutSettingsFeature;
@@ -62,6 +63,11 @@ public final class GboardKeyboardLayoutSettingsGroupFeature
     @Override
     public boolean isAvailable(Context context) {
         return delegate.isAvailable(context);
+    }
+
+    @Override
+    public List<GboardPatchesSettingsContract.Feature> getNavigationChildren() {
+        return delegate.getNavigationChildren();
     }
 
     @Override
