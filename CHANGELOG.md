@@ -1,3 +1,23 @@
+## [3.6.0-dev.1](https://github.com/jasonwu1994/Gboard-patches/compare/v3.5.0...v3.6.0-dev.1) (2026-08-26)
+
+### ✨ New Features
+
+* **Gboard:** add the `Floating Web Search` patch, which opens a floating web page directly from Gboard so you can quickly search for the information you need.
+
+### ✨ 新功能
+
+* **Gboard:** 新增 `Floating Web Search` Patch，可直接從 Gboard 開啟懸浮網頁，快速搜尋需要的資訊。
+
+## [3.5.0](https://github.com/jasonwu1994/Gboard-patches/compare/v3.4.0...v3.5.0) (2026-08-26)
+
+### ✨ New Features
+
+* **Gboard:** add the `Top Toolbar Item Count` patch, which lets you customize how many items appear in the Gboard top toolbar.
+
+### ✨ 新功能
+
+* **Gboard:** 新增 `Top Toolbar Item Count` Patch，可自訂 Gboard 頂端工具列項目數量。
+
 ## [3.5.0-dev.1](https://github.com/jasonwu1994/Gboard-patches/compare/v3.4.0...v3.5.0-dev.1) (2026-08-25)
 
 ### ✨ New Features
