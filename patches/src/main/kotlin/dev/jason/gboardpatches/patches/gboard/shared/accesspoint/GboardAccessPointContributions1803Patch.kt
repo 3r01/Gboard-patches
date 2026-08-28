@@ -1,4 +1,4 @@
-package dev.jason.gboardpatches.patches.gboard.features.manualincognito
+package dev.jason.gboardpatches.patches.gboard.shared.accesspoint
 
 import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.patch.bytecodePatch
@@ -13,67 +13,64 @@ import dev.jason.gboardpatches.patches.gboard.shared.runtimeabi.RuntimeCallEmitt
 import dev.jason.gboardpatches.patches.gboard.shared.runtimeabi.RuntimeCallId
 import dev.jason.gboardpatches.patches.shared.Constants.COMPATIBILITY_GBOARD
 
-internal val gboardManualIncognitoAccessPointPatch = bytecodePatch(
-    description = "加入 18.0.3 manual_incognito Access Point catalog 與 descriptor delegate。",
+internal val gboardAccessPointContributions1803Patch = bytecodePatch(
+    description = "集中注入 18.0.3 synthetic Access Point catalog 與 controller delegate。",
 ) {
     compatibleWith(COMPATIBILITY_GBOARD)
     dependsOn(gboardPatchesExtensionCarrierPatch)
 
     execute {
-        findMutableMethodOrThrow(GboardManualIncognitoTargets.orderFactory)
-            .applyManualIncognitoOrderCatalogDelegate()
-        findMutableMethodOrThrow(
-            GboardManualIncognitoTargets.accessPointControllerConstructor,
-        ).applyManualIncognitoControllerDelegate()
+        findMutableMethodOrThrow(GboardAccessPointContributions1803Targets.orderFactory)
+            .applyAccessPointOrderCatalogDelegate1803()
+        findMutableMethodOrThrow(GboardAccessPointContributions1803Targets.controllerConstructor)
+            .applyAccessPointControllerDelegate1803()
     }
 }
 
-internal fun MutableMethod.applyManualIncognitoOrderCatalogDelegate() {
-    val abi = RuntimeAbiCatalog.abi(
-        RuntimeCallId.MANUAL_INCOGNITO_RUNTIME_INCLUDE_ACCESS_POINT_CATALOG,
-    )
+internal fun MutableMethod.applyAccessPointOrderCatalogDelegate1803() {
+    val call = RuntimeCallId.ACCESS_POINT_CONTRIBUTIONS_1803_INCLUDE_ORDER_CATALOG
+    val abi = RuntimeAbiCatalog.abi(call)
     val instructions = implementation?.instructions
         ?: error("No instructions in $definingClass->$name")
     val existing = instructions.count { it.isMethodReference(abi.reference) }
     if (existing > 0) {
-        check(existing == 1 && instructions[0].isMethodReference(abi.reference)) {
-            "Malformed manual incognito order catalog delegate"
+        check(existing == 1) {
+            "Malformed 18.0.3 Access Point order catalog delegate"
         }
         return
     }
     addInstructions(
         0,
         """
-            ${RuntimeCallEmitter.invoke(
-                RuntimeCallId.MANUAL_INCOGNITO_RUNTIME_INCLUDE_ACCESS_POINT_CATALOG,
-                "p3 .. p3",
-            )}
+            move-object/from16 v0, p0
 
-            move-result-object p3
+            move-object/from16 v1, p3
+
+            ${RuntimeCallEmitter.invoke(call, "v0, v1")}
+
+            move-result-object v0
+
+            move-object/from16 p3, v0
 
             check-cast p3, Lvxe;
         """.trimIndent(),
     )
 }
 
-internal fun MutableMethod.applyManualIncognitoControllerDelegate() {
-    val abi = RuntimeAbiCatalog.abi(
-        RuntimeCallId.MANUAL_INCOGNITO_RUNTIME_AFTER_CONTROLLER_CREATED,
-    )
+internal fun MutableMethod.applyAccessPointControllerDelegate1803() {
+    val call = RuntimeCallId.ACCESS_POINT_CONTRIBUTIONS_1803_AFTER_CONTROLLER_CREATED
+    val abi = RuntimeAbiCatalog.abi(call)
     val instructions = implementation?.instructions
         ?: error("No instructions in $definingClass->$name")
     val returns = returnInstructionIndices().filter { instructions[it].isOpcode("RETURN_VOID") }
     check(returns.size == 1) { "Expected one mlh constructor return, found ${returns.size}" }
     val existing = instructions.count { it.isMethodReference(abi.reference) }
     if (existing > 0) {
-        check(existing == 1) { "Duplicate manual incognito controller delegate" }
+        check(existing == 1) { "Duplicate 18.0.3 Access Point controller delegate" }
         return
     }
     addInstructions(
         returns.single(),
-        RuntimeCallEmitter.invoke(
-            RuntimeCallId.MANUAL_INCOGNITO_RUNTIME_AFTER_CONTROLLER_CREATED,
-            "p0 .. p1",
-        ),
+        RuntimeCallEmitter.invoke(call, "p0, p1"),
     )
 }
