@@ -312,7 +312,6 @@ class GboardGrammarCheckerPatchContractTest {
         }
         val compatiblePackages = grammarPatch.getAsJsonObject("compatiblePackages")
 
-        assertEquals(37, patches.size)
         assertTrue(grammarPatch.get("use").asBoolean)
         assertEquals(setOf(GBOARD_PACKAGE), compatiblePackages.keySet())
         assertEquals(

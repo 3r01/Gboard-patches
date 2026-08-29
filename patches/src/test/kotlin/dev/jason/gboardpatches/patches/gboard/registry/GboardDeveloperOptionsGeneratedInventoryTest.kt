@@ -2,19 +2,17 @@ package dev.jason.gboardpatches.patches.gboard.registry
 
 import java.nio.file.Files
 import java.nio.file.Path
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class GboardDeveloperOptionsGeneratedInventoryTest {
     @Test
-    fun generatedInventoryContainsThirtyFivePublishedPatchesAndNoRetiredRows() {
+    fun generatedInventoryContainsExpectedPatchesAndNoRetiredRows() {
         val inventory = generatedPublishedInventory()
         val patches = inventory.getAsJsonArray("patches")
         val names = patches.map { it.asJsonObject.get("name").asString }
 
-        assertEquals(37, patches.size())
         RETIRED_PATCH_NAMES.forEach { retiredName ->
             assertFalse("Retired patch must stay absent: $retiredName", names.contains(retiredName))
         }

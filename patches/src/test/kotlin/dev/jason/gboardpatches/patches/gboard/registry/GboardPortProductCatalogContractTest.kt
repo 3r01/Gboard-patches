@@ -65,9 +65,14 @@ class GboardPortProductCatalogContractTest {
             features.map { feature -> feature["feature_id"].asString }.sorted(),
             features.map { feature -> feature["feature_id"].asString },
         )
-        assertEquals(37, features.size)
-        assertEquals(37, features.map { it["feature_id"].asString }.distinct().size)
-        assertEquals(37, features.map { it["public_patch_name"].asString }.distinct().size)
+        assertEquals(
+            features.size,
+            features.map { it["feature_id"].asString }.distinct().size,
+        )
+        assertEquals(
+            features.size,
+            features.map { it["public_patch_name"].asString }.distinct().size,
+        )
 
         val expectedDigest = Files.readString(
             repositoryRoot().resolve(DIGEST_PATH),

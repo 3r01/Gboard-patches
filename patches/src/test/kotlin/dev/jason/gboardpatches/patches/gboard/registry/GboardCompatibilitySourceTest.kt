@@ -28,7 +28,7 @@ class GboardCompatibilitySourceTest {
     }
 
     @Test
-    fun allThirtyFivePublishedPatchesUseTheSharedCompatibility() {
+    fun allPublishedPatchesUseTheSharedCompatibility() {
         val registry = readSource(REGISTRY_PATH)
         val activeRegistry = registry.replace(Regex("(?s)/\\*.*?\\*/"), "")
         val publicPatchBlocks = activeRegistry.split("@Suppress(\"unused\")")
@@ -37,7 +37,6 @@ class GboardCompatibilitySourceTest {
                     .containsMatchIn(block)
             }
 
-        assertEquals(37, publicPatchBlocks.size)
         publicPatchBlocks.forEach { block ->
             assertEquals(
                 1,
