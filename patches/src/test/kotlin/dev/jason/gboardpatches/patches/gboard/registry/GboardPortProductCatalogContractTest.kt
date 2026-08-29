@@ -51,7 +51,7 @@ class GboardPortProductCatalogContractTest {
     @Test
     fun catalogIsDeterministicAndDeclaresSelectedOnlyZeroSelectionComposition() {
         assertEquals("gboard-port-product-catalog.v1", catalog["format"].asString)
-        assertEquals("1.10.0", catalog["catalog_version"].asString)
+        assertEquals("1.11.0", catalog["catalog_version"].asString)
         val composition = catalog.getAsJsonObject("composition")
         assertEquals(
             setOf("selected_only_call_chain", "runtime_feature_mask"),
@@ -65,9 +65,9 @@ class GboardPortProductCatalogContractTest {
             features.map { feature -> feature["feature_id"].asString }.sorted(),
             features.map { feature -> feature["feature_id"].asString },
         )
-        assertEquals(37, features.size)
-        assertEquals(37, features.map { it["feature_id"].asString }.distinct().size)
-        assertEquals(37, features.map { it["public_patch_name"].asString }.distinct().size)
+        assertEquals(38, features.size)
+        assertEquals(38, features.map { it["feature_id"].asString }.distinct().size)
+        assertEquals(38, features.map { it["public_patch_name"].asString }.distinct().size)
 
         val expectedDigest = Files.readString(
             repositoryRoot().resolve(DIGEST_PATH),
@@ -683,6 +683,7 @@ class GboardPortProductCatalogContractTest {
             "quick_insert" to "version-sensitive",
             "rounded_keyboard_panel" to "version-sensitive",
             "settings_homepage_override" to "version-sensitive",
+            "swipe_down_to_dismiss_keyboard" to "version-sensitive",
             "swipeable_custom_top_row" to "version-sensitive",
             "use_bluetooth_microphone" to "version-sensitive",
             "web_clipboard" to "version-sensitive",
