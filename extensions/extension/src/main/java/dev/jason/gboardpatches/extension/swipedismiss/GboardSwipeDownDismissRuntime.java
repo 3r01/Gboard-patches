@@ -20,11 +20,13 @@ import dev.jason.gboardpatches.extension.settings.GboardPatchesSettings;
 public final class GboardSwipeDownDismissRuntime {
     private static final String TAG = "GboardPatches";
     private static final String LOG_PREFIX = "[swipe-down-dismiss] ";
+    private static volatile boolean toolbarEditMode;
 
     private GboardSwipeDownDismissRuntime() {
     }
 
     public static void onInputViewStarted(Object inputMethodService) {
+        toolbarEditMode = false;
         if (!(inputMethodService instanceof InputMethodService service)) {
             return;
         }
@@ -34,6 +36,14 @@ public final class GboardSwipeDownDismissRuntime {
         if (decorView != null) {
             decorView.post(() -> installWindowCallback(service));
         }
+    }
+
+    public static void onToolbarEditModeChanged(boolean editing) {
+        toolbarEditMode = editing;
+    }
+
+    static boolean isToolbarEditModeForTesting() {
+        return toolbarEditMode;
     }
 
     private static void installWindowCallback(InputMethodService service) {
@@ -101,6 +111,10 @@ public final class GboardSwipeDownDismissRuntime {
                     return delegate.dispatchTouchEvent(event);
                 }
                 case MotionEvent.ACTION_MOVE -> {
+                    if (toolbarEditMode) {
+                        gesture.reset();
+                        return delegate.dispatchTouchEvent(event);
+                    }
                     if (gesture.isConsumed()) {
                         return true;
                     }
@@ -157,6 +171,9 @@ public final class GboardSwipeDownDismissRuntime {
     private static boolean beginsInHeader(InputMethodService service, MotionEvent event) {
         if (service == null || service.getWindow() == null
                 || service.getWindow().getWindow() == null) {
+            return false;
+        }
+        if (toolbarEditMode) {
             return false;
         }
         View root = service.getWindow().getWindow().getDecorView();
