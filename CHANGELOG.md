@@ -1,3 +1,13 @@
+## [3.7.0-dev.2](https://github.com/jasonwu1994/Gboard-patches/compare/v3.7.0-dev.1...v3.7.0-dev.2) (2026-08-30)
+
+### ✨ New Features
+
+* **Gboard:** expand the `Long-Press Editing Shortcuts` patch to support additional keyboard layouts.
+
+### ✨ 新功能
+
+* **Gboard:** 擴充 `Long-Press Editing Shortcuts` Patch，現在支援更多鍵盤配置。
+
 ## [3.7.0-dev.1](https://github.com/jasonwu1994/Gboard-patches/compare/v3.6.0...v3.7.0-dev.1) (2026-08-28)
 
 ### ✨ New Features

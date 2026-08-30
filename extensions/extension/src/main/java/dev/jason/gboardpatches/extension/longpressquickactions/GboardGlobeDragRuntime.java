@@ -46,6 +46,7 @@ public final class GboardGlobeDragRuntime {
         }
         try {
             GboardGlobeDragPort port = portFor(metadata);
+            port.observeBoundKey(metadata, view);
             if (!port.isGlobeView(view)) {
                 return metadata;
             }
@@ -214,7 +215,10 @@ public final class GboardGlobeDragRuntime {
         if (!target.terminalCandidate) {
             return true;
         }
-        GboardGlobeDragSession.CommitResult result = session.commitTarget(target.shortcut, now);
+        GboardEditingShortcutPolicy.Shortcut resolvedShortcut =
+                session.resolveTerminalShortcut(target);
+        GboardGlobeDragSession.CommitResult result =
+                session.commitTarget(resolvedShortcut, now);
         if (result.failure != null) {
             logError("editor action failed", result.failure);
         }
@@ -234,6 +238,8 @@ public final class GboardGlobeDragRuntime {
             int activeSessionId = 0;
             String pressText = null;
             synchronized (LOCK) {
+                long now = SystemClock.uptimeMillis();
+                expireSession(now);
                 if (isPatched(metadata)) {
                     latestGlobeTracker = new WeakReference<>(tracker);
                     if (session != null && session.tracker == null) {
@@ -241,16 +247,20 @@ public final class GboardGlobeDragRuntime {
                     }
                     if (session != null
                             && (session.tracker == null || session.tracker == tracker)) {
-                        session.state.onGlobeOwner();
+                        session.onGlobeOwner();
                     }
                     return;
                 }
-                if (session == null || !session.state.isActive()
+                if (session == null || !session.state.canAcceptTargetOwner(now)
                         || (session.tracker != null && session.tracker != tracker)) {
                     return;
                 }
-                GboardGlobeDragPort.TargetSignal target = port.inspectPointerTarget(metadata);
-                session.state.onTargetOwner(target.shortcut);
+                if (session.tracker == null) {
+                    session.tracker = tracker;
+                }
+                GboardGlobeDragPort.TargetSignal target =
+                        port.inspectPointerTarget(softKeyView, metadata);
+                session.claimTarget(target);
                 activeSessionId = session.id;
                 pressText = target.pressText;
             }
@@ -271,8 +281,10 @@ public final class GboardGlobeDragRuntime {
             }
             try {
                 synchronized (LOCK) {
-                    expireSession(SystemClock.uptimeMillis());
-                    if (session == null || session.id != sessionId || !session.state.isActive()
+                    long now = SystemClock.uptimeMillis();
+                    expireSession(now);
+                    if (session == null || session.id != sessionId
+                            || !session.state.canAcceptTargetOwner(now)
                             || (session.tracker != null && session.tracker != currentTracker)) {
                         return;
                     }
@@ -493,4 +505,5 @@ public final class GboardGlobeDragRuntime {
             // Error reporting must not alter fail-closed behavior.
         }
     }
+
 }
