@@ -13,7 +13,7 @@ public final class GboardLongPressQuickActionsSettings {
     public static final String PREF_KEY_POSITION =
             "pref_long_press_quick_actions_position";
     public static final boolean DEFAULT_ENABLED = true;
-    public static final boolean DEFAULT_GLOBE_DRAG_ENABLED = true;
+    public static final boolean DEFAULT_GLOBE_DRAG_ENABLED = false;
     public static final int POSITION_LAST = -1;
     public static final int POSITION_FIRST = 0;
     public static final int DEFAULT_POSITION = POSITION_LAST;

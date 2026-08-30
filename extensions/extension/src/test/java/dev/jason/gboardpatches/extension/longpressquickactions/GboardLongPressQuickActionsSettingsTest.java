@@ -13,11 +13,11 @@ import java.util.Set;
 
 public final class GboardLongPressQuickActionsSettingsTest {
     @Test
-    public void missingAndMalformedValuesDefaultToEnabled() {
+    public void parentDefaultsEnabledWhileGlobeDragDefaultsDisabled() {
         TestSharedPreferences preferences = new TestSharedPreferences();
 
         Assert.assertTrue(GboardLongPressQuickActionsSettings.readEnabled(preferences));
-        Assert.assertTrue(GboardLongPressQuickActionsSettings
+        Assert.assertFalse(GboardLongPressQuickActionsSettings
                 .readGlobeDragEnabled(preferences));
 
         preferences.values.put(
@@ -27,7 +27,7 @@ public final class GboardLongPressQuickActionsSettingsTest {
         preferences.values.put(
                 GboardLongPressQuickActionsSettings.PREF_KEY_GLOBE_DRAG_ENABLED,
                 Integer.valueOf(0));
-        Assert.assertTrue(GboardLongPressQuickActionsSettings
+        Assert.assertFalse(GboardLongPressQuickActionsSettings
                 .readGlobeDragEnabled(preferences));
     }
 

@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public final class GboardGlobeDragSessionTest {
     private static final long GRACE_MS = 750L;
+    private static final Object DEFAULT_METADATA_IDENTITY = new Object();
 
     @Test
     public void invalidClaimCommitsAsNoOpWithoutCallingEditor() {
@@ -16,7 +17,7 @@ public final class GboardGlobeDragSessionTest {
                     calls.incrementAndGet();
                     return true;
                 }, GRACE_MS);
-        session.state.onTargetOwner(null);
+        session.claimTarget(target(1, "q", null));
 
         GboardGlobeDragSession.CommitResult result = session.commitClaimedTarget(1_000L);
 
@@ -31,7 +32,8 @@ public final class GboardGlobeDragSessionTest {
         RuntimeException failure = new RuntimeException("editor failed");
         GboardGlobeDragSession session = new GboardGlobeDragSession(
                 2, new Object(), shortcut -> { throw failure; }, GRACE_MS);
-        session.state.onTargetOwner(GboardEditingShortcutPolicy.Shortcut.SELECT_ALL);
+        session.claimTarget(target(
+                2, "a", GboardEditingShortcutPolicy.Shortcut.SELECT_ALL));
 
         GboardGlobeDragSession.CommitResult result = session.commitClaimedTarget(2_000L);
 
@@ -94,5 +96,154 @@ public final class GboardGlobeDragSessionTest {
 
         Assert.assertFalse(session.shouldConsumeGestureReplay(tracker, 6_300L));
         Assert.assertTrue(session.state.isAwaitingReplay(6_300L));
+    }
+
+    @Test
+    public void physicalClaimOverridesSemanticTerminalShortcut() {
+        GboardGlobeDragSession session = new GboardGlobeDragSession(
+                8, new Object(), shortcut -> true, GRACE_MS);
+        session.claimTarget(target(
+                0x7f0b1ac2, "y", GboardEditingShortcutPolicy.Shortcut.UNDO));
+
+        GboardEditingShortcutPolicy.Shortcut resolved = session.resolveTerminalShortcut(target(
+                0x7f0b1ac2, "y", GboardEditingShortcutPolicy.Shortcut.REDO));
+
+        Assert.assertSame(GboardEditingShortcutPolicy.Shortcut.UNDO, resolved);
+    }
+
+    @Test
+    public void terminalWithEqualValuesButDifferentMetadataIdentityIsRejected() {
+        Object claimedMetadata = new Object();
+        Object terminalMetadata = new Object();
+        GboardGlobeDragSession session = new GboardGlobeDragSession(
+                13, new Object(), shortcut -> true, GRACE_MS);
+        session.claimTarget(target(
+                claimedMetadata,
+                0x7f0b1ac2,
+                "y",
+                GboardEditingShortcutPolicy.Shortcut.UNDO));
+
+        Assert.assertNull(session.resolveTerminalShortcut(target(
+                terminalMetadata,
+                0x7f0b1ac2,
+                "y",
+                GboardEditingShortcutPolicy.Shortcut.UNDO)));
+    }
+
+    @Test
+    public void clonedMetadataCanMatchTheSamePhysicalSlotButNotAnotherSlot() {
+        Object claimedMetadata = new Object();
+        Object terminalMetadata = new Object();
+        GboardGlobeDragSession session = new GboardGlobeDragSession(
+                14, new Object(), shortcut -> true, GRACE_MS);
+        session.claimTarget(target(
+                claimedMetadata,
+                GboardGlobeDragPhysicalSlotPolicy.ShortcutSlot.SELECT_ALL,
+                100,
+                "a",
+                GboardEditingShortcutPolicy.Shortcut.SELECT_ALL));
+
+        Assert.assertSame(GboardEditingShortcutPolicy.Shortcut.SELECT_ALL,
+                session.resolveTerminalShortcut(target(
+                        terminalMetadata,
+                        GboardGlobeDragPhysicalSlotPolicy.ShortcutSlot.SELECT_ALL,
+                        100,
+                        "a",
+                        null)));
+        Assert.assertNull(session.resolveTerminalShortcut(target(
+                terminalMetadata,
+                GboardGlobeDragPhysicalSlotPolicy.ShortcutSlot.COPY,
+                100,
+                "a",
+                null)));
+    }
+
+    @Test
+    public void finalAlphabetTerminalCanReplaceANonTextShiftClaim() {
+        GboardGlobeDragSession session = new GboardGlobeDragSession(
+                15, new Object(), shortcut -> true, GRACE_MS);
+        session.claimTarget(target(new Object(), null, 59, null, null));
+
+        Assert.assertSame(GboardEditingShortcutPolicy.Shortcut.SELECT_ALL,
+                session.resolveTerminalShortcut(target(
+                        new Object(),
+                        GboardGlobeDragPhysicalSlotPolicy.ShortcutSlot.SELECT_ALL,
+                        100,
+                        "a",
+                        GboardEditingShortcutPolicy.Shortcut.SELECT_ALL)));
+    }
+
+    @Test
+    public void physicalClaimSurvivesTerminalWithoutLanguageSpecificMapping() {
+        Object tracker = new Object();
+        GboardGlobeDragSession session = new GboardGlobeDragSession(
+                9, tracker, shortcut -> true, GRACE_MS);
+        session.onPointerFinish(tracker, 8_900L);
+        session.claimTarget(target(
+                0x7f0b0e15, "м", GboardEditingShortcutPolicy.Shortcut.PASTE));
+
+        GboardEditingShortcutPolicy.Shortcut resolved = session.resolveTerminalShortcut(target(
+                0x7f0b0e15, "м", null));
+
+        Assert.assertSame(GboardEditingShortcutPolicy.Shortcut.PASTE, resolved);
+    }
+
+    @Test
+    public void lateCyrillicOwnerSequenceUsesFinalNoOpClaimAtTerminal() {
+        Object tracker = new Object();
+        GboardGlobeDragSession session = new GboardGlobeDragSession(
+                10, tracker, shortcut -> true, GRACE_MS);
+        session.onPointerFinish(tracker, 10_000L);
+        session.claimTarget(target(
+                0x7f0b0e0a, "ч", GboardEditingShortcutPolicy.Shortcut.CUT));
+        session.claimTarget(target(0x7f0b0e4a, "в", null));
+
+        Assert.assertNull(session.resolveTerminalShortcut(target(
+                0x7f0b0e4a, "в", null)));
+        Assert.assertFalse(session.state.canCommitClaimedTargetOnPointerFinish());
+    }
+
+    @Test
+    public void unsupportedOrMismatchedClaimSuppressesTerminalSemanticFallback() {
+        GboardGlobeDragSession session = new GboardGlobeDragSession(
+                11, new Object(), shortcut -> true, GRACE_MS);
+        session.claimTarget(target(100, "q", null));
+
+        Assert.assertNull(session.resolveTerminalShortcut(target(
+                100, "q", GboardEditingShortcutPolicy.Shortcut.SELECT_ALL)));
+        Assert.assertNull(session.resolveTerminalShortcut(target(
+                101, "a", GboardEditingShortcutPolicy.Shortcut.SELECT_ALL)));
+    }
+
+    @Test
+    public void returningToGlobeClearsPhysicalClaim() {
+        GboardGlobeDragSession session = new GboardGlobeDragSession(
+                12, new Object(), shortcut -> true, GRACE_MS);
+        session.claimTarget(target(
+                100, "м", GboardEditingShortcutPolicy.Shortcut.PASTE));
+
+        session.onGlobeOwner();
+
+        Assert.assertSame(GboardEditingShortcutPolicy.Shortcut.SELECT_ALL,
+                session.resolveTerminalShortcut(target(
+                        101, "a", GboardEditingShortcutPolicy.Shortcut.SELECT_ALL)));
+    }
+
+    private static GboardGlobeDragPort.TargetSignal target(int keyId, String text,
+            GboardEditingShortcutPolicy.Shortcut shortcut) {
+        return target(DEFAULT_METADATA_IDENTITY, keyId, text, shortcut);
+    }
+
+    private static GboardGlobeDragPort.TargetSignal target(Object metadataIdentity,
+            int keyId, String text, GboardEditingShortcutPolicy.Shortcut shortcut) {
+        return target(metadataIdentity, null, keyId, text, shortcut);
+    }
+
+    private static GboardGlobeDragPort.TargetSignal target(Object metadataIdentity,
+            Object claimIdentity, int keyId, String text,
+            GboardEditingShortcutPolicy.Shortcut shortcut) {
+        return new GboardGlobeDragPort.TargetSignal(
+                metadataIdentity, claimIdentity,
+                keyId, text, null, shortcut, text != null);
     }
 }

@@ -18,7 +18,7 @@ public final class GboardLongPressQuickActionsRuntimeSettingsTest {
 
         Assert.assertEquals(123L, snapshot.loadedAtElapsedMs);
         Assert.assertFalse(snapshot.enabled);
-        Assert.assertTrue(snapshot.globeDragEnabled);
+        Assert.assertFalse(snapshot.globeDragEnabled);
         Assert.assertEquals(GboardLongPressQuickActionsSettings.DEFAULT_POSITION,
                 snapshot.position);
         Assert.assertEquals("local", snapshot.source);

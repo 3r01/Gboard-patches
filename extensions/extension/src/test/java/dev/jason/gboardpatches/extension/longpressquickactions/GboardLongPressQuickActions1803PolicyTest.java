@@ -155,6 +155,14 @@ public final class GboardLongPressQuickActions1803PolicyTest {
                 0x7f0b19f6, "q", 'q', -10043, -10009));
     }
 
+    @Test
+    public void zhuyinRangeAdmissionIsVersionOwnedAndBounded() {
+        Assert.assertFalse(GboardLongPressQuickActions1803Policy.isZhuyinKeyId(0x7f0b295d));
+        Assert.assertTrue(GboardLongPressQuickActions1803Policy.isZhuyinKeyId(0x7f0b295e));
+        Assert.assertTrue(GboardLongPressQuickActions1803Policy.isZhuyinKeyId(0x7f0b298a));
+        Assert.assertFalse(GboardLongPressQuickActions1803Policy.isZhuyinKeyId(0x7f0b298b));
+    }
+
     private static void assertPlan(int keyId, String pressText, int actionCode,
             int iconResId, String debugName, int contextMenuActionId) throws Exception {
         Object plan = invokePlan(keyId, pressText, new int[0]);

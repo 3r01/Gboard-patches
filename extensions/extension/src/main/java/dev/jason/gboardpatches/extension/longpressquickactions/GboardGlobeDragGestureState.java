@@ -28,14 +28,14 @@ final class GboardGlobeDragGestureState {
     }
 
     void onGlobeOwner() {
-        if (phase == Phase.ACTIVE) {
+        if (phase == Phase.ACTIVE || phase == Phase.AWAITING_TERMINAL) {
             targetClaimed = false;
             targetShortcut = null;
         }
     }
 
     void onTargetOwner(GboardEditingShortcutPolicy.Shortcut shortcut) {
-        if (phase == Phase.ACTIVE) {
+        if (phase == Phase.ACTIVE || phase == Phase.AWAITING_TERMINAL) {
             targetClaimed = true;
             targetShortcut = shortcut;
         }
@@ -86,7 +86,16 @@ final class GboardGlobeDragGestureState {
     }
 
     boolean hasClaimedTarget() {
+        return (phase == Phase.ACTIVE || phase == Phase.AWAITING_TERMINAL)
+                && targetClaimed;
+    }
+
+    boolean canCommitClaimedTargetOnPointerFinish() {
         return phase == Phase.ACTIVE && targetClaimed;
+    }
+
+    boolean canAcceptTargetOwner(long now) {
+        return phase == Phase.ACTIVE || isAwaitingTerminal(now);
     }
 
     GboardEditingShortcutPolicy.Shortcut targetShortcut() {
