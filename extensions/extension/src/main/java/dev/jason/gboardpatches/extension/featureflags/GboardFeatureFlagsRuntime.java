@@ -17,6 +17,8 @@ public final class GboardFeatureFlagsRuntime {
             "enable_grammar_checker";
     public static final String FLAG_INLINE_SUGGESTIONS =
             "enable_inline_suggestions_on_client_side";
+    public static final String FLAG_MULTIPLE_SMART_SUGGESTIONS =
+            "show_multiple_categories";
     public static final String FLAG_KEY_SHAPE_SELECTION =
             "more_pill_keys";
 
@@ -36,6 +38,10 @@ public final class GboardFeatureFlagsRuntime {
         }
 
         return isActiveRecognizedFlag(flagName) ? Boolean.TRUE : original;
+    }
+
+    public static Object applyMultipleSmartSuggestionsFlagValue(String flagName, Object original) {
+        return applyOverriddenFlagValue(flagName, original);
     }
 
     public static Object applyDeviceIntelligenceFlagValue(String flagName, Object original) {
@@ -121,6 +127,9 @@ public final class GboardFeatureFlagsRuntime {
         featureKeys.put(
                 FLAG_INLINE_SUGGESTIONS,
                 GboardPatchesFeatureAvailability.FEATURE_INLINE_SUGGESTIONS);
+        featureKeys.put(
+                FLAG_MULTIPLE_SMART_SUGGESTIONS,
+                GboardPatchesFeatureAvailability.FEATURE_MULTIPLE_SMART_SUGGESTIONS);
         featureKeys.put(
                 FLAG_KEY_SHAPE_SELECTION,
                 GboardPatchesFeatureAvailability.FEATURE_KEY_SHAPE_SELECTION);

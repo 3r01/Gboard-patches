@@ -14,6 +14,8 @@ import dev.jason.gboardpatches.patches.gboard.features.englishqwerty.gboardEngli
 import dev.jason.gboardpatches.patches.gboard.features.englishqwerty.gboardEnglishQwertySoftKeyPatch
 import dev.jason.gboardpatches.patches.gboard.features.flowmode.gboardFlowModeFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.flowmode.gboardFlowModeKeyEventPatch
+import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardMultipleSmartSuggestionsCategoryFilterPatch
+import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardMultipleSmartSuggestionsFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.longpressquickactions.gboardLongPressQuickActionsInputEventPatch
 import dev.jason.gboardpatches.patches.gboard.features.longpressquickactions.gboardLongPressQuickActionsGesturePatch
 import dev.jason.gboardpatches.patches.gboard.features.longpressquickactions.gboardLongPressQuickActionsPointerOwnerPatch
@@ -110,6 +112,14 @@ internal object GboardContributionWiring {
             },
             unit("long_press_editing_shortcuts.gesture") {
                 arrayOf(gboardLongPressQuickActionsGesturePatch)
+            },
+        ),
+        "multiple_smart_suggestions" to listOf(
+            unit("multiple_smart_suggestions.flag") {
+                arrayOf(gboardMultipleSmartSuggestionsFlagValuePatch)
+            },
+            unit("multiple_smart_suggestions.category_filter") {
+                arrayOf(gboardMultipleSmartSuggestionsCategoryFilterPatch)
             },
         ),
         "rounded_keyboard_panel" to listOf(

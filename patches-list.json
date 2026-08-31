@@ -326,6 +326,18 @@
       "options": []
     },
     {
+      "name": "Multiple Smart Suggestions",
+      "description": "同時顯示所有符合條件的智慧建議，並保留 Gboard 的原生優先順序\nShow all eligible smart suggestion categories at once while preserving Gboard's native priority order.",
+      "use": true,
+      "dependencies": [],
+      "compatiblePackages": {
+        "com.google.android.inputmethod.latin": [
+          "18.0.3.954559732-release-arm64-v8a"
+        ]
+      },
+      "options": []
+    },
+    {
       "name": "Package Rename",
       "description": "將套件名稱改成 dev.jason.com.google.android.inputmethod.latin，並可自訂 App 名稱，以便共存安裝\nRename the package to dev.jason.com.google.android.inputmethod.latin and allow a custom app name so it can be installed alongside the official Gboard.",
       "use": true,

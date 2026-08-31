@@ -17,6 +17,7 @@ import dev.jason.gboardpatches.patches.gboard.features.englishqwerty.gboardEngli
 import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardDeviceIntelligenceFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardGrammarCheckerFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardInlineSuggestionsFlagValuePatch
+import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardMultipleSmartSuggestionsFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardKeyShapeSelectionFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.flowmode.gboardFlowModeFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.ocr.gboardOcrFlagValuePatch
@@ -51,7 +52,7 @@ class GboardPortProductCatalogContractTest {
     @Test
     fun catalogIsDeterministicAndDeclaresSelectedOnlyZeroSelectionComposition() {
         assertEquals("gboard-port-product-catalog.v1", catalog["format"].asString)
-        assertEquals("1.11.0", catalog["catalog_version"].asString)
+        assertEquals("1.12.0", catalog["catalog_version"].asString)
         val composition = catalog.getAsJsonObject("composition")
         assertEquals(
             setOf("selected_only_call_chain", "runtime_feature_mask"),
@@ -197,7 +198,7 @@ class GboardPortProductCatalogContractTest {
     }
 
     @Test
-    fun flagFamilyDeclaresSeventeenSelectedOnlyComposerCallsInCanonicalOrder() {
+    fun flagFamilyDeclaresEighteenSelectedOnlyComposerCallsInCanonicalOrder() {
         val flagContributions = features().flatMap { feature ->
             feature.getAsJsonArray("contributions")
                 .map { contribution -> contribution.asJsonObject }
@@ -207,10 +208,10 @@ class GboardPortProductCatalogContractTest {
                 .map { contribution -> feature["feature_id"].asString to contribution }
         }.sortedBy { (_, contribution) -> contribution["order"].asInt }
 
-        assertEquals(17, flagContributions.size)
+        assertEquals(18, flagContributions.size)
         assertEquals(
             listOf(
-                10, 20, 30, 40, 100, 200, 300, 400,
+                10, 20, 30, 35, 40, 100, 200, 300, 400,
                 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300,
             ),
             flagContributions.map { (_, contribution) -> contribution["order"].asInt },
@@ -218,7 +219,7 @@ class GboardPortProductCatalogContractTest {
         val runtimeCalls = flagContributions.map { (_, contribution) ->
             contribution.getAsJsonArray("runtime_calls").first().asString
         }
-        assertEquals(17, runtimeCalls.distinct().size)
+        assertEquals(18, runtimeCalls.distinct().size)
         assertFalse("FEATURE_FLAGS_RUNTIME_APPLY_OVERRIDDEN_FLAG_VALUE" in runtimeCalls)
         flagContributions.forEach { (_, contribution) ->
             assertEquals(
@@ -681,6 +682,7 @@ class GboardPortProductCatalogContractTest {
             "lan_ftp_server" to "version-neutral-extension",
             "latin_globe_key_ignore_interval" to "version-sensitive",
             "long_press_editing_shortcuts" to "version-sensitive",
+            "multiple_smart_suggestions" to "version-sensitive",
             "package_rename" to "generic",
             "quick_insert" to "version-sensitive",
             "rounded_keyboard_panel" to "version-sensitive",
@@ -807,6 +809,14 @@ class GboardPortProductCatalogContractTest {
                 "gboardInlineSuggestionsFlagValuePatch",
                 FEATURE_ROOT + "featureflags/GboardFeatureFlagsBytecodePatch.kt",
                 FEATURE_ROOT + "featureflags/GboardInlineSuggestionsFeatureMarkerPatch.kt",
+            ),
+            FlagFeatureContract(
+                "multiple_smart_suggestions",
+                GboardFlagFamilyFeature.MULTIPLE_SMART_SUGGESTIONS,
+                gboardMultipleSmartSuggestionsFlagValuePatch,
+                "gboardMultipleSmartSuggestionsFlagValuePatch",
+                FEATURE_ROOT + "featureflags/GboardFeatureFlagsBytecodePatch.kt",
+                FEATURE_ROOT + "featureflags/GboardMultipleSmartSuggestionsFeatureMarkerPatch.kt",
             ),
             FlagFeatureContract(
                 "key_shape_selection",

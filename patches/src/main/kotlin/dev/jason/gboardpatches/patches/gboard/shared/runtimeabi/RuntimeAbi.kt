@@ -49,6 +49,8 @@ internal enum class RuntimeCallId(internal val encodedAbi: String) {
     DEVICE_INTELLIGENCE_RUNTIME_APPLY_FLAG_VALUE("Ldev/jason/gboardpatches/extension/featureflags/GboardFeatureFlagsRuntime;->applyDeviceIntelligenceFlagValue(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;"),
     EMOJI_SIZE_RUNTIME_APPLY_OVERRIDDEN_FLAG_VALUE("Ldev/jason/gboardpatches/extension/emojisize/GboardEmojiSize1803Runtime;->applyOverriddenFlagValue(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;"),
     FEATURE_FLAGS_RUNTIME_APPLY_OVERRIDDEN_FLAG_VALUE("Ldev/jason/gboardpatches/extension/featureflags/GboardFeatureFlagsRuntime;->applyOverriddenFlagValue(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;"),
+    MULTIPLE_SMART_SUGGESTIONS_RUNTIME_APPLY_FLAG_VALUE("Ldev/jason/gboardpatches/extension/featureflags/GboardFeatureFlagsRuntime;->applyMultipleSmartSuggestionsFlagValue(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;"),
+    MULTIPLE_SMART_SUGGESTIONS_RUNTIME_REMOVE_UNDO_CATEGORY("Ldev/jason/gboardpatches/extension/featureflags/GboardMultipleSmartSuggestionsRuntime;->removeUndoCategory(Ljava/lang/Object;)V"),
     FLOW_MODE_RUNTIME_APPLY_FLAG_VALUE("Ldev/jason/gboardpatches/extension/flowmode/GboardFlowModeRuntime;->applyFlagValue(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;"),
     FLOW_MODE_RUNTIME_MAP_KEY_CODE("Ldev/jason/gboardpatches/extension/flowmode/GboardFlowModeRuntime;->mapKeyCode(I)I"),
     GRAMMAR_CHECKER_RUNTIME_APPLY_FLAG_VALUE("Ldev/jason/gboardpatches/extension/featureflags/GboardFeatureFlagsRuntime;->applyGrammarCheckerFlagValue(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;"),

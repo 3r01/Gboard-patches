@@ -21,6 +21,8 @@ public final class GboardPatchesFeatureAvailability {
             "dev.jason.gboardpatches.feature.grammar_checker";
     public static final String FEATURE_INLINE_SUGGESTIONS =
             "dev.jason.gboardpatches.feature.inline_suggestions";
+    public static final String FEATURE_MULTIPLE_SMART_SUGGESTIONS =
+            "dev.jason.gboardpatches.feature.multiple_smart_suggestions";
     public static final String FEATURE_KEY_SHAPE_SELECTION =
             "dev.jason.gboardpatches.feature.key_shape_selection";
     public static final String FEATURE_CUSTOM_SYMBOLS =

@@ -45,6 +45,7 @@ import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardGramma
 import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardGrammarCheckerFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardInlineSuggestionsFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardInlineSuggestionsFlagValuePatch
+import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardMultipleSmartSuggestionsFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardKeyShapeSelectionFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.featureflags.gboardKeyShapeSelectionFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.flowmode.gboardFlowModeFeatureMarkerPatch
@@ -622,6 +623,22 @@ val gboardInlineSuggestionsFlagPatch = gboardPublicResourcePatch(
 }
 
 @Suppress("unused")
+val gboardMultipleSmartSuggestionsPatch = gboardPublicResourcePatch(
+    featureId = "multiple_smart_suggestions",
+    name = "Multiple Smart Suggestions",
+    description = "同時顯示所有符合條件的智慧建議，並保留 Gboard 的原生優先順序\n" +
+        "Show all eligible smart suggestion categories at once while preserving Gboard's native priority order.",
+    default = true,
+) {
+    compatibleWith(COMPATIBILITY_GBOARD)
+
+    dependsOn(
+        gboardPatchesExtensionCarrierPatch,
+        gboardMultipleSmartSuggestionsFeatureMarkerPatch,
+    )
+}
+
+@Suppress("unused")
 val gboardKeyShapeSelectionFlagPatch = gboardPublicResourcePatch(
     featureId = "key_shape_selection",
     name = "Key Shape Selection",
@@ -811,6 +828,7 @@ object GboardPublishedPatchCatalog {
         gboardDeviceIntelligencePatch,
         gboardGrammarCheckerFlagPatch,
         gboardInlineSuggestionsFlagPatch,
+        gboardMultipleSmartSuggestionsPatch,
         gboardKeyShapeSelectionFlagPatch,
         gboardAiWritingToolsPatch,
         gboardOcrScanTextPatch,

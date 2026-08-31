@@ -18,6 +18,11 @@ internal val gboardInlineSuggestionsFlagValuePatch = gboardFlagFamilyFeaturePatc
     feature = GboardFlagFamilyFeature.INLINE_SUGGESTIONS,
 )
 
+internal val gboardMultipleSmartSuggestionsFlagValuePatch = gboardFlagFamilyFeaturePatch(
+    description = "Force only the selected Multiple Smart Suggestions rollout flag.",
+    feature = GboardFlagFamilyFeature.MULTIPLE_SMART_SUGGESTIONS,
+)
+
 internal val gboardKeyShapeSelectionFlagValuePatch = gboardFlagFamilyFeaturePatch(
     description = "Force only the selected Key Shape Selection rollout flag.",
     feature = GboardFlagFamilyFeature.KEY_SHAPE_SELECTION,

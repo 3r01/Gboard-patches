@@ -38,6 +38,10 @@ public final class GboardFeatureFlagsRuntimeBehaviorTest {
                     GboardPatchesFeatureAvailability.FEATURE_INLINE_SUGGESTIONS
             },
             {
+                    "show_multiple_categories",
+                    GboardPatchesFeatureAvailability.FEATURE_MULTIPLE_SMART_SUGGESTIONS
+            },
+            {
                     "more_pill_keys",
                     GboardPatchesFeatureAvailability.FEATURE_KEY_SHAPE_SELECTION
             },
@@ -414,13 +418,13 @@ public final class GboardFeatureFlagsRuntimeBehaviorTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void recognizedFlagMapIsImmutableAndContainsOnlyTheFourPublicFlags()
+    public void recognizedFlagMapIsImmutableAndContainsOnlyTheFivePublicFlags()
             throws Exception {
         Field field = GboardFeatureFlagsRuntime.class.getDeclaredField("FLAG_TO_FEATURE_KEY");
         field.setAccessible(true);
         Map<String, String> flagMap = (Map<String, String>) field.get(null);
 
-        assertEquals(4, flagMap.size());
+        assertEquals(5, flagMap.size());
         assertFalse(flagMap.containsKey("enable_clipboard_entity_extraction"));
         assertFalse(flagMap.containsKey("enable_clipboard_text_editor"));
         try {
