@@ -80,6 +80,10 @@ public final class GboardLongPressQuickActions1803Policy {
                 ? action.shortcut : null;
     }
 
+    public static boolean isZhuyinKeyId(int keyId) {
+        return keyId >= 0x7f0b295e && keyId <= 0x7f0b298a;
+    }
+
     private static QuickAction resolve(int keyId, String pressText) {
         if (pressText == null) {
             return null;

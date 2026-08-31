@@ -7,6 +7,7 @@ final class GboardGlobeDragSession {
     final GboardGlobeDragGestureState state;
     private final ShortcutExecutor shortcutExecutor;
     private Object replayGestureTracker;
+    private GboardGlobeDragPort.TargetSignal claimedTarget;
 
     GboardGlobeDragSession(int id, Object tracker,
             ShortcutExecutor shortcutExecutor, long releaseGraceMs) {
@@ -17,13 +18,41 @@ final class GboardGlobeDragSession {
     }
 
     CommitResult commitClaimedTarget(long now) {
-        CommitResult result = commitTarget(state.targetShortcut(), now);
+        CommitResult result = commitTarget(
+                claimedTarget == null ? null : claimedTarget.shortcut, now);
         replayGestureTracker = null;
         return result;
     }
 
     boolean hasActionableClaim() {
-        return state.hasClaimedTarget() && state.targetShortcut() != null;
+        return state.canCommitClaimedTargetOnPointerFinish()
+                && claimedTarget != null && claimedTarget.shortcut != null;
+    }
+
+    void onGlobeOwner() {
+        state.onGlobeOwner();
+        claimedTarget = null;
+    }
+
+    void claimTarget(GboardGlobeDragPort.TargetSignal target) {
+        claimedTarget = target;
+        state.onTargetOwner(target == null ? null : target.shortcut);
+    }
+
+    GboardEditingShortcutPolicy.Shortcut resolveTerminalShortcut(
+            GboardGlobeDragPort.TargetSignal terminalTarget) {
+        if (!state.hasClaimedTarget()) {
+            return terminalTarget == null ? null : terminalTarget.shortcut;
+        }
+        if (claimedTarget != null
+                && claimedTarget.shortcut == null
+                && !claimedTarget.terminalCandidate) {
+            return terminalTarget == null ? null : terminalTarget.shortcut;
+        }
+        if (!sameKeyIdentity(claimedTarget, terminalTarget)) {
+            return null;
+        }
+        return claimedTarget == null ? null : claimedTarget.shortcut;
     }
 
     CommitResult commitTarget(GboardEditingShortcutPolicy.Shortcut shortcut, long now) {
@@ -40,6 +69,7 @@ final class GboardGlobeDragSession {
             state.onTerminalConsumed(now);
             replayGestureTracker = terminalTracker;
             tracker = null;
+            claimedTarget = null;
         }
         return new CommitResult(true, actionSucceeded, shortcut, failure);
     }
@@ -73,14 +103,34 @@ final class GboardGlobeDragSession {
         state.onReplayConsumed();
         replayGestureTracker = null;
         tracker = null;
+        claimedTarget = null;
     }
 
     void failClosed(long now) {
         state.onFailure(now);
+        claimedTarget = null;
         if (!state.isFailedActive()) {
             replayGestureTracker = null;
             tracker = null;
         }
+    }
+
+    private static boolean sameKeyIdentity(GboardGlobeDragPort.TargetSignal first,
+            GboardGlobeDragPort.TargetSignal second) {
+        if (first == null || second == null
+                || first.keyId != second.keyId) {
+            return false;
+        }
+        boolean sameMetadataIdentity = first.metadataIdentity != null
+                && first.metadataIdentity == second.metadataIdentity;
+        boolean sameClaimIdentity = first.claimIdentity != null
+                && first.claimIdentity.equals(second.claimIdentity);
+        if (!sameMetadataIdentity && !sameClaimIdentity) {
+            return false;
+        }
+        return first.pressText == null
+                ? second.pressText == null
+                : first.pressText.equals(second.pressText);
     }
 
     interface ShortcutExecutor {

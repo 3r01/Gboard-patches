@@ -65,9 +65,9 @@ class GboardPortProductCatalogContractTest {
             features.map { feature -> feature["feature_id"].asString }.sorted(),
             features.map { feature -> feature["feature_id"].asString },
         )
-        assertEquals(38, features.size)
-        assertEquals(38, features.map { it["feature_id"].asString }.distinct().size)
-        assertEquals(38, features.map { it["public_patch_name"].asString }.distinct().size)
+        assertMatchesPublishedRegistrationCount(features.size)
+        assertEquals(features.size, features.map { it["feature_id"].asString }.distinct().size)
+        assertEquals(features.size, features.map { it["public_patch_name"].asString }.distinct().size)
 
         val expectedDigest = Files.readString(
             repositoryRoot().resolve(DIGEST_PATH),
@@ -565,6 +565,7 @@ class GboardPortProductCatalogContractTest {
         assertEquals(
             setOf(
                 "generic",
+                "version-neutral-extension",
                 "version-sensitive",
             ),
             definitions.getAsJsonObject("migrationScope")
@@ -677,6 +678,7 @@ class GboardPortProductCatalogContractTest {
             "incognito_mode_toggle" to "version-sensitive",
             "inline_suggestions" to "version-sensitive",
             "key_shape_selection" to "version-sensitive",
+            "lan_ftp_server" to "version-neutral-extension",
             "latin_globe_key_ignore_interval" to "version-sensitive",
             "long_press_editing_shortcuts" to "version-sensitive",
             "package_rename" to "generic",

@@ -481,6 +481,23 @@
       ]
     },
     {
+      "feature_id": "lan_ftp_server",
+      "public_patch_name": "FTP Server",
+      "feature_marker": "dev.jason.gboardpatches.feature.lan_ftp_server",
+      "target_family_ids": [],
+      "migration_scope": "version-neutral-extension",
+      "consumer_files": [
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/features/lanftp/GboardLanFtpFeatureMarkerPatch.kt",
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/features/lanftp/GboardLanFtpManifestPatch.kt",
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/features/packagerename/GboardPackageRenameResourcePatch.kt",
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/registry/GboardPatchRegistry.kt",
+        "patches/src/main/resources/lan-ftp-res/drawable/ic_lan_ftp_tile.xml"
+      ],
+      "contributions": [
+        { "contribution_id": "lan_ftp_server.resources", "anchor_family_id": "resource_only", "phase": "resource", "order": 300, "required_bindings": [], "runtime_calls": [] }
+      ]
+    },
+    {
       "feature_id": "latin_globe_key_ignore_interval",
       "public_patch_name": "Latin Globe Key Ignore Interval",
       "feature_marker": "dev.jason.gboardpatches.feature.latin_globe_key_ignore_interval",
@@ -592,7 +609,7 @@
         "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/registry/GboardPatchRegistry.kt"
       ],
       "contributions": [
-        { "contribution_id": "swipe_down_to_dismiss_keyboard.lifecycle", "anchor_family_id": "dedicated_bytecode", "phase": "dedicated", "order": 1900, "required_bindings": [], "runtime_calls": ["SWIPE_DOWN_DISMISS_RUNTIME_ON_INPUT_VIEW_STARTED"] }
+        { "contribution_id": "swipe_down_to_dismiss_keyboard.lifecycle", "anchor_family_id": "dedicated_bytecode", "phase": "dedicated", "order": 1900, "required_bindings": [], "runtime_calls": ["SWIPE_DOWN_DISMISS_RUNTIME_ON_INPUT_VIEW_STARTED", "SWIPE_DOWN_DISMISS_RUNTIME_ON_TOOLBAR_EDIT_MODE_CHANGED"] }
       ]
     },
     {

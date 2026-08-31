@@ -10,12 +10,14 @@ interface GboardGlobeDragPort {
 
     Object extractSoftKeyMetadata(Object softKeyView) throws Throwable;
 
+    void observeBoundKey(Object metadata, View view) throws Throwable;
+
     InputSignal inspectInputEvent(Object event, Object marker) throws Throwable;
 
     GestureSignal inspectGesture(Object actionType, Object entry, Object metadata)
             throws Throwable;
 
-    TargetSignal inspectPointerTarget(Object metadata) throws Throwable;
+    TargetSignal inspectPointerTarget(Object softKeyView, Object metadata) throws Throwable;
 
     TargetSignal inspectTerminalTarget(Object metadata, int selectedCode) throws Throwable;
 
@@ -61,15 +63,21 @@ interface GboardGlobeDragPort {
     }
 
     final class TargetSignal {
+        final Object metadataIdentity;
+        final Object claimIdentity;
         final int keyId;
         final String pressText;
         final Object entryPayload;
         final GboardEditingShortcutPolicy.Shortcut shortcut;
         final boolean terminalCandidate;
 
-        TargetSignal(int keyId, String pressText, Object entryPayload,
+        TargetSignal(Object metadataIdentity, Object claimIdentity,
+                int keyId, String pressText,
+                Object entryPayload,
                 GboardEditingShortcutPolicy.Shortcut shortcut,
                 boolean terminalCandidate) {
+            this.metadataIdentity = metadataIdentity;
+            this.claimIdentity = claimIdentity;
             this.keyId = keyId;
             this.pressText = pressText;
             this.entryPayload = entryPayload;

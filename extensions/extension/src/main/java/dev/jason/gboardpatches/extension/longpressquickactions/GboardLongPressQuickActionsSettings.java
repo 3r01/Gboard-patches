@@ -11,7 +11,7 @@ public final class GboardLongPressQuickActionsSettings {
     public static final String PREF_KEY_GLOBE_DRAG_ENABLED =
             "pref_long_press_quick_actions_globe_drag_enabled";
     public static final boolean DEFAULT_ENABLED = true;
-    public static final boolean DEFAULT_GLOBE_DRAG_ENABLED = true;
+    public static final boolean DEFAULT_GLOBE_DRAG_ENABLED = false;
 
     private GboardLongPressQuickActionsSettings() {
     }

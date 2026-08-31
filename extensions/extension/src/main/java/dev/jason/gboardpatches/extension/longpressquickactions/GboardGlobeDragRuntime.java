@@ -15,6 +15,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /** Stable ownership runtime; version-private details enter only through {@link GboardGlobeDragPort}. */
 public final class GboardGlobeDragRuntime {
+    enum MarkerDownDisposition {
+        PASS_THROUGH,
+        CONSUME_ONLY,
+        ARM_SESSION
+    }
+
     private static final String TAG = "GboardPatches";
     private static final String LOG_PREFIX = "[gboard-globe-drag-18.0.3] ";
     private static final String MARKER = "__gboard_patches_globe_drag__";
@@ -46,6 +52,7 @@ public final class GboardGlobeDragRuntime {
         }
         try {
             GboardGlobeDragPort port = portFor(metadata);
+            port.observeBoundKey(metadata, view);
             if (!port.isGlobeView(view)) {
                 return metadata;
             }
@@ -89,13 +96,13 @@ public final class GboardGlobeDragRuntime {
             long now = SystemClock.uptimeMillis();
             synchronized (LOCK) {
                 expireSession(now);
-                if (session == null && !isPatched(signal.metadata)) {
-                    return false;
+                boolean patchedMetadata = isPatched(signal.metadata);
+                MarkerDownDisposition markerDisposition = markerDownDisposition(
+                        signal.markerDown, patchedMetadata);
+                if (markerDisposition == MarkerDownDisposition.CONSUME_ONLY) {
+                    return true;
                 }
-                if (signal.markerUp && isPatched(signal.metadata)) {
-                    return false;
-                }
-                if (signal.markerDown && isPatched(signal.metadata)) {
+                if (markerDisposition == MarkerDownDisposition.ARM_SESSION) {
                     boolean actionsAdmitted = isEnabled();
                     Object tracker = latestGlobeTracker.get();
                     WeakReference<InputMethodService> serviceReference =
@@ -108,6 +115,12 @@ public final class GboardGlobeDragRuntime {
                             RELEASE_EVENT_GRACE_MS);
                     logInfo("session=" + session.id + " armed");
                     return true;
+                }
+                if (session == null && !patchedMetadata) {
+                    return false;
+                }
+                if (signal.markerUp && patchedMetadata) {
+                    return false;
                 }
                 if (session == null) {
                     return false;
@@ -214,7 +227,10 @@ public final class GboardGlobeDragRuntime {
         if (!target.terminalCandidate) {
             return true;
         }
-        GboardGlobeDragSession.CommitResult result = session.commitTarget(target.shortcut, now);
+        GboardEditingShortcutPolicy.Shortcut resolvedShortcut =
+                session.resolveTerminalShortcut(target);
+        GboardGlobeDragSession.CommitResult result =
+                session.commitTarget(resolvedShortcut, now);
         if (result.failure != null) {
             logError("editor action failed", result.failure);
         }
@@ -234,6 +250,8 @@ public final class GboardGlobeDragRuntime {
             int activeSessionId = 0;
             String pressText = null;
             synchronized (LOCK) {
+                long now = SystemClock.uptimeMillis();
+                expireSession(now);
                 if (isPatched(metadata)) {
                     latestGlobeTracker = new WeakReference<>(tracker);
                     if (session != null && session.tracker == null) {
@@ -241,16 +259,20 @@ public final class GboardGlobeDragRuntime {
                     }
                     if (session != null
                             && (session.tracker == null || session.tracker == tracker)) {
-                        session.state.onGlobeOwner();
+                        session.onGlobeOwner();
                     }
                     return;
                 }
-                if (session == null || !session.state.isActive()
+                if (session == null || !session.state.canAcceptTargetOwner(now)
                         || (session.tracker != null && session.tracker != tracker)) {
                     return;
                 }
-                GboardGlobeDragPort.TargetSignal target = port.inspectPointerTarget(metadata);
-                session.state.onTargetOwner(target.shortcut);
+                if (session.tracker == null) {
+                    session.tracker = tracker;
+                }
+                GboardGlobeDragPort.TargetSignal target =
+                        port.inspectPointerTarget(softKeyView, metadata);
+                session.claimTarget(target);
                 activeSessionId = session.id;
                 pressText = target.pressText;
             }
@@ -271,8 +293,10 @@ public final class GboardGlobeDragRuntime {
             }
             try {
                 synchronized (LOCK) {
-                    expireSession(SystemClock.uptimeMillis());
-                    if (session == null || session.id != sessionId || !session.state.isActive()
+                    long now = SystemClock.uptimeMillis();
+                    expireSession(now);
+                    if (session == null || session.id != sessionId
+                            || !session.state.canAcceptTargetOwner(now)
                             || (session.tracker != null && session.tracker != currentTracker)) {
                         return;
                     }
@@ -402,6 +426,16 @@ public final class GboardGlobeDragRuntime {
         }
     }
 
+    static MarkerDownDisposition markerDownDisposition(
+            boolean markerDown, boolean patchedMetadata) {
+        if (!markerDown) {
+            return MarkerDownDisposition.PASS_THROUGH;
+        }
+        return patchedMetadata
+                ? MarkerDownDisposition.ARM_SESSION
+                : MarkerDownDisposition.CONSUME_ONLY;
+    }
+
     private static void sendKeyEventBestEffort(InputConnection connection, KeyEvent event) {
         try {
             connection.sendKeyEvent(event);
@@ -493,4 +527,5 @@ public final class GboardGlobeDragRuntime {
             // Error reporting must not alter fail-closed behavior.
         }
     }
+
 }

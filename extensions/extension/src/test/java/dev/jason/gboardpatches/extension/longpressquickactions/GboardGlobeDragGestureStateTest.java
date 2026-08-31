@@ -41,6 +41,21 @@ public final class GboardGlobeDragGestureStateTest {
     }
 
     @Test
+    public void finishBeforeCyrillicPointerOwnerStillAdmitsLateTargetClaim() {
+        GboardGlobeDragGestureState state = new GboardGlobeDragGestureState(GRACE_MS);
+
+        state.onPointerFinish(2_000L);
+        Assert.assertTrue(state.isAwaitingTerminal(2_100L));
+
+        state.onTargetOwner(GboardEditingShortcutPolicy.Shortcut.SELECT_ALL);
+
+        Assert.assertTrue(state.hasClaimedTarget());
+        Assert.assertSame(GboardEditingShortcutPolicy.Shortcut.SELECT_ALL,
+                state.targetShortcut());
+        Assert.assertFalse(state.canCommitClaimedTargetOnPointerFinish());
+    }
+
+    @Test
     public void failedActiveOwnershipWaitsForPointerFinish() {
         GboardGlobeDragGestureState state = new GboardGlobeDragGestureState(GRACE_MS);
         state.onFailure(1_000L);

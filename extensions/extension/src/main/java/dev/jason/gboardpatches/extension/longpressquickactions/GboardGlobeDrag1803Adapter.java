@@ -14,6 +14,8 @@ final class GboardGlobeDrag1803Adapter implements GboardGlobeDragPort {
     private static final int PLAIN_TEXT_KEY_CODE = -10009;
 
     private final GboardLongPressQuickActions1803ReflectionHandles handles;
+    private static final GboardGlobeDragBoundSlotRegistry BOUND_SLOTS =
+            GboardGlobeDragBoundSlotRegistry.shared();
 
     GboardGlobeDrag1803Adapter(
             GboardLongPressQuickActions1803ReflectionHandles handles) {
@@ -47,6 +49,30 @@ final class GboardGlobeDrag1803Adapter implements GboardGlobeDragPort {
     @Override
     public Object extractSoftKeyMetadata(Object softKeyView) throws Throwable {
         return handles.extractSoftKeyMetadata(softKeyView);
+    }
+
+    @Override
+    public void observeBoundKey(Object metadata, View view) throws Throwable {
+        if (metadata == null || view == null) {
+            return;
+        }
+        int keyId = handles.extractKeyId(metadata);
+        if (GboardLongPressQuickActions1803Policy.isZhuyinKeyId(keyId)) {
+            return;
+        }
+        String viewEntryName;
+        try {
+            viewEntryName = view.getResources().getResourceEntryName(view.getId());
+        } catch (Throwable ignored) {
+            return;
+        }
+        BOUND_SLOTS.observe(
+                metadata,
+                shortcutSlot(viewEntryName),
+                keyId,
+                handles.extractPressText(metadata),
+                handles.extractPressCarrierCode(metadata),
+                FLOW_MODE_TYPING_PULSE_KEY_CODE);
     }
 
     @Override
@@ -88,15 +114,43 @@ final class GboardGlobeDrag1803Adapter implements GboardGlobeDragPort {
     }
 
     @Override
-    public TargetSignal inspectPointerTarget(Object metadata) throws Throwable {
+    public TargetSignal inspectPointerTarget(Object softKeyView, Object metadata) throws Throwable {
+        if (GboardLongPressQuickActions1803Policy.isZhuyinKeyId(
+                handles.extractKeyId(metadata))) {
+            return inspectPointerTarget(null, metadata);
+        }
+        String viewEntryName = null;
+        if (softKeyView instanceof View view) {
+            viewEntryName = view.getResources().getResourceEntryName(view.getId());
+        }
+        return inspectPointerTarget(viewEntryName, metadata);
+    }
+
+    TargetSignal inspectPointerTarget(String viewEntryName, Object metadata) throws Throwable {
         int keyId = handles.extractKeyId(metadata);
         String pressText = handles.extractPressText(metadata);
         int pressCarrier = handles.extractPressCarrierCode(metadata);
-        GboardEditingShortcutPolicy.Shortcut shortcut =
-                GboardLongPressQuickActions1803Policy.shortcutForPointerTarget(
-                        keyId, pressText, pressCarrier, FLOW_MODE_TYPING_PULSE_KEY_CODE);
+        GboardGlobeDragPhysicalSlotPolicy.ShortcutSlot physicalSlot = null;
+        GboardEditingShortcutPolicy.Shortcut shortcut;
+        if (GboardLongPressQuickActions1803Policy.isZhuyinKeyId(keyId)) {
+            shortcut = GboardLongPressQuickActions1803Policy.shortcutForPointerTarget(
+                    keyId, pressText, pressCarrier, FLOW_MODE_TYPING_PULSE_KEY_CODE);
+        } else {
+            physicalSlot = shortcutSlot(viewEntryName);
+            shortcut = GboardGlobeDragPhysicalSlotPolicy.resolve(
+                    physicalSlot,
+                    pressText,
+                    pressCarrier,
+                    FLOW_MODE_TYPING_PULSE_KEY_CODE);
+        }
         return new TargetSignal(
-                keyId, pressText, Integer.valueOf(pressCarrier), shortcut, pressText != null);
+                metadata,
+                physicalSlot,
+                keyId,
+                pressText,
+                Integer.valueOf(pressCarrier),
+                shortcut,
+                pressText != null);
     }
 
     @Override
@@ -109,19 +163,62 @@ final class GboardGlobeDrag1803Adapter implements GboardGlobeDragPort {
             Object entryPayload) throws Throwable {
         int keyId = handles.extractKeyId(metadata);
         String pressText = handles.extractPressText(metadata);
-        GboardEditingShortcutPolicy.Shortcut shortcut =
-                GboardLongPressQuickActions1803Policy.shortcutForChord(
-                        keyId,
-                        pressText,
-                        selectedCode,
-                        FLOW_MODE_TYPING_PULSE_KEY_CODE,
-                        PLAIN_TEXT_KEY_CODE);
+        int pressCarrier = handles.extractPressCarrierCode(metadata);
+        boolean zhuyinKey = GboardLongPressQuickActions1803Policy.isZhuyinKeyId(keyId);
+        GboardEditingShortcutPolicy.Shortcut zhuyinShortcut = zhuyinKey
+                ? GboardLongPressQuickActions1803Policy.shortcutForChord(
+                    keyId,
+                    pressText,
+                    selectedCode,
+                    FLOW_MODE_TYPING_PULSE_KEY_CODE,
+                    PLAIN_TEXT_KEY_CODE)
+                : null;
+        GboardGlobeDragPhysicalSlotPolicy.ShortcutSlot boundSlot = zhuyinKey
+                ? null
+                : BOUND_SLOTS.resolveSlot(
+                    metadata,
+                    keyId,
+                    pressText,
+                    pressCarrier,
+                    FLOW_MODE_TYPING_PULSE_KEY_CODE);
+        GboardEditingShortcutPolicy.Shortcut boundSlotShortcut =
+                GboardGlobeDragPhysicalSlotPolicy.resolve(
+                    boundSlot,
+                    pressText,
+                    pressCarrier,
+                    FLOW_MODE_TYPING_PULSE_KEY_CODE);
+        GboardEditingShortcutPolicy.Shortcut shortcut = resolveTerminalShortcut(
+                zhuyinKey, zhuyinShortcut, boundSlotShortcut);
         return new TargetSignal(
+                metadata, boundSlot,
                 keyId, pressText, entryPayload, shortcut, pressText != null);
     }
 
     @Override
     public boolean cancelScheduledLongPress(Object pointerTracker) throws Throwable {
         return handles.cancelScheduledLongPress(pointerTracker);
+    }
+
+    static GboardGlobeDragPhysicalSlotPolicy.ShortcutSlot shortcutSlot(
+            String viewEntryName) {
+        if (viewEntryName == null) {
+            return null;
+        }
+        return switch (viewEntryName) {
+            case "C01" -> GboardGlobeDragPhysicalSlotPolicy.ShortcutSlot.SELECT_ALL;
+            case "B01" -> GboardGlobeDragPhysicalSlotPolicy.ShortcutSlot.UNDO;
+            case "B02" -> GboardGlobeDragPhysicalSlotPolicy.ShortcutSlot.CUT;
+            case "B03" -> GboardGlobeDragPhysicalSlotPolicy.ShortcutSlot.COPY;
+            case "B04" -> GboardGlobeDragPhysicalSlotPolicy.ShortcutSlot.PASTE;
+            case "D06" -> GboardGlobeDragPhysicalSlotPolicy.ShortcutSlot.REDO;
+            default -> null;
+        };
+    }
+
+    static GboardEditingShortcutPolicy.Shortcut resolveTerminalShortcut(
+            boolean zhuyinKey,
+            GboardEditingShortcutPolicy.Shortcut zhuyinShortcut,
+            GboardEditingShortcutPolicy.Shortcut boundSlotShortcut) {
+        return zhuyinKey ? zhuyinShortcut : boundSlotShortcut;
     }
 }
