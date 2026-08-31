@@ -21,6 +21,13 @@ private val onStartInputView = GboardMethodTarget(
     "V",
 )
 
+private val setAccessPointsCustomizeState = GboardMethodTarget(
+    "Lmln;",
+    "Q",
+    listOf("Z"),
+    "V",
+)
+
 internal val gboardSwipeDownDismissLifecyclePatch = bytecodePatch(
     description = "Install the swipe-down header gesture observer after the input view starts.",
 ) {
@@ -29,7 +36,23 @@ internal val gboardSwipeDownDismissLifecyclePatch = bytecodePatch(
 
     execute {
         findMutableMethodOrThrow(onStartInputView).applySwipeDownDismissExitDelegate()
+        findMutableMethodOrThrow(setAccessPointsCustomizeState).applyToolbarEditModeDelegate()
     }
+}
+
+internal fun MutableMethod.applyToolbarEditModeDelegate() {
+    val call = RuntimeCallId.SWIPE_DOWN_DISMISS_RUNTIME_ON_TOOLBAR_EDIT_MODE_CHANGED
+    val abi = RuntimeAbiCatalog.abi(call)
+    val instructions = implementation?.instructions
+        ?: error("No instructions in $definingClass->$name")
+    val existing = instructions.count { it.isMethodReference(abi.reference) }
+    if (existing > 0) {
+        check(existing == 1 && instructions.first().isMethodReference(abi.reference)) {
+            "Malformed toolbar edit-mode delegate in $definingClass->$name"
+        }
+        return
+    }
+    addInstructions(0, RuntimeCallEmitter.invoke(call, "p1 .. p1"))
 }
 
 internal fun MutableMethod.applySwipeDownDismissExitDelegate() {
