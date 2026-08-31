@@ -743,8 +743,8 @@ val gboardZhuyinBottomRowWeightPatch = gboardPublicResourcePatch(
 val gboardPackageRenamePatch = gboardPublicResourcePatch(
     featureId = "package_rename",
     name = "Package Rename",
-    description = "將套件名稱改成 dev.jason.com.google.android.inputmethod.latin，並可自訂 App 名稱，以便共存安裝\n" +
-        "Rename the package to dev.jason.com.google.android.inputmethod.latin and allow " +
+    description = "將套件名稱改成 dev.threer01.com.google.android.inputmethod.latin，並可自訂 App 名稱，以便共存安裝\n" +
+        "Rename the package to dev.threer01.com.google.android.inputmethod.latin and allow " +
         "a custom app name so it can be installed alongside the official Gboard.",
     default = true
 ) {
@@ -752,13 +752,13 @@ val gboardPackageRenamePatch = gboardPublicResourcePatch(
 
     val appDisplayName = stringOption(
         key = "app_display_name",
-        default = "GboardWu",
+        default = "Gboard 3r01",
         values = linkedMapOf(
             "Gboard" to "Gboard",
             "Gboard Dev" to "Gboard Dev",
             "Gboard Patches" to "Gboard Patches",
             "Gboard Mod" to "Gboard Mod",
-            "GboardWu" to "GboardWu",
+            "Gboard 3r01" to "Gboard 3r01",
         ),
         title = "App 名稱 / App name",
         description = "",

@@ -91,7 +91,7 @@ public final class GboardPatchesSettingsActivity extends Activity
     private static final String GBOARD_PACKAGE_JASON_DEV =
             "com.google.android.inputmethod.latin.jason.dev";
     private static final String GBOARD_PACKAGE_REVERSED_DEV =
-            "dev.jason.com.google.android.inputmethod.latin";
+            "dev.threer01.com.google.android.inputmethod.latin";
     private static final String LIVE_TRANSCRIBE_PACKAGE_NAME =
             "com.google.audio.hearing.visualization.accessibility.scribe";
     private static final String SPEECH_SERVICES_PACKAGE_NAME =
@@ -115,9 +115,9 @@ public final class GboardPatchesSettingsActivity extends Activity
     private static final int TOOLBAR_HEIGHT_DP = 56;
     private static final int NO_SCROLL_POSITION_REQUESTED = -1;
     private static final String TOOLBAR_TITLE_PATCHES = "Patches";
-    private static final String ABOUT_AUTHOR_URL = "https://github.com/jasonwu1994";
+    private static final String ABOUT_AUTHOR_URL = "https://github.com/3r01";
     private static final String ABOUT_PATCH_REPOSITORY_URL =
-            "https://github.com/jasonwu1994/Gboard-patches";
+            "https://github.com/3r01/Gboard-patches";
     private static final String DOCUMENT_TYPE_FALLBACK = "text/plain";
     private static final String DOCUMENT_PICKER_FAILED = "Unable to open file picker.";
     private static final String DOCUMENT_WRITE_FAILED = "Failed to export file.";
@@ -3414,4 +3414,3 @@ public final class GboardPatchesSettingsActivity extends Activity
         }
     }
 }
-

@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/jasonwu1994/gboard-patches/schemas/gboard-port-product-catalog.schema.json",
+  "$id": "https://github.com/3r01/Gboard-patches/schemas/gboard-port-product-catalog.schema.json",
   "title": "Gboard port product catalog",
   "type": "object",
   "additionalProperties": false,

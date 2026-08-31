@@ -189,10 +189,10 @@ patches {
     about {
         name = "Gboard Patches"
         description = "Morphe patches for Gboard."
-        source = "https://github.com/jasonwu1994/gboard-patches"
-        author = "Jason Wu"
-        contact = "https://github.com/jasonwu1994/gboard-patches/issues"
-        website = "https://github.com/jasonwu1994/gboard-patches"
+        source = "https://github.com/3r01/Gboard-patches"
+        author = "Jason Wu and 3r01"
+        contact = "https://github.com/3r01/Gboard-patches/issues"
+        website = "https://github.com/3r01/Gboard-patches"
         license = "GPLv3"
     }
 }

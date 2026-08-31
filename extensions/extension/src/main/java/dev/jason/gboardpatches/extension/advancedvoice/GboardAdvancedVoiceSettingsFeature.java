@@ -24,7 +24,7 @@ public final class GboardAdvancedVoiceSettingsFeature
     private static final String APKMIRROR_DOWNLOAD_URL =
             "https://www.apkmirror.com/apk/google-inc/gboard/gboard-the-google-keyboard-18-0-3-954559732-release/gboard-the-google-keyboard-18-0-3-954559732-release-arm64-v8a-2-android-apk-download/";
     private static final String ADVANCED_VOICE_GITHUB_URL =
-            "https://github.com/jasonwu1994/Gboard-patches";
+            "https://github.com/3r01/Gboard-patches";
 
     private final String entryTitle;
     private final String entrySummary;
@@ -429,7 +429,7 @@ public final class GboardAdvancedVoiceSettingsFeature
         addPackageName(packageNames, context == null ? null : context.getPackageName());
         addPackageName(packageNames, "com.google.android.inputmethod.latin");
         addPackageName(packageNames, "com.google.android.inputmethod.latin.jason.dev");
-        addPackageName(packageNames, "dev.jason.com.google.android.inputmethod.latin");
+        addPackageName(packageNames, "dev.threer01.com.google.android.inputmethod.latin");
         return packageNames;
     }
 

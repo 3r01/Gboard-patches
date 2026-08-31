@@ -42,7 +42,7 @@ public final class GboardAiWritingToolsRuntime {
     static final String ALL_LANGUAGES_ALLOWLIST_VALUE = "*";
     static final String MODELESS_SMART_EDIT_REGEX_VERSION = "v3";
     static final String RENAMED_GBOARD_PACKAGE =
-            "dev.jason.com.google.android.inputmethod.latin";
+            "dev.threer01.com.google.android.inputmethod.latin";
     static final String PROOFREAD_MODEL_CONFIG =
             "202408051448_prod_sd_config";
     static final String TEXT_STYLIZATION_MODEL_CONFIG =
