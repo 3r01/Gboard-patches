@@ -1,3 +1,16 @@
+## Added in this fork
+
+- Multiple Smart Suggestions
+- Swipe Down to Dismiss Keyboard
+- First/last popup ordering for Long-Press Editing Shortcuts
+- A separate `Gboard 3r01` package identity
+
+<br>
+
+## Original README
+
+<br>
+
 <h1 align="center">Gboard Patches</h1>
 
 <p align="center">
@@ -18,8 +31,6 @@
 ## Overview
 
 Gboard Patches is a public Morphe source for a curated set of Gboard enhancements, including both global usability improvements and Taiwan-focused features for local input habits and day-to-day use.
-
-This fork is maintained by [3r01](https://github.com/3r01) and is based on the original work by [Jason Wu](https://github.com/jasonwu1994).
 
 ## Included Patches
 
