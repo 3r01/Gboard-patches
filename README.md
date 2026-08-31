@@ -9,25 +9,6 @@
 
 ## Original README
 
-<br>
-
-<h1 align="center">Gboard Patches</h1>
-
-<p align="center">
-  Morphe patches for Gboard with a mix of global improvements and Taiwan-focused enhancements.
-</p>
-
-<p align="center">
-  <a href="https://github.com/3r01/Gboard-patches/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/3r01/Gboard-patches?display_name=tag&label=Release&style=for-the-badge"></a>
-  <a href="https://github.com/3r01/Gboard-patches"><img alt="Total downloads" src="https://img.shields.io/github/downloads/3r01/Gboard-patches/total?label=Downloads&style=for-the-badge"></a>
-  <a href="https://morphe.software/add-source?github=3r01/Gboard-patches"><img alt="Add to Morphe" src="https://img.shields.io/badge/Morphe-Add%20Source-00A8FF?style=for-the-badge"></a>
-  <a href="https://github.com/3r01/Gboard-patches"><img alt="GitHub stars" src="https://img.shields.io/github/stars/3r01/Gboard-patches?style=social"></a>
-</p>
-
-<p align="center">
-  <a href="https://ko-fi.com/jasonwu1994"><img height="40" alt="Buy me a coffee on Ko-fi" src="https://storage.ko-fi.com/cdn/kofi5.png?v=3"></a>
-</p>
-
 ## Overview
 
 Gboard Patches is a public Morphe source for a curated set of Gboard enhancements, including both global usability improvements and Taiwan-focused features for local input habits and day-to-day use.
