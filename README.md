@@ -51,6 +51,12 @@ Features designed and built by this project rather than simply unlocking an exis
 </details>
 
 <details>
+  <summary><code>Custom Theme</code></summary>
+
+Import custom ZIP themes and beautiful themes from the official Rboard repository.
+</details>
+
+<details>
   <summary><code>FTP Server</code></summary>
 
   Hosts an FTP server on your phone so desktop FTP clients can browse, upload, download, and resume file transfers over the same LAN. It supports anonymous or password-protected access, a configurable control and passive port range, read-only mode, <code>/sdcard</code> or a user-selected folder as the root, live transfer progress, retained partial uploads, and an optional Quick Settings Tile.
