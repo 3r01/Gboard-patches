@@ -34,6 +34,10 @@ import dev.jason.gboardpatches.patches.gboard.features.closeproactivesuggestions
 import dev.jason.gboardpatches.patches.gboard.features.developeroptions.gboardDeveloperOptionsFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.cursortrackpad.gboardCursorTrackpadFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.cursortrackpad.gboardCursorTrackpadFlagValuePatch
+import dev.jason.gboardpatches.patches.gboard.features.customtheme.gboardCustomThemeAssetsPatch
+import dev.jason.gboardpatches.patches.gboard.features.customtheme.gboardCustomThemeFeatureMarkerPatch
+import dev.jason.gboardpatches.patches.gboard.features.customtheme.gboardCustomThemeManifestPatch
+import dev.jason.gboardpatches.patches.gboard.features.customtheme.gboardCustomThemeOfficialImportPatch
 import dev.jason.gboardpatches.patches.gboard.features.emojisize.gboardEmojiSizeFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.emojisize.gboardEmojiSizeFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.webclipboard.gboardWebClipboardAssetsPatch
@@ -410,6 +414,24 @@ val gboardFlowModeAnimationPatch = gboardPublicResourcePatch(
     dependsOn(
         gboardPatchesSettingsPatch,
         gboardFlowModeFeatureMarkerPatch,
+    )
+}
+
+@Suppress("unused")
+val gboardCustomThemePatch = gboardPublicResourcePatch(
+    featureId = "custom_theme",
+    name = "Custom Theme",
+    description = "支援匯入自訂 ZIP 主題，並支援從 Rboard 官方儲存庫匯入精美主題。\n" +
+        "Import custom ZIP themes and beautiful themes from the official Rboard repository.",
+    default = true,
+) {
+    compatibleWith(COMPATIBILITY_GBOARD)
+    dependsOn(
+        gboardPatchesSettingsPatch,
+        gboardCustomThemeFeatureMarkerPatch,
+        gboardCustomThemeAssetsPatch,
+        gboardCustomThemeManifestPatch,
+        gboardCustomThemeOfficialImportPatch,
     )
 }
 
@@ -836,6 +858,7 @@ object GboardPublishedPatchCatalog {
         gboardAccessPointCountPatch,
         gboardCloseProactiveSuggestionsPatch,
         gboardFlowModeAnimationPatch,
+        gboardCustomThemePatch,
         gboardQuickInsertPatch,
         gboardZhuyinQuickTraditionalSimplifiedTogglePatch,
         gboardCustomSymbolsPatch,

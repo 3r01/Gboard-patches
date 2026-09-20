@@ -1,3 +1,31 @@
+## [3.11.0-dev.2](https://github.com/jasonwu1994/Gboard-patches/compare/v3.10.0...v3.11.0-dev.2) (2026-09-18)
+
+### ✨ New Features
+
+* **Gboard:** add the `Custom Theme` patch, supporting custom ZIP theme imports and a selection of beautiful themes from Rboard's official repository.
+
+### 🐛 Bug Fixes
+
+* **Gboard:** fix an issue where `Custom Symbols` history entries were incorrectly saved to `Emoticon` history.
+
+### ✨ 新功能
+
+* **Gboard:** 新增 `Custom Theme` Patch，支援匯入自訂 ZIP 主題，也能從 Rboard 官方儲存庫匯入精美主題。
+
+### 🐛 修復
+
+* **Gboard:** 修復 `Custom Symbols` 歷史記錄誤寫入 `Emoticon` 歷史記錄的問題。
+
+## [3.10.0](https://github.com/jasonwu1994/Gboard-patches/compare/v3.9.0...v3.10.0) (2026-09-02)
+
+### ✨ New Features
+
+* **Gboard:** add the `Backup & Restore` patch for exporting and restoring all patch settings, and for backing up, comparing, and restoring Gboard's PB/XML flag stores.
+
+### ✨ 新功能
+
+* **Gboard:** 新增 `Backup & Restore` Patch，可匯出與還原所有 Patch 設定，並支援備份、比較及還原 Gboard 的 PB/XML flag store。
+
 ## [3.10.0-dev.3](https://github.com/jasonwu1994/Gboard-patches/compare/v3.9.0...v3.10.0-dev.3) (2026-09-01)
 
 ### ✨ New Features

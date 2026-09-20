@@ -1,12 +1,20 @@
 {
   "$schema": "gboard-port-product-catalog.schema.json",
   "format": "gboard-port-product-catalog.v1",
-  "catalog_version": "1.12.0",
+  "catalog_version": "1.14.0",
   "composition": {
     "selected_only_call_chain": true,
     "runtime_feature_mask": false
   },
   "binding_contracts": {
+    "custom_theme_fragment_peer_field": "field",
+    "custom_theme_launcher_launch": "method",
+    "custom_theme_peer_context_field": "field",
+    "custom_theme_peer_launcher_field": "field",
+    "custom_theme_peer_result_handler": "method",
+    "custom_theme_plus_handler": "method",
+    "custom_theme_result_handler": "method",
+    "custom_theme_validator": "method",
     "flag_bool_getter": "method",
     "flag_name_field": "field",
     "gesture_dispatch": "method",
@@ -237,6 +245,24 @@
       "contributions": [
         { "contribution_id": "custom_symbols.soft_key", "anchor_family_id": "soft_key_bind", "phase": "before_stock", "order": 700, "required_bindings": ["soft_key_bind", "soft_key_metadata_type"], "runtime_calls": ["ADD_SYMBOLS_SOFT_KEY_RUNTIME_PATCH_SOFT_KEY_METADATA"] },
         { "contribution_id": "custom_symbols.bytecode", "anchor_family_id": "dedicated_bytecode", "phase": "dedicated", "order": 700, "required_bindings": ["keyboard_completion_callback_type", "keyboard_definition_type", "keyboard_extension_manager", "keyboard_provider_request"], "runtime_calls": ["ADD_SYMBOLS_RUNTIME_APPEND_CUSTOM_CORPUS_ITEM", "ADD_SYMBOLS_RUNTIME_BIND_CUSTOM_VIEW_HOLDER", "ADD_SYMBOLS_RUNTIME_BRIDGE_PROVIDER_RECEIVER", "ADD_SYMBOLS_RUNTIME_CREATE_CUSTOM_VIEW_HOLDER", "ADD_SYMBOLS_RUNTIME_ENSURE_EXTENSION_PROVIDER_MAPPING", "ADD_SYMBOLS_RUNTIME_HANDLE_CATEGORY_BIND", "ADD_SYMBOLS_RUNTIME_HANDLE_CATEGORY_CHANGE", "ADD_SYMBOLS_RUNTIME_INTERCEPT_HISTORY_WRITE", "ADD_SYMBOLS_RUNTIME_ON_EMOTICON_BODY_READY", "ADD_SYMBOLS_RUNTIME_ON_EMOTICON_KEYBOARD_CONSTRUCTED", "ADD_SYMBOLS_RUNTIME_ON_EMOTICON_RECYCLER_ADAPTER_CONSTRUCTED", "ADD_SYMBOLS_RUNTIME_ON_EXPRESSION_CORPUS_FOOTER_TAB_CLICK", "ADD_SYMBOLS_RUNTIME_ON_HEADER_CALLBACK_AFTER", "ADD_SYMBOLS_RUNTIME_ON_KEYBOARD_READY", "ADD_SYMBOLS_RUNTIME_OVERRIDE_CATEGORY_NAME_FROM_INDEX", "ADD_SYMBOLS_RUNTIME_RESOLVE_CUSTOM_VIEW_TYPE", "ADD_SYMBOLS_RUNTIME_RESOLVE_SELECTED_CATEGORY_INDEX", "ADD_SYMBOLS_RUNTIME_REWRITE_METRICS_KEYBOARD_TYPE", "ADD_SYMBOLS_RUNTIME_REWRITE_NAVIGATION_KEYBOARD_TYPE", "ADD_SYMBOLS_RUNTIME_REWRITE_PROVIDER_REQUEST_TYPE", "ADD_SYMBOLS_RUNTIME_REWRITE_PROVIDER_WRAPPER_KEYBOARD_TYPE", "ADD_SYMBOLS_RUNTIME_SHOULD_SKIP_DETACHED_VIEW_TRANSFORM", "ADD_SYMBOLS_RUNTIME_SHOULD_SKIP_HEADER_START_EDGE_UPDATE"] }
+      ]
+    },
+    {
+      "feature_id": "custom_theme",
+      "public_patch_name": "Custom Theme",
+      "feature_marker": "dev.jason.gboardpatches.feature.custom_theme",
+      "target_family_ids": ["theme.import"],
+      "migration_scope": "version-sensitive",
+      "consumer_files": [
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/features/customtheme/GboardCustomThemeAssetsPatch.kt",
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/features/customtheme/GboardCustomThemeFeatureMarkerPatch.kt",
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/features/customtheme/GboardCustomThemeManifestPatch.kt",
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/features/customtheme/GboardCustomThemeOfficialImportPatch.kt",
+        "patches/src/main/kotlin/dev/jason/gboardpatches/patches/gboard/registry/GboardPatchRegistry.kt",
+        "patches/src/main/resources/custom-theme-assets/catalog.json"
+      ],
+      "contributions": [
+        { "contribution_id": "custom_theme.bytecode_and_resources", "anchor_family_id": "dedicated_bytecode", "phase": "dedicated", "order": 100, "required_bindings": ["custom_theme_fragment_peer_field", "custom_theme_launcher_launch", "custom_theme_peer_context_field", "custom_theme_peer_launcher_field", "custom_theme_peer_result_handler", "custom_theme_plus_handler", "custom_theme_result_handler", "custom_theme_validator"], "runtime_calls": ["CUSTOM_THEME_RUNTIME_HANDLE_ACTIVITY_RESULT", "CUSTOM_THEME_RUNTIME_INTERCEPT_PLUS"] }
       ]
     },
     {

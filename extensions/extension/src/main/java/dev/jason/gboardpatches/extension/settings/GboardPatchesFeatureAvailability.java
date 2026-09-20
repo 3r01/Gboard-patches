@@ -81,6 +81,8 @@ public final class GboardPatchesFeatureAvailability {
             "dev.jason.gboardpatches.feature.swipe_down_dismiss_keyboard";
     public static final String FEATURE_SIMPLE_CALCULATOR =
             "dev.jason.gboardpatches.feature.simple_calculator";
+    public static final String FEATURE_CUSTOM_THEME =
+            "dev.jason.gboardpatches.feature.custom_theme";
 
     private static final String TAG = "GboardPatches";
 
