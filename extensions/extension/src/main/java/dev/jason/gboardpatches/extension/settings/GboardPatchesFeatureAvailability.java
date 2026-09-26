@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.util.Log;
 
 public final class GboardPatchesFeatureAvailability {
+    public static final String FEATURE_EDITING_ACCESS_POINTS =
+            "dev.jason.gboardpatches.feature.editing_access_points";
     public static final String FEATURE_CLIPBOARD_ENHANCEMENTS =
             "dev.jason.gboardpatches.feature.clipboard_enhancements";
     public static final String FEATURE_CLIPBOARD_CONTENT_LIMIT =
@@ -83,6 +85,8 @@ public final class GboardPatchesFeatureAvailability {
             "dev.jason.gboardpatches.feature.swipe_down_dismiss_keyboard";
     public static final String FEATURE_SIMPLE_CALCULATOR =
             "dev.jason.gboardpatches.feature.simple_calculator";
+    public static final String FEATURE_CUSTOM_THEME =
+            "dev.jason.gboardpatches.feature.custom_theme";
 
     private static final String TAG = "GboardPatches";
 
