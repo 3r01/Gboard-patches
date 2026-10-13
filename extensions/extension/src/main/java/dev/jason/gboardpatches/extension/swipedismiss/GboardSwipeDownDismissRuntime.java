@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewConfiguration;
 import android.view.Window;
 
 import java.lang.reflect.InvocationHandler;
@@ -107,11 +108,13 @@ public final class GboardSwipeDownDismissRuntime {
                 case MotionEvent.ACTION_DOWN -> {
                     boolean enabled = isEnabled(currentService);
                     gesture.begin(enabled && beginsInHeader(currentService, event),
-                            event.getRawX(), event.getRawY());
+                            event.getRawX(), event.getRawY(), event.getEventTime(),
+                            ViewConfiguration.get(currentService).getScaledTouchSlop(),
+                            ViewConfiguration.getLongPressTimeout());
                     return delegate.dispatchTouchEvent(event);
                 }
                 case MotionEvent.ACTION_MOVE -> {
-                    if (toolbarEditMode) {
+                    if (toolbarEditMode || hasNativeDragPopup(currentService)) {
                         gesture.reset();
                         return delegate.dispatchTouchEvent(event);
                     }
@@ -120,7 +123,7 @@ public final class GboardSwipeDownDismissRuntime {
                     }
                     float density = currentService == null
                             ? 1f : currentService.getResources().getDisplayMetrics().density;
-                    if (gesture.move(event.getRawX(), event.getRawY(), density)) {
+                    if (gesture.move(event.getRawX(), event.getRawY(), density, event.getEventTime())) {
                         cancelDelegateGesture(event);
                         dismiss(currentService);
                         return true;
@@ -177,7 +180,52 @@ public final class GboardSwipeDownDismissRuntime {
             return false;
         }
         View root = service.getWindow().getWindow().getDecorView();
-        return containsMatchingHeaderSurface(root, event.getRawX(), event.getRawY());
+        return !containsNativeGestureSurface(root, event.getRawX(), event.getRawY())
+                && containsMatchingHeaderSurface(root, event.getRawX(), event.getRawY());
+    }
+
+    private static boolean containsNativeGestureSurface(View view, float rawX, float rawY) {
+        if (view == null || view.getVisibility() != View.VISIBLE || !contains(view, rawX, rawY)) {
+            return false;
+        }
+        if (view.getClass().getName().endsWith("DragDetectionLayer")
+                || view.canScrollVertically(-1) || view.canScrollVertically(1)) {
+            return true;
+        }
+        if (view instanceof ViewGroup group) {
+            for (int index = group.getChildCount() - 1; index >= 0; index--) {
+                if (containsNativeGestureSurface(group.getChildAt(index), rawX, rawY)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean hasNativeDragPopup(InputMethodService service) {
+        if (service == null || service.getWindow() == null
+                || service.getWindow().getWindow() == null) {
+            return false;
+        }
+        return containsNativeDragPopup(service.getWindow().getWindow().getDecorView());
+    }
+
+    private static boolean containsNativeDragPopup(View view) {
+        if (view == null || view.getVisibility() != View.VISIBLE) {
+            return false;
+        }
+        String name = view.getClass().getName();
+        if (name.endsWith("DragConfirmationPopupView") || name.endsWith("AccessPointDragPopupView")) {
+            return true;
+        }
+        if (view instanceof ViewGroup group) {
+            for (int index = 0; index < group.getChildCount(); index++) {
+                if (containsNativeDragPopup(group.getChildAt(index))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static boolean containsMatchingHeaderSurface(View view, float rawX, float rawY) {
