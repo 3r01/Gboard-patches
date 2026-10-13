@@ -1,7 +1,7 @@
 {
-    "created_at":  "2026-09-18T14:26:31",
-    "description":  "### ✨ New Features\n\n* **Gboard:** add the `Custom Theme` patch, supporting custom ZIP theme imports and a selection of beautiful themes from Rboard's official repository.\n\n### 🐛 Bug Fixes\n\n* **Gboard:** fix an issue where `Custom Symbols` history entries were incorrectly saved to `Emoticon` history.\n\n### ✨ 新功能\n\n* **Gboard:** 新增 `Custom Theme` Patch，支援匯入自訂 ZIP 主題，也能從 Rboard 官方儲存庫匯入精美主題。\n\n### 🐛 修復\n\n* **Gboard:** 修復 `Custom Symbols` 歷史記錄誤寫入 `Emoticon` 歷史記錄的問題。",
-    "download_url":  "https://github.com/jasonwu1994/Gboard-patches/releases/download/v3.11.0-dev.2/patches-3.11.0-dev.2.mpp",
-    "signature_download_url":  "",
-    "version":  "3.11.0-dev.2"
+  "created_at": "2026-10-13T08:02:33",
+  "description": "### 🐛 Bug Fixes\n\n* **Gboard:** fix an issue where the `Frosted Glass` patch could cause the keyboard to crash when entering the password upon device startup (Direct Boot).\n\n### 🐛 修復\n\n* **Gboard:** 修復 `Frosted Glass` Patch 在裝置開機輸入密碼時（Direct Boot）可能導致鍵盤崩潰的問題。",
+  "download_url": "https://github.com/jasonwu1994/Gboard-patches/releases/download/v3.12.1-dev.1/patches-3.12.1-dev.1.mpp",
+  "signature_download_url": "",
+  "version": "3.12.1-dev.1"
 }

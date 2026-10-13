@@ -1,3 +1,63 @@
+## [3.12.1-dev.1](https://github.com/jasonwu1994/Gboard-patches/compare/v3.12.0...v3.12.1-dev.1) (2026-10-13)
+
+### 🐛 Bug Fixes
+
+* **Gboard:** fix an issue where the `Frosted Glass` patch could cause the keyboard to crash when entering the password upon device startup (Direct Boot).
+
+### 🐛 修復
+
+* **Gboard:** 修復 `Frosted Glass` Patch 在裝置開機輸入密碼時（Direct Boot）可能導致鍵盤崩潰的問題。
+
+## [3.12.0](https://github.com/jasonwu1994/Gboard-patches/compare/v3.11.0...v3.12.0) (2026-10-04)
+
+### ✨ New Features
+
+* **Gboard:** add the `Frosted Glass` patch, bringing real-time background blur and customizable theme transparency to the keyboard. 👀
+
+### ✨ 新功能
+
+* **Gboard:** 新增 `Frosted Glass` Patch，為鍵盤加入即時背景模糊效果，並支援自訂主題透明度。👀
+
+## [3.12.0-dev.5](https://github.com/jasonwu1994/Gboard-patches/compare/v3.11.0...v3.12.0-dev.5) (2026-09-26)
+
+### ✨ New Features
+
+* **Gboard:** add the `Frosted Glass` patch, bringing real-time background blur and customizable theme transparency to the keyboard. 👀
+
+### ✨ 新功能
+
+* **Gboard:** 新增 `Frosted Glass` Patch，為鍵盤加入即時背景模糊效果，並支援自訂主題透明度。👀
+
+## [3.11.0](https://github.com/jasonwu1994/Gboard-patches/compare/v3.10.0...v3.11.0) (2026-09-22)
+
+### ✨ New Features
+
+* **Gboard:** add the `Toolbar Editing Buttons` patch, which adds Select all, Copy, Cut, and Paste actions to the toolbar menu.
+* **Gboard:** add the `Custom Theme` patch, supporting custom ZIP theme imports and a selection of beautiful themes from Rboard's official repository.
+
+### 🐛 Bug Fixes
+
+* **Gboard:** fix an issue where `Custom Symbols` history entries were incorrectly saved to `Emoticon` history.
+
+### ✨ 新功能
+
+* **Gboard:** 新增 `Toolbar Editing Buttons` Patch，將「全選」、「複製」、「剪下」與「貼上」操作加入工具列選單。
+* **Gboard:** 新增 `Custom Theme` Patch，支援匯入自訂 ZIP 主題，也能從 Rboard 官方儲存庫匯入精美主題。
+
+### 🐛 修復
+
+* **Gboard:** 修復 `Custom Symbols` 歷史記錄誤寫入 `Emoticon` 歷史記錄的問題。
+
+## [3.11.0-dev.3](https://github.com/jasonwu1994/Gboard-patches/compare/v3.11.0-dev.2...v3.11.0-dev.3) (2026-09-20)
+
+### ✨ New Features
+
+* **Gboard:** add the `Toolbar Editing Buttons` patch, which adds Select all, Copy, Cut, and Paste actions to the toolbar menu.
+
+### ✨ 新功能
+
+* **Gboard:** 新增 `Toolbar Editing Buttons` Patch，將「全選」、「複製」、「剪下」與「貼上」操作加入工具列選單。
+
 ## [3.11.0-dev.2](https://github.com/jasonwu1994/Gboard-patches/compare/v3.10.0...v3.11.0-dev.2) (2026-09-18)
 
 ### ✨ New Features

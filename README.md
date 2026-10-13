@@ -57,6 +57,12 @@ Import custom ZIP themes and beautiful themes from the official Rboard repositor
 </details>
 
 <details>
+  <summary><code>Frosted Glass</code></summary>
+
+  Adds live background blur and custom-theme transparency to the keyboard. Available on Android 12+ devices that support cross-window blur, with custom themes such as Animal Black.
+</details>
+
+<details>
   <summary><code>FTP Server</code></summary>
 
   Hosts an FTP server on your phone so desktop FTP clients can browse, upload, download, and resume file transfers over the same LAN. It supports anonymous or password-protected access, a configurable control and passive port range, read-only mode, <code>/sdcard</code> or a user-selected folder as the root, live transfer progress, retained partial uploads, and an optional Quick Settings Tile.
@@ -66,6 +72,13 @@ Import custom ZIP themes and beautiful themes from the official Rboard repositor
   <summary><code>Long-Press Editing Shortcuts</code></summary>
 
   Add Select all, Undo, Copy, Cut, Paste, and Redo long-press shortcuts to English QWERTY and Zhuyin, with an optional globe-key drag gesture that follows the same physical key positions across supported alphabet layouts.
+</details>
+
+<details>
+  <summary><code>Toolbar Editing Buttons</code></summary>
+
+  Add Select All, Copy, Cut and Paste to the menu. Drag them to the top toolbar and
+  use them with different keyboard languages in supported editors.
 </details>
 
 <details>

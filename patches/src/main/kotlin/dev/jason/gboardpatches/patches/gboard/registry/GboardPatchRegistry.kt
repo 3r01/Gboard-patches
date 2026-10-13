@@ -1,6 +1,8 @@
 package dev.jason.gboardpatches.patches.gboard.registry
 
 import app.morphe.patcher.patch.Patch
+import dev.jason.gboardpatches.patches.gboard.features.editingaccesspoints.gboardEditingAccessPointsFeatureMarkerPatch
+import dev.jason.gboardpatches.patches.gboard.features.editingaccesspoints.gboardEditingAccessPointsLifecyclePatch
 import app.morphe.patcher.patch.ResourcePatchBuilder
 import app.morphe.patcher.patch.resourcePatch
 import app.morphe.patcher.patch.stringOption
@@ -71,6 +73,8 @@ import dev.jason.gboardpatches.patches.gboard.features.packagerename.isValidGboa
 import dev.jason.gboardpatches.patches.gboard.features.quickinsert.gboardQuickInsertFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.quickinsert.gboardQuickInsertFlagValuePatch
 import dev.jason.gboardpatches.patches.gboard.features.roundedkeyboard.gboardRoundedKeyboardFeatureMarkerPatch
+import dev.jason.gboardpatches.patches.gboard.features.frostedglass.gboardFrostedGlassFeatureMarkerPatch
+import dev.jason.gboardpatches.patches.gboard.features.frostedglass.gboardFrostedGlassLifecyclePatch
 import dev.jason.gboardpatches.patches.gboard.features.settingshomepage.gboardSettingsHomepageBytecodePatch
 import dev.jason.gboardpatches.patches.gboard.features.settingshomepage.gboardSettingsHomepageFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.signaturebypass.gboardSignatureBypassBytecodePatch
@@ -196,6 +200,23 @@ val gboardManualIncognitoModePatch = gboardPublicResourcePatch(
         gboardManualIncognitoFeatureMarkerPatch,
         gboardManualIncognitoLifecyclePatch,
         gboardManualIncognitoPolicyPatch,
+        gboardAccessPointContributions1803Patch,
+    )
+}
+
+@Suppress("unused")
+val gboardEditingAccessPointsPatch = gboardPublicResourcePatch(
+    featureId = "editing_access_points",
+    name = "Toolbar Editing Buttons",
+    description = "將全選、複製、剪下與貼上加入選單。\n" +
+        "Add Select All, Copy, Cut and Paste to the menu.",
+    default = true,
+) {
+    compatibleWith(COMPATIBILITY_GBOARD)
+    dependsOn(
+        gboardPatchesSettingsPatch,
+        gboardEditingAccessPointsFeatureMarkerPatch,
+        gboardEditingAccessPointsLifecyclePatch,
         gboardAccessPointContributions1803Patch,
     )
 }
@@ -364,6 +385,23 @@ val gboardRoundedKeyboardPanelPatch = gboardPublicResourcePatch(
     dependsOn(
         gboardPatchesSettingsPatch,
         gboardRoundedKeyboardFeatureMarkerPatch,
+    )
+}
+
+@Suppress("unused")
+val gboardFrostedGlassPatch = gboardPublicResourcePatch(
+    featureId = "frosted_glass",
+    name = "Frosted Glass",
+    description = "為鍵盤加入即時背景模糊與自訂主題透明度。\n" +
+        "Add live background blur and custom-theme opacity to the keyboard.",
+    default = true,
+) {
+    compatibleWith(COMPATIBILITY_GBOARD)
+
+    dependsOn(
+        gboardPatchesSettingsPatch,
+        gboardFrostedGlassFeatureMarkerPatch,
+        gboardFrostedGlassLifecyclePatch,
     )
 }
 
@@ -846,6 +884,7 @@ object GboardPublishedPatchCatalog {
         gboardSpacebarLogoPatch,
         gboardManualIncognitoModePatch,
         gboardFloatingWebSearchPatch,
+        gboardEditingAccessPointsPatch,
         gboardSimpleCalculatorPatch,
         gboardAdvancedVoiceTypingPatch,
         gboardBluetoothMicrophonePatch,
@@ -855,6 +894,7 @@ object GboardPublishedPatchCatalog {
         gboardSplitKeyboardPatch,
         gboardAccessibilityLayoutPatch,
         gboardRoundedKeyboardPanelPatch,
+        gboardFrostedGlassPatch,
         gboardAccessPointCountPatch,
         gboardCloseProactiveSuggestionsPatch,
         gboardFlowModeAnimationPatch,
