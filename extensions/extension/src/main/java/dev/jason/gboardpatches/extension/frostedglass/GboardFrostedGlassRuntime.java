@@ -28,6 +28,8 @@ import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.lsposed.hiddenapibypass.HiddenApiBypass;
 
+import dev.jason.gboardpatches.extension.flagsettings.GboardFlagRuntimeContext;
+
 /** Android public-API runtime for a bounded IME background blur. */
 public final class GboardFrostedGlassRuntime {
     private static final String TAG = "GboardPatchesBlur";
@@ -45,81 +47,123 @@ public final class GboardFrostedGlassRuntime {
 
     public static void onConfigureWindow(Object receiver, boolean fullscreen,
             boolean candidatesOnly) {
-        if (!(receiver instanceof InputMethodService service)) {
-            return;
+        try {
+            if (!(receiver instanceof InputMethodService service)) {
+                return;
+            }
+            activeService = new WeakReference<>(service);
+            if (!isUserUnlocked(service)) {
+                return;
+            }
+            Window window = windowOf(service);
+            if (window == null) {
+                return;
+            }
+            if (!GboardFrostedGlassSettingsRuntime.isEnabled()
+                    || fullscreen || candidatesOnly || !canUseBackgroundBlur(service)) {
+                disable(window);
+                return;
+            }
+            ensureHiddenApiAccess();
+            scheduleApply(window, service);
+        } catch (Throwable ignored) {
+            // Lifecycle entry points must fail closed and never crash the IME.
         }
-        activeService = new WeakReference<>(service);
-        Window window = windowOf(service);
-        if (window == null) {
-            return;
-        }
-        if (!GboardFrostedGlassSettingsRuntime.isEnabled()
-                || fullscreen || candidatesOnly || !canUseBackgroundBlur(service)) {
-            disable(window);
-            return;
-        }
-        ensureHiddenApiAccess();
-        scheduleApply(window, service);
     }
 
     public static void afterConfigureWindow(Window window, boolean fullscreen,
             boolean candidatesOnly) {
-        if (window == null) {
-            return;
+        try {
+            if (window == null) {
+                return;
+            }
+            InputMethodService service = activeService.get();
+            Context context = service != null ? service : contextOf(window);
+            if (!isUserUnlocked(context)) {
+                return;
+            }
+            if (!GboardFrostedGlassSettingsRuntime.isEnabled()
+                    || fullscreen || candidatesOnly || context == null
+                    || !canUseBackgroundBlur(context)) {
+                disable(window);
+                return;
+            }
+            ensureHiddenApiAccess();
+            scheduleApply(window, context);
+        } catch (Throwable ignored) {
+            // Lifecycle entry points must fail closed and never crash the IME.
         }
-        InputMethodService service = activeService.get();
-        Context context = service != null ? service : contextOf(window);
-        if (!GboardFrostedGlassSettingsRuntime.isEnabled()
-                || fullscreen || candidatesOnly || context == null
-                || !canUseBackgroundBlur(context)) {
-            disable(window);
-            return;
-        }
-        ensureHiddenApiAccess();
-        scheduleApply(window, context);
     }
 
     public static void onWindowShown(Object receiver) {
-        if (!(receiver instanceof InputMethodService service)) {
-            return;
-        }
-        activeService = new WeakReference<>(service);
-        Window window = windowOf(service);
-        if (window == null) {
-            return;
-        }
-        if (!GboardFrostedGlassSettingsRuntime.isEnabled()) {
-            disable(window);
-            return;
-        }
-        ensureHiddenApiAccess();
-        View decor = window.getDecorView();
-        if (decor != null) {
-            State state = stateFor(window);
-            installDecorLayoutObserver(window, service, decor, state);
-            decor.post(() -> {
-                if (GboardFrostedGlassSettingsRuntime.isEnabled()
-                        && canUseBackgroundBlur(service)) {
-                    scheduleApply(window, service);
-                }
-            });
-        } else {
-            onConfigureWindow(receiver, false, false);
+        try {
+            if (!(receiver instanceof InputMethodService service)) {
+                return;
+            }
+            activeService = new WeakReference<>(service);
+            if (!isUserUnlocked(service)) {
+                return;
+            }
+            Window window = windowOf(service);
+            if (window == null) {
+                return;
+            }
+            if (!GboardFrostedGlassSettingsRuntime.isEnabled()) {
+                disable(window);
+                return;
+            }
+            ensureHiddenApiAccess();
+            View decor = window.getDecorView();
+            if (decor != null) {
+                State state = stateFor(window);
+                installDecorLayoutObserver(window, service, decor, state);
+                decor.post(() -> {
+                    try {
+                        if (isUserUnlocked(service)
+                                && GboardFrostedGlassSettingsRuntime.isEnabled()
+                                && canUseBackgroundBlur(service)) {
+                            scheduleApply(window, service);
+                        }
+                    } catch (Throwable ignored) {
+                        // Delayed window show work must fail closed.
+                    }
+                });
+            } else {
+                onConfigureWindow(receiver, false, false);
+            }
+        } catch (Throwable ignored) {
+            // Lifecycle entry points must fail closed and never crash the IME.
         }
     }
 
     public static void onWindowHidden(Object receiver) {
-        Window window = receiver instanceof InputMethodService service
-                ? windowOf(service) : null;
-        if (window != null) {
-            disable(window);
+        try {
+            if (!(receiver instanceof InputMethodService service)) {
+                activeService = new WeakReference<>(null);
+                return;
+            }
+            if (!isUserUnlocked(service)) {
+                activeService = new WeakReference<>(null);
+                return;
+            }
+            Window window = windowOf(service);
+            if (window != null) {
+                disable(window);
+            }
+            activeService = new WeakReference<>(null);
+        } catch (Throwable ignored) {
+            activeService = new WeakReference<>(null);
         }
-        activeService = new WeakReference<>(null);
+    }
+
+    static boolean isUserUnlocked(Context context) {
+        return GboardFlagRuntimeContext.isUserUnlocked(context);
     }
 
     private static void reapplyAfterLayout(Window window, Context context,
             State state, long layoutGeneration) {
         if (state.layoutGeneration != layoutGeneration
+                || !isUserUnlocked(context)
                 || !GboardFrostedGlassSettingsRuntime.isEnabled()) {
             return;
         }
@@ -137,7 +181,7 @@ public final class GboardFrostedGlassRuntime {
         }
         View.OnLayoutChangeListener listener = (view, left, top, right, bottom,
                 oldLeft, oldTop, oldRight, oldBottom) -> {
-            if (!GboardFrostedGlassSettingsRuntime.isEnabled()) {
+            if (!isUserUnlocked(context) || !GboardFrostedGlassSettingsRuntime.isEnabled()) {
                 return;
             }
             long generation = ++state.layoutGeneration;
@@ -183,7 +227,7 @@ public final class GboardFrostedGlassRuntime {
 
     private static void verifyAndApply(Window window, Context context, State state) {
         try {
-            if (!GboardFrostedGlassSettingsRuntime.isEnabled()) {
+            if (!isUserUnlocked(context) || !GboardFrostedGlassSettingsRuntime.isEnabled()) {
                 disable(window);
                 return;
             }

@@ -1,5 +1,10 @@
 ## [3.12.0](https://github.com/jasonwu1994/Gboard-patches/compare/v3.11.0...v3.12.0) (2026-10-04)
 
+### 3r01 fixes
+
+* Preserve suggestion deletion, toolbar dragging, scrolling, and native vertical candidate gestures when swipe-down dismissal is enabled.
+* Include upstream's Direct Boot fix for the Frosted Glass patch.
+
 ### ✨ New Features
 
 * **Gboard:** add the `Frosted Glass` patch, bringing real-time background blur and customizable theme transparency to the keyboard. 👀
