@@ -1,3 +1,23 @@
+## [3.12.1-dev.1](https://github.com/jasonwu1994/Gboard-patches/compare/v3.12.0...v3.12.1-dev.1) (2026-10-13)
+
+### 🐛 Bug Fixes
+
+* **Gboard:** fix an issue where the `Frosted Glass` patch could cause the keyboard to crash when entering the password upon device startup (Direct Boot).
+
+### 🐛 修復
+
+* **Gboard:** 修復 `Frosted Glass` Patch 在裝置開機輸入密碼時（Direct Boot）可能導致鍵盤崩潰的問題。
+
+## [3.12.0](https://github.com/jasonwu1994/Gboard-patches/compare/v3.11.0...v3.12.0) (2026-10-04)
+
+### ✨ New Features
+
+* **Gboard:** add the `Frosted Glass` patch, bringing real-time background blur and customizable theme transparency to the keyboard. 👀
+
+### ✨ 新功能
+
+* **Gboard:** 新增 `Frosted Glass` Patch，為鍵盤加入即時背景模糊效果，並支援自訂主題透明度。👀
+
 ## [3.12.0-dev.5](https://github.com/jasonwu1994/Gboard-patches/compare/v3.11.0...v3.12.0-dev.5) (2026-09-26)
 
 ### ✨ New Features

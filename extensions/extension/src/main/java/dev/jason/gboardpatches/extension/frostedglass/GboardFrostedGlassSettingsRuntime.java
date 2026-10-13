@@ -5,17 +5,43 @@ import dev.jason.gboardpatches.extension.flagsettings.GboardFlagRuntimeContext;
 
 public final class GboardFrostedGlassSettingsRuntime {
     private GboardFrostedGlassSettingsRuntime() {}
-    private static SharedPreferences prefs() { return GboardFlagRuntimeContext.preferencesOrNull(); }
+
+    private static SharedPreferences prefs() {
+        try {
+            return GboardFlagRuntimeContext.preferencesOrNull();
+        } catch (Throwable ignored) {
+            return null;
+        }
+    }
+
     public static boolean isEnabled() {
-        return GboardFrostedGlassSettings.readEnabled(prefs());
+        try {
+            return GboardFrostedGlassSettings.readEnabled(prefs());
+        } catch (Throwable ignored) {
+            return GboardFrostedGlassSettings.DEFAULT_ENABLED;
+        }
     }
+
     public static int blurRadiusPx() {
-        int strength = GboardFrostedGlassSettings.readBlurStrength(prefs());
-        return GboardFrostedGlassSettings.blurStrengthToRadiusPx(strength);
+        try {
+            int strength = GboardFrostedGlassSettings.readBlurStrength(prefs());
+            return GboardFrostedGlassSettings.blurStrengthToRadiusPx(strength);
+        } catch (Throwable ignored) {
+            return GboardFrostedGlassSettings.blurStrengthToRadiusPx(
+                    GboardFrostedGlassSettings.DEFAULT_BLUR_STRENGTH);
+        }
     }
+
     public static int customOpacityPercent() {
-        SharedPreferences p=prefs();
-        if (GboardFrostedGlassSettings.TRANSPARENCY_MODE_CUSTOM.equals(GboardFrostedGlassSettings.readTransparencyMode(p))) return Math.round((100-GboardFrostedGlassSettings.readCustomOpacity(p))*255f/100f);
+        try {
+            SharedPreferences p = prefs();
+            if (GboardFrostedGlassSettings.TRANSPARENCY_MODE_CUSTOM.equals(
+                    GboardFrostedGlassSettings.readTransparencyMode(p))) {
+                return Math.round((100 - GboardFrostedGlassSettings.readCustomOpacity(p)) * 255f / 100f);
+            }
+        } catch (Throwable ignored) {
+            // Fall through to theme transparency mode when preferences are unavailable.
+        }
         return -1;
     }
 }
