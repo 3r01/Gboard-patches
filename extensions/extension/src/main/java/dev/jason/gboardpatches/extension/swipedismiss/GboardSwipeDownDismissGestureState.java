@@ -12,6 +12,11 @@ final class GboardSwipeDownDismissGestureState {
     private float touchSlop;
     private boolean moving;
 
+    static boolean isHeaderStart(float x, float y, int left, int top, int width, int height) {
+        return width > 0 && height > 0
+                && x >= left && x < left + width && y >= top && y < top + height;
+    }
+
     void begin(boolean inHeader, float x, float y, long eventTime,
             float touchSlop, int longPressTimeout) {
         tracking = inHeader;
@@ -52,6 +57,10 @@ final class GboardSwipeDownDismissGestureState {
 
     boolean isConsumed() {
         return consumed;
+    }
+
+    boolean isTracking() {
+        return tracking;
     }
 
     void reset() {

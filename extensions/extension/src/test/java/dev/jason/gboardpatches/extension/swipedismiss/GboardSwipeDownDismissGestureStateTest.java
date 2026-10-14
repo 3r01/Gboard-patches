@@ -5,6 +5,20 @@ import org.junit.Test;
 
 public final class GboardSwipeDownDismissGestureStateTest {
     @Test
+    public void keyboardBodyAndHeaderEdgesAreExcluded() {
+        Assert.assertTrue(GboardSwipeDownDismissGestureState.isHeaderStart(
+                450f, 1685f, 0, 1621, 1220, 132));
+        Assert.assertFalse(GboardSwipeDownDismissGestureState.isHeaderStart(
+                965f, 2530f, 0, 1621, 1220, 132));
+        Assert.assertFalse(GboardSwipeDownDismissGestureState.isHeaderStart(
+                450f, 1753f, 0, 1621, 1220, 132));
+        Assert.assertFalse(GboardSwipeDownDismissGestureState.isHeaderStart(
+                1220f, 1685f, 0, 1621, 1220, 132));
+        Assert.assertFalse(GboardSwipeDownDismissGestureState.isHeaderStart(
+                0f, 0f, 0, 0, 0, 132));
+    }
+
+    @Test
     public void settingDefaultsOff() {
         Assert.assertFalse(GboardSwipeDownDismissSettings.DEFAULT_ENABLED);
     }

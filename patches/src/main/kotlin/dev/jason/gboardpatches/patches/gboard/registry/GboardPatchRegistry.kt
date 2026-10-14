@@ -86,7 +86,7 @@ import dev.jason.gboardpatches.patches.gboard.features.spacebarlogo.gboardSpaceb
 import dev.jason.gboardpatches.patches.gboard.features.symbolfooter.gboardSymbolFooterOrderBytecodePatch
 import dev.jason.gboardpatches.patches.gboard.features.symbolfooter.gboardSymbolFooterOrderFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.swipedismiss.gboardSwipeDownDismissFeatureMarkerPatch
-import dev.jason.gboardpatches.patches.gboard.features.swipedismiss.gboardSwipeDownDismissLifecyclePatch
+import dev.jason.gboardpatches.patches.gboard.features.swipedismiss.gboardSwipeDownDismissTouchPatch
 import dev.jason.gboardpatches.patches.gboard.features.toprowswipe.gboardTopRowSwipeFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.writingtools.gboardAiWritingToolsFeatureMarkerPatch
 import dev.jason.gboardpatches.patches.gboard.features.writingtools.gboardAiWritingTools1803AutoFixAcceptancePatch
@@ -563,7 +563,7 @@ val gboardSwipeDownDismissKeyboardPatch = gboardPublicResourcePatch(
     dependsOn(
         gboardPatchesSettingsPatch,
         gboardSwipeDownDismissFeatureMarkerPatch,
-        gboardSwipeDownDismissLifecyclePatch,
+        gboardSwipeDownDismissTouchPatch,
     )
 }
 

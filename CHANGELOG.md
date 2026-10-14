@@ -1,3 +1,8 @@
+## [3.12.1](https://github.com/3r01/Gboard-patches/compare/v3.12.0...v3.12.1) (2026-10-14)
+
+* Use upstream's precise header touch hook for swipe-down dismissal, removing the window callback proxy and stored input service.
+* Preserve suggestion deletion, toolbar customization, scrolling, and native candidate gestures.
+
 ## [3.12.0](https://github.com/jasonwu1994/Gboard-patches/compare/v3.11.0...v3.12.0) (2026-10-04)
 
 ### 3r01 fixes
