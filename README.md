@@ -106,6 +106,12 @@ Import custom ZIP themes and beautiful themes from the official Rboard repositor
 </details>
 
 <details>
+  <summary><code>Swipe Down to Dismiss Keyboard</code></summary>
+
+  Swipe down from the suggestions or toolbar to close the keyboard.
+</details>
+
+<details>
   <summary><code>G Logo on Spacebar</code></summary>
 
   Show the G Logo on the spacebar and hide the language label.

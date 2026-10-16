@@ -110,7 +110,9 @@ public final class GboardSettingsGroupingTest {
                 "new GboardCursorTrackpadSettingsFeature(context)",
                 "new GboardOcrSettingsFeature(context)",
                 "new GboardQuickInsertSettingsFeature(context)",
-                "new GboardFloatingWebSearchSettingsFeature(context)");
+                "new GboardFloatingWebSearchSettingsFeature(context)",
+                "new GboardCalculatorSettingsFeature(context)",
+                "new GboardSwipeDismissSettingsFeature(context)");
         assertInOrder(layoutGroupSource.substring(layoutGroupSource.indexOf("Arrays.asList(")),
                 "new GboardSpacebarLogoSettingsFeature(context)",
                 "new GboardFlowModeSettingsFeature(context)",
@@ -147,6 +149,9 @@ public final class GboardSettingsGroupingTest {
         Assert.assertTrue(availabilitySource.contains("FEATURE_ACCESS_POINT_COUNT"));
         Assert.assertTrue(availabilitySource.contains(
                 "dev.jason.gboardpatches.feature.access_point_count"));
+        Assert.assertTrue(availabilitySource.contains("FEATURE_SWIPE_DISMISS"));
+        Assert.assertTrue(availabilitySource.contains(
+                "dev.jason.gboardpatches.feature.swipe_dismiss"));
     }
 
     @Test

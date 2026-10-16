@@ -16,6 +16,7 @@ import dev.jason.gboardpatches.extension.quickinsert.GboardQuickInsertSettingsFe
 import dev.jason.gboardpatches.extension.settings.GboardFeatureGroup;
 import dev.jason.gboardpatches.extension.settings.GboardPatchesSettingsContract;
 import dev.jason.gboardpatches.extension.settings.GboardSettingsText;
+import dev.jason.gboardpatches.extension.swipedismiss.GboardSwipeDismissSettingsFeature;
 import dev.jason.gboardpatches.extension.toprowswipe.GboardTopRowSwipeSettingsFeature;
 import dev.jason.gboardpatches.extension.websearch.GboardFloatingWebSearchSettingsFeature;
 
@@ -45,7 +46,8 @@ public final class GboardKeyboardToolsSettingsGroupFeature
                         new GboardOcrSettingsFeature(context),
                         new GboardQuickInsertSettingsFeature(context),
                         new GboardFloatingWebSearchSettingsFeature(context),
-                        new GboardCalculatorSettingsFeature(context)));
+                        new GboardCalculatorSettingsFeature(context),
+                        new GboardSwipeDismissSettingsFeature(context)));
     }
 
     @Override

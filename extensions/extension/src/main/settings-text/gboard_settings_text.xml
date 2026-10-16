@@ -3046,6 +3046,26 @@
         <translation locale="en">The calculator settings screen failed to load. Reopen Gboard settings and try again.</translation>
         <translation locale="zh-Hant">計算機設定畫面載入失敗。請重新開啟 Gboard 設定再試一次。</translation>
     </string>
+    <string name="gboard_patches_swipe_dismiss_title">
+        <translation locale="en">Swipe Down to Dismiss Keyboard</translation>
+        <translation locale="zh-Hant">下滑關閉鍵盤</translation>
+    </string>
+    <string name="gboard_patches_swipe_dismiss_summary">
+        <translation locale="en">Swipe down from the suggestions or toolbar to close the keyboard.</translation>
+        <translation locale="zh-Hant">從建議列或工具列向下滑動以關閉鍵盤。</translation>
+    </string>
+    <string name="gboard_patches_swipe_dismiss_section">
+        <translation locale="en">General</translation>
+        <translation locale="zh-Hant">一般</translation>
+    </string>
+    <string name="gboard_patches_swipe_dismiss_enabled_title">
+        <translation locale="en">Enable swipe down to dismiss</translation>
+        <translation locale="zh-Hant">啟用下滑關閉</translation>
+    </string>
+    <string name="gboard_patches_swipe_dismiss_enabled_summary">
+        <translation locale="en">Only swipes starting in the keyboard header can close the keyboard.</translation>
+        <translation locale="zh-Hant">只有從鍵盤頂部開始的下滑手勢可以關閉鍵盤。</translation>
+    </string>
     <string name="gboard_patches_custom_theme_title">
         <translation locale="en">Custom themes</translation>
         <translation locale="zh-Hant">自訂主題</translation>
