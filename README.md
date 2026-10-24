@@ -1,7 +1,7 @@
 ## Added in this fork
 
 - Multiple Smart Suggestions
-- Swipe Down to Dismiss Keyboard
+- Additional native-gesture protections for Swipe Down to Dismiss Keyboard
 - First/last popup ordering for Long-Press Editing Shortcuts
 - A separate `Gboard 3r01` package identity
 
@@ -97,6 +97,12 @@ Import custom ZIP themes and beautiful themes from the official Rboard repositor
   <summary><code>Simple Calculator</code></summary>
 
   Adds an optional inline calculator for arithmetic expressions typed in any text field. The result appears in Gboard's suggestion row; tap it to replace the expression, or long-press it to copy the result.
+</details>
+
+<details>
+  <summary><code>Swipe Down to Dismiss Keyboard</code></summary>
+
+  Swipe down from the suggestions or toolbar to close the keyboard.
 </details>
 
 <details>

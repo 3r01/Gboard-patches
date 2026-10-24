@@ -35,7 +35,7 @@ jobs:
         env:
           GITHUB_ACTOR: ${{ github.repository_owner }}
           GITHUB_TOKEN: ${{ secrets.MORPHE_PACKAGES_TOKEN }}
-        run: ./gradlew :patches:buildAndroid generatePatchesList
+        run: ./gradlew :extensions:extension:testDebugUnitTest :patches:buildAndroid generatePatchesList :patches:verifyGboardCapabilityWiring
 
       - name: Validate synced release metadata
         id: metadata
