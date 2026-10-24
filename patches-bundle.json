@@ -1,5 +1,5 @@
 {
-    "created_at":  "2026-10-14T08:07:07Z",
+    "created_at":  "2026-10-14T08:07:07",
     "description":  "Swipe-down dismissal now uses upstream's precise header touch hook while preserving suggestion deletion, toolbar customization, scrolling, and native candidate gestures. Removes the window callback proxy and stored input service. Tested on-device.",
     "download_url":  "https://github.com/3r01/Gboard-patches/releases/download/v3.12.1/patches-3.12.1.mpp",
     "signature_download_url":  "",

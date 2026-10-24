@@ -60,7 +60,11 @@ jobs:
               throw "Tag version '$expectedVersion' does not match gradle.properties version '$actualVersion'."
           }
 
-          $bundle = Get-Content -LiteralPath "patches-bundle.json" -Raw | ConvertFrom-Json
+          $bundleJson = Get-Content -LiteralPath "patches-bundle.json" -Raw
+          if ($bundleJson -notmatch '"created_at"\s*:\s*"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}"') {
+              throw "created_at must be a timezone-free local date/time for Morphe custom sources."
+          }
+          $bundle = $bundleJson | ConvertFrom-Json
           if ([string]$bundle.version -ne $actualVersion) {
               throw "patches-bundle.json version '$($bundle.version)' does not match '$actualVersion'."
           }
